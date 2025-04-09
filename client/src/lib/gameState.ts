@@ -38,21 +38,7 @@ export function getInitialGameState(): GameState {
     // Character info
     characterCreated: false,
     characterName: undefined,
-    characterCode: undefined, // Unique identifier for character
     sect: undefined,
-    
-    // Social profile
-    socialProfile: {
-      privacyLevel: 'public',
-      bio: '',
-      title: '',
-      displayName: '',
-      achievements: [],
-      friendCount: 0,
-      clanId: undefined,
-      clanName: undefined,
-      clanRole: undefined
-    },
     
     // Basic cultivation stats
     energy: 0,
