@@ -51,6 +51,11 @@ const CharacterCreation = () => {
       updatedState.characterName = characterName;
       updatedState.sect = selectedSect;
       
+      // Initialize martial arts object if it doesn't exist
+      if (!updatedState.martialArts) {
+        updatedState.martialArts = {};
+      }
+      
       // Add initial martial arts for the character
       // Every character starts with Basic Palm Strike
       updatedState.martialArts["palm-strike"] = {

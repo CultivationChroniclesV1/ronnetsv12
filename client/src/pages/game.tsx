@@ -8,6 +8,8 @@ import { SkillsSection } from '@/components/skills-section';
 import { StatsSection } from '@/components/stats-section';
 import { SettingsModal } from '@/components/ui/settings-modal';
 import { Button } from '@/components/ui/button';
+import { useLocation } from 'wouter';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function Game() {
   const { 
@@ -17,11 +19,36 @@ export default function Game() {
     saveGame, 
     isAutoSaveEnabled
   } = useGameEngine();
+  const [, setLocation] = useLocation();
   
   useEffect(() => {
     // Initialize game engine when component mounts
     initialize();
-  }, [initialize]);
+    
+    // Redirect to character creation if character not created
+    if (!game.characterCreated) {
+      setLocation('/character');
+    }
+  }, [initialize, game.characterCreated, setLocation]);
+  
+  // Don't render game content if character not created
+  if (!game.characterCreated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="max-w-md w-full">
+          <CardContent className="pt-6 text-center">
+            <p>Please create your character before beginning your cultivation journey.</p>
+            <Button 
+              className="mt-4" 
+              onClick={() => setLocation('/character')}
+            >
+              Create Character
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   // Calculate time since last save
   const lastSavedDate = new Date(game.lastSaved);
