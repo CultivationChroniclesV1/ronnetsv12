@@ -883,12 +883,154 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 10,
+      spiritualStones: 1
+    }
+  },
+  'wolf': {
+    name: 'Spiritual Wolf',
+    description: 'A swift predator with sharp senses and instincts.',
+    health: 45,
+    attack: 7,
+    defense: 1,
+    level: 2,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 12,
+      spiritualStones: 1
+    }
+  },
+  'fox': {
+    name: 'Nine-Tailed Fox',
+    description: 'A cunning creature with innate spiritual abilities.',
+    health: 40,
+    attack: 6,
+    defense: 3,
+    level: 3,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 15,
+      spiritualStones: 2
+    }
+  },
+  'bear': {
+    name: 'Spirit Bear',
+    description: 'A massive beast with incredible strength and endurance.',
+    health: 70,
+    attack: 8,
+    defense: 4,
+    level: 4,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 18,
+      spiritualStones: 2
+    }
+  },
+  'snake': {
+    name: 'Mystic Serpent',
+    description: 'A poisonous snake with venomous spiritual energy.',
+    health: 35,
+    attack: 9,
+    defense: 2,
+    level: 5,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 20,
+      spiritualStones: 2
+    }
+  },
+  'tiger': {
+    name: 'Azure Tiger',
+    description: 'A majestic predator with lightning-fast reflexes.',
+    health: 60,
+    attack: 10,
+    defense: 4,
+    level: 6,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 25,
+      spiritualStones: 3
+    }
+  },
+  'eagle': {
+    name: 'Spirit Eagle',
+    description: 'A keen-eyed raptor with control over wind elements.',
+    health: 45,
+    attack: 12,
+    defense: 3,
+    level: 7,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 28,
+      spiritualStones: 3
+    }
+  },
+  'boar': {
+    name: 'Iron-Hide Boar',
+    description: 'A ferocious boar with extremely tough skin.',
+    health: 80,
+    attack: 8,
+    defense: 6,
+    level: 8,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 30,
+      spiritualStones: 3
+    }
+  },
+  'monkey': {
+    name: 'Nimble Monkey',
+    description: 'A clever primate that has learned basic spiritual techniques.',
+    health: 40,
+    attack: 7,
+    defense: 5,
+    level: 9,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 32,
+      spiritualStones: 4
+    }
+  },
+  'deer': {
+    name: 'Golden Deer',
+    description: 'A rare deer that can manipulate healing energies.',
+    health: 55,
+    attack: 6,
+    defense: 7,
+    level: 10,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 35,
+      spiritualStones: 4
+    }
+  },
+  
+  // City outskirts enemies
+  'bandit': {
+    name: 'Rogue Cultivator',
+    description: 'A cultivator who has strayed from the righteous path.',
+    health: 60,
+    attack: 8,
+    defense: 4,
+    level: 5,
+    realm: 'qi',
+    location: 'city',
+    rewards: {
+      experience: 10,
       spiritualStones: 5,
       gold: 3,
       loot: ['beast-core', 'hide']
     }
   },
-  'bandit': {
+  'rogue-cultivator': {
     name: 'Rogue Cultivator',
     description: 'A cultivator who has strayed from the righteous path and now preys on others.',
     health: 80,

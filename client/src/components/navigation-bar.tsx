@@ -59,6 +59,16 @@ export function NavigationBar() {
                 <i className="fas fa-archive mr-1"></i> Inventory
               </div>
             </Link>
+            <Link href="/shop">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/shop' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-shopping-cart mr-1"></i> Shop
+              </div>
+            </Link>
+            <Link href="/sect-quests">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/sect-quests' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-tasks mr-1"></i> Quests
+              </div>
+            </Link>
           </div>
           
           {/* Creator Info Button */}
@@ -151,6 +161,16 @@ export function NavigationBar() {
                 <Link href="/inventory">
                   <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/inventory' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-archive mr-2"></i> Inventory
+                  </div>
+                </Link>
+                <Link href="/shop">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/shop' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-shopping-cart mr-2"></i> Shop
+                  </div>
+                </Link>
+                <Link href="/sect-quests">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/sect-quests' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-tasks mr-2"></i> Quests
                   </div>
                 </Link>
                 

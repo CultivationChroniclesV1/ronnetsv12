@@ -271,14 +271,55 @@ const CombatPage = () => {
   const availableTechniques = Object.entries(game.martialArts)
     .filter(([id, technique]) => technique.unlocked);
 
-  // Filter enemies by area
+  // Filter enemies by area and player level
   const getAreaEnemies = () => {
-    // This is a simple implementation - in a real game,
-    // different areas would have different enemy lists
+    const playerLevel = game.cultivationLevel;
+    
+    // Expanded enemy lists by area
     const enemies = {
-      "forest": ["beast"],
-      "city": ["bandit"],
-      "ruins": ["guardian", "demon"]
+      // Spirit Forest - various animal and nature spirits
+      "forest": playerLevel < 5 ? 
+        ["beast", "wolf", "fox"] : 
+        playerLevel < 10 ? 
+          ["bear", "snake", "tiger", "eagle", "boar", "monkey", "deer"] : 
+          ["shadow-wolf", "spirit-ape", "vine-horror"],
+      
+      // City Outskirts - human and humanoid opponents
+      "city": playerLevel < 7 ? 
+        ["bandit", "rogue-cultivator"] : 
+        ["demonic-cultivator", "ghost-warrior"],
+      
+      // Ancient Ruins - constructs and ancient entities
+      "ruins": playerLevel < 12 ? 
+        ["guardian", "tomb-guardian"] : 
+        ["demon", "ghost-warrior", "stone-golem"],
+      
+      // Mountain - larger beasts and elemental entities
+      "mountain": playerLevel < 8 ? 
+        ["bear", "eagle", "boar"] : 
+        playerLevel < 15 ? 
+          ["spirit-ape", "thunder-beast", "ancient-tiger"] : 
+          ["golden-ape"],
+      
+      // Jade Valley - mineral and earth entities
+      "jade-valley": playerLevel < 10 ? 
+        ["jade-serpent"] : 
+        ["stone-golem", "giant-centipede"],
+      
+      // Poison Marsh - toxic and venomous creatures
+      "poison-marsh": playerLevel < 8 ? 
+        ["snake", "venomous-toad"] : 
+        ["vine-horror", "blood-bat"],
+        
+      // Flame Desert - fire-attuned entities
+      "flame-desert": playerLevel < 15 ? 
+        ["flame-scorpion"] : 
+        ["phoenix-descendant", "fire-dragon-king"],
+      
+      // Frozen Peak - ice and cold entities
+      "frozen-peak": playerLevel < 12 ? 
+        ["ice-sprite"] : 
+        ["elder-dragon"]
     };
     
     return (enemies as any)[selectedArea] || ["beast"];
@@ -307,52 +348,210 @@ const CombatPage = () => {
             {/* Area Selection */}
             <div className="mb-6">
               <h2 className="text-xl font-medium mb-4">Select Hunting Ground</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card 
-                  className={`cursor-pointer transition-all ${selectedArea === "forest" ? "ring-2 ring-green-500" : ""}`}
-                  onClick={() => setSelectedArea("forest")}
-                >
-                  <CardHeader className="bg-green-600 text-white py-3">
-                    <CardTitle className="text-lg flex items-center">
-                      <i className="fas fa-tree mr-2"></i> Spirit Forest
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <p className="text-sm">A mystical forest with spiritual beasts.</p>
-                    <p className="text-xs mt-2 text-gray-600">Recommended for new cultivators</p>
-                  </CardContent>
-                </Card>
+              
+              <Tabs defaultValue="beginner" className="mb-4">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="beginner">Beginner Areas</TabsTrigger>
+                  <TabsTrigger value="intermediate">Intermediate Areas</TabsTrigger>
+                  <TabsTrigger value="advanced">Advanced Areas</TabsTrigger>
+                </TabsList>
                 
-                <Card 
-                  className={`cursor-pointer transition-all ${selectedArea === "city" ? "ring-2 ring-blue-500" : ""}`}
-                  onClick={() => setSelectedArea("city")}
-                >
-                  <CardHeader className="bg-blue-600 text-white py-3">
-                    <CardTitle className="text-lg flex items-center">
-                      <i className="fas fa-city mr-2"></i> City Outskirts
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <p className="text-sm">Encounter bandits and rogue cultivators.</p>
-                    <p className="text-xs mt-2 text-gray-600">Medium difficulty challenges</p>
-                  </CardContent>
-                </Card>
+                <TabsContent value="beginner">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "forest" ? "ring-2 ring-green-500" : ""}`}
+                      onClick={() => setSelectedArea("forest")}
+                    >
+                      <CardHeader className="bg-green-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-tree mr-2"></i> Spirit Forest
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">A mystical forest with spiritual beasts.</p>
+                        <p className="text-xs mt-2 text-gray-600">Recommended for new cultivators</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "city" ? "ring-2 ring-blue-500" : ""}`}
+                      onClick={() => setSelectedArea("city")}
+                    >
+                      <CardHeader className="bg-blue-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-city mr-2"></i> City Outskirts
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">Encounter bandits and rogue cultivators.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 3-7 recommended</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "mountain" ? "ring-2 ring-yellow-500" : ""}`}
+                      onClick={() => setSelectedArea("mountain")}
+                    >
+                      <CardHeader className="bg-yellow-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-mountain mr-2"></i> Azure Mountains
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">Home to powerful beasts and flying creatures.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 4-8 recommended</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "poison-marsh" ? "ring-2 ring-green-700" : ""}`}
+                      onClick={() => setSelectedArea("poison-marsh")}
+                    >
+                      <CardHeader className="bg-green-700 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-skull-crossbones mr-2"></i> Poison Marsh
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">A dangerous swamp filled with venomous creatures.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 5-10 recommended</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
                 
-                <Card 
-                  className={`cursor-pointer transition-all ${selectedArea === "ruins" ? "ring-2 ring-purple-500" : ""}`}
-                  onClick={() => setSelectedArea("ruins")}
-                >
-                  <CardHeader className="bg-purple-600 text-white py-3">
-                    <CardTitle className="text-lg flex items-center">
-                      <i className="fas fa-dungeon mr-2"></i> Ancient Ruins
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <p className="text-sm">Face guardians and demons of the ruins.</p>
-                    <p className="text-xs mt-2 text-gray-600">For advanced cultivators only</p>
-                  </CardContent>
-                </Card>
-              </div>
+                <TabsContent value="intermediate">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "jade-valley" ? "ring-2 ring-emerald-500" : ""}`}
+                      onClick={() => setSelectedArea("jade-valley")}
+                    >
+                      <CardHeader className="bg-emerald-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-gem mr-2"></i> Jade Valley
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">A valley rich with jade essence and mineral spirits.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 6-12 recommended</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "ruins" ? "ring-2 ring-purple-500" : ""}`}
+                      onClick={() => setSelectedArea("ruins")}
+                    >
+                      <CardHeader className="bg-purple-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-dungeon mr-2"></i> Ancient Ruins
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">Face guardians and demons of the ruins.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 10-15 recommended</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "frozen-peak" ? "ring-2 ring-blue-300" : ""}`}
+                      onClick={() => setSelectedArea("frozen-peak")}
+                    >
+                      <CardHeader className="bg-blue-400 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-snowflake mr-2"></i> Frozen Peak
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">A mountaintop covered in eternal ice with frost spirits.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 12-18 recommended</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "thunder-peak" ? "ring-2 ring-indigo-500" : ""}`}
+                      onClick={() => setSelectedArea("thunder-peak")}
+                    >
+                      <CardHeader className="bg-indigo-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-bolt mr-2"></i> Thunder Peak
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">A high mountain constantly struck by lightning.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 15-20 recommended</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="advanced">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "flame-desert" ? "ring-2 ring-red-500" : ""}`}
+                      onClick={() => setSelectedArea("flame-desert")}
+                    >
+                      <CardHeader className="bg-red-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-fire mr-2"></i> Flame Desert
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">A scorching desert with fire elementals and beasts.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 15-25 recommended</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "great-river" ? "ring-2 ring-blue-500" : ""}`}
+                      onClick={() => setSelectedArea("great-river")}
+                      style={{ opacity: game.cultivationLevel >= 20 ? 1 : 0.5 }}
+                    >
+                      <CardHeader className="bg-blue-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-water mr-2"></i> Great River
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">Home to powerful water creatures including dragons.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 20+ required</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "tiger-mountain" ? "ring-2 ring-amber-500" : ""}`}
+                      onClick={() => setSelectedArea("tiger-mountain")}
+                      style={{ opacity: game.cultivationLevel >= 25 ? 1 : 0.5 }}
+                    >
+                      <CardHeader className="bg-amber-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-paw mr-2"></i> Tiger Mountain
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">The domain of ancient tiger spirits with great power.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 25+ required</p>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card 
+                      className={`cursor-pointer transition-all ${selectedArea === "dragon-volcano" ? "ring-2 ring-rose-500" : ""}`}
+                      onClick={() => setSelectedArea("dragon-volcano")}
+                      style={{ opacity: game.cultivationLevel >= 35 ? 1 : 0.5 }}
+                    >
+                      <CardHeader className="bg-rose-600 text-white py-3">
+                        <CardTitle className="text-lg flex items-center">
+                          <i className="fas fa-dragon mr-2"></i> Dragon Volcano
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <p className="text-sm">The lair of the Fire Dragon King. Extremely dangerous.</p>
+                        <p className="text-xs mt-2 text-gray-600">Levels 35+ required</p>
+                        <p className="text-xs mt-1 text-red-500 font-semibold">Boss Location</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
             
             {/* Enemy Selection */}
