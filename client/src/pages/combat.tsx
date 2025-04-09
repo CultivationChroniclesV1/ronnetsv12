@@ -83,7 +83,13 @@ const CombatPage = () => {
     }));
     
     // Calculate damage based on attribute scaling
-    const attributeValue = game.attributes[technique.attributeScaling];
+    // Default to strength if attributeScaling is undefined
+    const attributeName = technique.attributeScaling || 'strength';
+    
+    // Ensure attributes object exists and contains the attribute
+    const attributeValue = (game.attributes && game.attributes[attributeName]) ? 
+                           game.attributes[attributeName] : 10; // Default to 10 if not found
+    
     let damage = technique.damage;
     
     // Attribute scaling (10% damage per point above 10)

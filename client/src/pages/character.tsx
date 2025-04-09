@@ -51,9 +51,60 @@ const CharacterCreation = () => {
       updatedState.characterName = characterName;
       updatedState.sect = selectedSect;
       
-      // Initialize martial arts object if it doesn't exist
+      // Initialize core objects if they don't exist
       if (!updatedState.martialArts) {
         updatedState.martialArts = {};
+      }
+      
+      if (!updatedState.attributes) {
+        updatedState.attributes = {
+          strength: 10,
+          agility: 10,
+          endurance: 10,
+          intelligence: 10,
+          perception: 10
+        };
+      }
+      
+      if (!updatedState.inventory) {
+        updatedState.inventory = {
+          spiritualStones: 0,
+          herbs: {},
+          equipment: {}
+        };
+      }
+      
+      if (!updatedState.exploration) {
+        updatedState.exploration = {
+          currentArea: "sect",
+          discoveredAreas: { "sect": true },
+          completedChallenges: {},
+          dailyTasksCompleted: {}
+        };
+      }
+      
+      // Initialize or reset HP system
+      updatedState.health = 100;
+      updatedState.maxHealth = 100;
+      updatedState.defense = 5;
+      updatedState.attack = 10;
+      updatedState.critChance = 5;
+      updatedState.dodgeChance = 5;
+      
+      // Calculate starting HP based on endurance (10 HP per point)
+      if (updatedState.attributes.endurance) {
+        updatedState.maxHealth = 50 + (updatedState.attributes.endurance * 5);
+        updatedState.health = updatedState.maxHealth; // Start with full health
+      }
+      
+      // Calculate starting attack based on strength
+      if (updatedState.attributes.strength) {
+        updatedState.attack = 5 + (updatedState.attributes.strength * 0.5);
+      }
+      
+      // Calculate defense based on endurance
+      if (updatedState.attributes.endurance) {
+        updatedState.defense = 2 + (updatedState.attributes.endurance * 0.3);
       }
       
       // Add initial martial arts for the character

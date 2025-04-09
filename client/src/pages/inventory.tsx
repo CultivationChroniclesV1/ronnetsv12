@@ -21,12 +21,37 @@ const InventoryPage = () => {
 
   // Use herb function
   const useHerb = (herbId: string) => {
+    // Ensure inventory structure exists
+    if (!game.inventory || !game.inventory.herbs) {
+      updateGameState(state => ({
+        ...state,
+        inventory: {
+          ...state.inventory,
+          herbs: {},
+          equipment: {},
+          spiritualStones: state.inventory?.spiritualStones || 0
+        }
+      }));
+      toast({
+        title: "Inventory Error",
+        description: "Inventory was incorrectly initialized. The issue has been fixed.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const herb = game.inventory.herbs[herbId];
     if (!herb || herb.quantity <= 0) return;
     
     // Apply herb effects
     updateGameState(state => {
       const newState = { ...state };
+      
+      // Ensure health is initialized
+      if (typeof newState.health === 'undefined') {
+        newState.health = 100;
+        newState.maxHealth = 100;
+      }
       
       // Process effects
       Object.entries(herb.effects).forEach(([effect, value]) => {
@@ -46,7 +71,26 @@ const InventoryPage = () => {
             });
             break;
           case "attribute-boost":
-            // This would need more logic to handle which attribute to boost
+            // Initialize attributes if not present
+            if (!newState.attributes) {
+              newState.attributes = {
+                strength: 10,
+                agility: 10,
+                endurance: 10,
+                intelligence: 10,
+                perception: 10
+              };
+            }
+            
+            // For now, just boost all attributes by the value
+            Object.keys(newState.attributes).forEach(attr => {
+              newState.attributes[attr as keyof typeof newState.attributes] += 1;
+            });
+            
+            toast({
+              title: "Herb Used",
+              description: `All attributes increased by 1 from ${herb.name}.`
+            });
             break;
         }
       });
@@ -65,11 +109,40 @@ const InventoryPage = () => {
 
   // Equip/Unequip items
   const toggleEquip = (itemId: string) => {
+    // Check if inventory is properly initialized
+    if (!game.inventory || !game.inventory.equipment) {
+      updateGameState(state => ({
+        ...state,
+        inventory: {
+          ...state.inventory,
+          herbs: state.inventory?.herbs || {},
+          equipment: {},
+          spiritualStones: state.inventory?.spiritualStones || 0
+        }
+      }));
+      toast({
+        title: "Inventory Error",
+        description: "Equipment inventory was incorrectly initialized. The issue has been fixed.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const item = game.inventory.equipment[itemId];
     if (!item) return;
     
     updateGameState(state => {
       const newState = { ...state };
+      
+      // Initialize health and combat stats if not present
+      if (typeof newState.health === 'undefined') {
+        newState.health = 100;
+        newState.maxHealth = 100;
+        newState.attack = 10;
+        newState.defense = 5;
+        newState.critChance = 5;
+        newState.dodgeChance = 5;
+      }
       
       // Toggle equipped status
       newState.inventory.equipment[itemId].equipped = !item.equipped;
@@ -144,11 +217,12 @@ const InventoryPage = () => {
     return state;
   };
 
-  // Count items by category
+  // Count items by category - safely handle potential undefined values
   const itemCounts = {
-    herbs: Object.keys(game.inventory.herbs).length,
-    equipment: Object.keys(game.inventory.equipment).length,
-    equipped: Object.values(game.inventory.equipment).filter(item => item.equipped).length
+    herbs: game.inventory && game.inventory.herbs ? Object.keys(game.inventory.herbs).length : 0,
+    equipment: game.inventory && game.inventory.equipment ? Object.keys(game.inventory.equipment).length : 0,
+    equipped: game.inventory && game.inventory.equipment ? 
+      Object.values(game.inventory.equipment).filter(item => item.equipped).length : 0
   };
 
   return (
@@ -182,7 +256,7 @@ const InventoryPage = () => {
                       <i className="fas fa-gem text-amber-500 mr-2"></i>
                       <span className="font-medium">Spiritual Stones</span>
                     </div>
-                    <p className="text-xl">{game.inventory.spiritualStones}</p>
+                    <p className="text-xl">{game.inventory && game.inventory.spiritualStones ? game.inventory.spiritualStones : 0}</p>
                   </div>
                   
                   <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
@@ -228,23 +302,23 @@ const InventoryPage = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                       <div>
                         <p className="text-sm font-medium mb-1">Health</p>
-                        <p className="text-lg">{Math.floor(game.health)} / {game.maxHealth}</p>
+                        <p className="text-lg">{Math.floor(game.health || 100)} / {game.maxHealth || 100}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium mb-1">Attack</p>
-                        <p className="text-lg">{game.attack}</p>
+                        <p className="text-lg">{game.attack || 10}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium mb-1">Defense</p>
-                        <p className="text-lg">{game.defense}</p>
+                        <p className="text-lg">{game.defense || 5}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium mb-1">Crit Chance</p>
-                        <p className="text-lg">{game.critChance}%</p>
+                        <p className="text-lg">{game.critChance || 5}%</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium mb-1">Dodge Chance</p>
-                        <p className="text-lg">{game.dodgeChance}%</p>
+                        <p className="text-lg">{game.dodgeChance || 5}%</p>
                       </div>
                     </div>
                     
@@ -253,23 +327,23 @@ const InventoryPage = () => {
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div>
                           <p className="text-sm font-medium mb-1">Strength</p>
-                          <p className="text-lg">{game.attributes.strength}</p>
+                          <p className="text-lg">{game.attributes?.strength || 10}</p>
                         </div>
                         <div>
                           <p className="text-sm font-medium mb-1">Agility</p>
-                          <p className="text-lg">{game.attributes.agility}</p>
+                          <p className="text-lg">{game.attributes?.agility || 10}</p>
                         </div>
                         <div>
                           <p className="text-sm font-medium mb-1">Endurance</p>
-                          <p className="text-lg">{game.attributes.endurance}</p>
+                          <p className="text-lg">{game.attributes?.endurance || 10}</p>
                         </div>
                         <div>
                           <p className="text-sm font-medium mb-1">Intelligence</p>
-                          <p className="text-lg">{game.attributes.intelligence}</p>
+                          <p className="text-lg">{game.attributes?.intelligence || 10}</p>
                         </div>
                         <div>
                           <p className="text-sm font-medium mb-1">Perception</p>
-                          <p className="text-lg">{game.attributes.perception}</p>
+                          <p className="text-lg">{game.attributes?.perception || 10}</p>
                         </div>
                       </div>
                     </div>
@@ -283,7 +357,7 @@ const InventoryPage = () => {
                     <CardTitle className="text-lg">Herbs Collection</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {Object.keys(game.inventory.herbs).length === 0 ? (
+                    {!game.inventory?.herbs || Object.keys(game.inventory.herbs).length === 0 ? (
                       <p className="text-center text-gray-500 py-4">
                         You have not collected any herbs yet. Explore the world to gather herbs.
                       </p>
@@ -338,7 +412,7 @@ const InventoryPage = () => {
                     <CardTitle className="text-lg">Equipment</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {Object.keys(game.inventory.equipment).length === 0 ? (
+                    {!game.inventory?.equipment || Object.keys(game.inventory.equipment).length === 0 ? (
                       <p className="text-center text-gray-500 py-4">
                         You have not found any equipment yet. Defeat enemies to obtain equipment.
                       </p>

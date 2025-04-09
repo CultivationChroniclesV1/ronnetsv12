@@ -136,8 +136,48 @@ const MapPage = () => {
     updateGameState(state => {
       const newState = { ...state };
       
+      // Ensure required objects exist
+      if (!newState.exploration) {
+        newState.exploration = {
+          currentArea: selectedLocation || "sect",
+          discoveredAreas: { "sect": true },
+          completedChallenges: {},
+          dailyTasksCompleted: {}
+        };
+      }
+      
+      if (!newState.exploration.discoveredAreas) {
+        newState.exploration.discoveredAreas = { "sect": true };
+      }
+      
+      if (!newState.exploration.dailyTasksCompleted) {
+        newState.exploration.dailyTasksCompleted = {};
+      }
+      
+      if (!newState.inventory) {
+        newState.inventory = {
+          spiritualStones: 0,
+          herbs: {},
+          equipment: {}
+        };
+      }
+      
+      if (!newState.inventory.herbs) {
+        newState.inventory.herbs = {};
+      }
+      
+      if (!newState.attributes) {
+        newState.attributes = {
+          strength: 10,
+          agility: 10,
+          endurance: 10,
+          intelligence: 10,
+          perception: 10
+        };
+      }
+      
       // Update discovered areas
-      if (selectedActivity.includes("explore")) {
+      if (selectedActivity && selectedActivity.includes("explore")) {
         newState.exploration.discoveredAreas[selectedLocation] = true;
       }
       
@@ -175,16 +215,17 @@ const MapPage = () => {
       // Add attribute progress
       if (activityRewards.attributeProgress) {
         Object.entries(activityRewards.attributeProgress).forEach(([attr, value]) => {
-          newState.attributes[attr as keyof typeof newState.attributes] += value as number;
-          setActivityLog(prev => [...prev, `Improved ${attr} attribute by ${value}.`]);
+          if (newState.attributes[attr as keyof typeof newState.attributes] !== undefined) {
+            newState.attributes[attr as keyof typeof newState.attributes] += value as number;
+            setActivityLog(prev => [...prev, `Improved ${attr} attribute by ${value}.`]);
+          }
         });
       }
       
       // Mark activity as completed
-      if (!newState.exploration.dailyTasksCompleted) {
-        newState.exploration.dailyTasksCompleted = {};
+      if (selectedActivity) {
+        newState.exploration.dailyTasksCompleted[`${selectedLocation}-${selectedActivity}`] = true;
       }
-      newState.exploration.dailyTasksCompleted[`${selectedLocation}-${selectedActivity}`] = true;
       
       // Update current area
       newState.exploration.currentArea = selectedLocation;
