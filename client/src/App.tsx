@@ -8,6 +8,7 @@ import Game from "@/pages/game";
 import { useEffect } from "react";
 import { NavigationBar } from "@/components/navigation-bar";
 import { MusicAutoStarter } from "@/components/music-auto-starter";
+import { WebSocketProvider } from "@/contexts/websocket-context";
 
 // Lazy load other pages
 import { lazy, Suspense } from "react";
@@ -16,6 +17,7 @@ const Character = lazy(() => import("./pages/character"));
 const Combat = lazy(() => import("./pages/combat"));
 const Map = lazy(() => import("./pages/map"));
 const Inventory = lazy(() => import("./pages/inventory"));
+const Social = lazy(() => import("./pages/social"));
 
 // Loading component for lazy-loaded pages
 const PageLoading = () => (
@@ -39,6 +41,7 @@ function Router() {
         <Route path="/combat" component={Combat} />
         <Route path="/map" component={Map} />
         <Route path="/inventory" component={Inventory} />
+        <Route path="/social" component={Social} />
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>
@@ -72,14 +75,16 @@ function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col min-h-screen">
-        <NavigationBar />
-        <main className="flex-grow">
-          <Router />
-        </main>
-      </div>
-      <MusicAutoStarter />
-      <Toaster />
+      <WebSocketProvider>
+        <div className="flex flex-col min-h-screen">
+          <NavigationBar />
+          <main className="flex-grow">
+            <Router />
+          </main>
+        </div>
+        <MusicAutoStarter />
+        <Toaster />
+      </WebSocketProvider>
     </QueryClientProvider>
   );
 }

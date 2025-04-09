@@ -40,6 +40,18 @@ export function getInitialGameState(): GameState {
     characterName: undefined,
     sect: undefined,
     
+    // Social profile
+    socialProfile: {
+      privacyLevel: 'public',
+      bio: '',
+      title: '',
+      displayName: '',
+      achievements: [],
+      friendCount: 0,
+      clanId: undefined,
+      clanRole: undefined
+    },
+    
     // Basic cultivation stats
     energy: 0,
     energyRate: BASE_QI_RATE + 0.1, // Base + basic-qi level 1
