@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useGameEngine } from '@/lib/gameEngine';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { REALMS, SECTS } from '@/lib/constants';
+import { AudioPlayer } from '@/components/audio-player';
 
 export function NavigationBar() {
   const [location] = useLocation();
@@ -21,6 +22,11 @@ export function NavigationBar() {
         </div>
         
         <div className="flex items-center space-x-2">
+          {/* Audio Player */}
+          <div className="hidden md:block">
+            <AudioPlayer />
+          </div>
+          
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-4 items-center">
             <Link href="/">
@@ -50,7 +56,7 @@ export function NavigationBar() {
             </Link>
             <Link href="/inventory">
               <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/inventory' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
-                Inventory
+                <i className="fas fa-archive mr-1"></i> Inventory
               </div>
             </Link>
           </div>
@@ -144,11 +150,15 @@ export function NavigationBar() {
                 </Link>
                 <Link href="/inventory">
                   <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/inventory' ? 'bg-primary/10 text-primary' : ''}`}>
-                    <i className="fas fa-backpack mr-2"></i> Inventory
+                    <i className="fas fa-archive mr-2"></i> Inventory
                   </div>
                 </Link>
                 
                 <div className="border-t border-gray-200 my-2 pt-2">
+                  <div className="mb-4">
+                    <AudioPlayer />
+                  </div>
+                  
                   <h3 className="text-sm font-semibold text-gray-600 mb-2">Character Info</h3>
                   {game.characterCreated ? (
                     <>

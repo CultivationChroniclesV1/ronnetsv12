@@ -217,7 +217,7 @@ export const SECTS = {
     name: 'Divine Healing Pavilion',
     chineseName: '神医阁',
     description: 'A sect dedicated to the healing arts and medicinal cultivation, with unparalleled skill in herb crafting.',
-    icon: 'mortar-pestle',
+    icon: 'first-aid',
     color: 'bg-green-500',
     textColor: 'text-green-500',
     benefits: {
