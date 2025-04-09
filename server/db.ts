@@ -1,12 +1,10 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from '@shared/schema';
 
-// Configure neon for server environment
-neonConfig.fetchConnectionCache = true;
-
-// Initialize neon client
-const sql = neon(process.env.DATABASE_URL!);
+// Initialize postgres client for normal operation
+const connectionString = process.env.DATABASE_URL!;
+const sql = postgres(connectionString, { max: 10 });
 
 // Create drizzle database instance with the correct typing
 export const db = drizzle(sql, { schema });

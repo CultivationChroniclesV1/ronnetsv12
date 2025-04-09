@@ -1071,6 +1071,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup WebSocket server for real-time communication
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
   
+  console.log('WebSocket server created on path: /ws');
+  
   wss.on('connection', function connection(ws) {
     let currentUserId: number | null = null;
     
