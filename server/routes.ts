@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { gameStateSchema, insertFriendRequestSchema, insertMessageSchema, insertGiftSchema, insertClanSchema, insertClanMemberSchema, insertClanMessageSchema } from "@shared/schema";
+import { gameStateSchema, insertFriendRequestSchema, insertMessageSchema, insertGiftSchema, insertClanSchema, insertClanMemberSchema, insertClanMessageSchema, insertWorldChatMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { WebSocketServer, WebSocket } from 'ws';
 
@@ -29,7 +29,8 @@ type WSMessageType =
   | 'gift_reject' 
   | 'clan_message'
   | 'heartbeat'
-  | 'status_change';
+  | 'status_change'
+  | 'world_chat';
 
 interface WSMessage {
   type: WSMessageType;
@@ -1242,6 +1243,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
               sentAt: message.sentAt
             }
           }));
+        } else if (data.type === 'world_chat') {
+          // Send message to world chat
+          if (!currentUserId) {
+            ws.send(JSON.stringify({ type: 'error', payload: { message: 'Not authenticated' } }));
+            return;
+          }
+          
+          const { content } = data.payload;
+          if (!content || content.trim() === '') {
+            ws.send(JSON.stringify({ type: 'error', payload: { message: 'Message content cannot be empty' } }));
+            return;
+          }
+          
+          // Get user and character info
+          const user = await storage.getUser(currentUserId);
+          const playerData = await storage.getPlayerData(currentUserId);
+          
+          if (!user) {
+            ws.send(JSON.stringify({ type: 'error', payload: { message: 'User not found' } }));
+            return;
+          }
+          
+          // Create world chat message
+          const messageData = insertWorldChatMessageSchema.parse({
+            userId: currentUserId,
+            characterName: playerData?.gameState.characterName,
+            realm: playerData?.gameState.realm,
+            sect: playerData?.gameState.sect,
+            content
+          });
+          
+          const worldChatMessage = await storage.sendWorldChatMessage(messageData);
+          
+          // Broadcast to all connected users
+          for (const [userId, connection] of connectedUsers.entries()) {
+            if (connection.ws.readyState === WebSocket.OPEN) {
+              connection.ws.send(JSON.stringify({
+                type: 'world_chat',
+                payload: {
+                  id: worldChatMessage.id,
+                  userId: currentUserId,
+                  username: user.username,
+                  characterName: playerData?.gameState.characterName,
+                  realm: worldChatMessage.realm,
+                  sect: worldChatMessage.sect,
+                  content,
+                  timestamp: worldChatMessage.sentAt
+                }
+              }));
+            }
+          }
         }
       } catch (error) {
         console.error('WebSocket message error:', error);

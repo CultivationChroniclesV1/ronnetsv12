@@ -38,6 +38,7 @@ export function getInitialGameState(): GameState {
     // Character info
     characterCreated: false,
     characterName: undefined,
+    characterCode: undefined, // Unique identifier for character
     sect: undefined,
     
     // Social profile
@@ -49,6 +50,7 @@ export function getInitialGameState(): GameState {
       achievements: [],
       friendCount: 0,
       clanId: undefined,
+      clanName: undefined,
       clanRole: undefined
     },
     

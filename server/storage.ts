@@ -8,7 +8,8 @@ import {
   clanMembers, type ClanMember, type InsertClanMember,
   messages, type Message, type InsertMessage,
   clanMessages, type ClanMessage, type InsertClanMessage,
-  gifts, type Gift, type InsertGift
+  gifts, type Gift, type InsertGift,
+  worldChatMessages, type WorldChatMessage, type InsertWorldChatMessage
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc } from "drizzle-orm";
@@ -63,6 +64,10 @@ export interface IStorage {
   getGifts(userId: number, isSent?: boolean): Promise<Gift[]>;
   createGift(gift: InsertGift): Promise<Gift>;
   updateGiftStatus(id: number, status: string): Promise<Gift | undefined>;
+  
+  // World chat operations
+  getWorldChatMessages(limit?: number): Promise<WorldChatMessage[]>;
+  sendWorldChatMessage(message: InsertWorldChatMessage): Promise<WorldChatMessage>;
 }
 
 // Memory storage implementation (for testing/fallback)
@@ -76,6 +81,7 @@ export class MemStorage implements IStorage {
   private messages: Map<number, Message>;
   private clanMessages: Map<number, ClanMessage>;
   private gifts: Map<number, Gift>;
+  private worldChatMessages: Map<number, WorldChatMessage>;
   
   currentId: number;
   currentPlayerDataId: number;
@@ -86,6 +92,7 @@ export class MemStorage implements IStorage {
   currentMessageId: number;
   currentClanMessageId: number;
   currentGiftId: number;
+  currentWorldChatMessageId: number;
 
   constructor() {
     this.users = new Map();
@@ -97,6 +104,7 @@ export class MemStorage implements IStorage {
     this.messages = new Map();
     this.clanMessages = new Map();
     this.gifts = new Map();
+    this.worldChatMessages = new Map();
     
     this.currentId = 1;
     this.currentPlayerDataId = 1;
@@ -107,6 +115,7 @@ export class MemStorage implements IStorage {
     this.currentMessageId = 1;
     this.currentClanMessageId = 1;
     this.currentGiftId = 1;
+    this.currentWorldChatMessageId = 1;
   }
 
   // User operations
@@ -457,6 +466,24 @@ export class MemStorage implements IStorage {
     
     this.gifts.set(id, updatedGift);
     return updatedGift;
+  }
+  
+  // World chat operations
+  async getWorldChatMessages(limit: number = 50): Promise<WorldChatMessage[]> {
+    return Array.from(this.worldChatMessages.values())
+      .sort((a, b) => b.sentAt.getTime() - a.sentAt.getTime())
+      .slice(0, limit);
+  }
+  
+  async sendWorldChatMessage(message: InsertWorldChatMessage): Promise<WorldChatMessage> {
+    const id = this.currentWorldChatMessageId++;
+    const newMessage = {
+      ...message,
+      id,
+      sentAt: new Date()
+    };
+    this.worldChatMessages.set(id, newMessage);
+    return newMessage;
   }
 }
 
@@ -824,8 +851,24 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedGift;
   }
+  
+  // World chat operations
+  async getWorldChatMessages(limit: number = 50): Promise<WorldChatMessage[]> {
+    return await db
+      .select()
+      .from(worldChatMessages)
+      .orderBy(desc(worldChatMessages.sentAt))
+      .limit(limit);
+  }
+  
+  async sendWorldChatMessage(message: InsertWorldChatMessage): Promise<WorldChatMessage> {
+    const [newMessage] = await db
+      .insert(worldChatMessages)
+      .values(message)
+      .returning();
+    return newMessage;
+  }
 }
 
 // Export the appropriate storage implementation
-// For now, use MemStorage until database migrations are complete
 export const storage = new DatabaseStorage();

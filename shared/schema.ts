@@ -7,6 +7,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  characterCode: text("character_code").unique(),
   lastOnline: timestamp("last_online").defaultNow().notNull(),
   isOnline: boolean("is_online").default(false),
 });
@@ -24,6 +25,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  characterCode: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -130,9 +132,12 @@ export const clans = pgTable("clans", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
   description: text("description"),
+  icon: text("icon").notNull(),
   founderUserId: integer("founder_user_id").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  memberCount: integer("member_count").default(1),
+  maxMembers: integer("max_members").default(30),
 });
 
 export const clansRelations = relations(clans, ({ one, many }) => ({
@@ -147,7 +152,10 @@ export const clansRelations = relations(clans, ({ one, many }) => ({
 export const insertClanSchema = createInsertSchema(clans).pick({
   name: true,
   description: true,
+  icon: true,
   founderUserId: true,
+  memberCount: true,
+  maxMembers: true,
 });
 
 export type InsertClan = z.infer<typeof insertClanSchema>;
@@ -303,10 +311,45 @@ export const insertGiftSchema = createInsertSchema(gifts).pick({
 export type InsertGift = z.infer<typeof insertGiftSchema>;
 export type Gift = typeof gifts.$inferSelect;
 
+// World chat messages
+export const worldChatMessages = pgTable("world_chat_messages", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  characterName: text("character_name"),
+  content: text("content").notNull(),
+  realm: text("realm"),
+  sect: text("sect"),
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
+}, (table) => {
+  return {
+    userIdx: index("world_chat_user_idx").on(table.userId),
+    timeIdx: index("world_chat_time_idx").on(table.sentAt),
+  }
+});
+
+export const worldChatMessagesRelations = relations(worldChatMessages, ({ one }) => ({
+  user: one(users, {
+    fields: [worldChatMessages.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertWorldChatMessageSchema = createInsertSchema(worldChatMessages).pick({
+  userId: true,
+  characterName: true,
+  content: true,
+  realm: true,
+  sect: true,
+});
+
+export type InsertWorldChatMessage = z.infer<typeof insertWorldChatMessageSchema>;
+export type WorldChatMessage = typeof worldChatMessages.$inferSelect;
+
 export const gameStateSchema = z.object({
   // Basic character info
   characterCreated: z.boolean().default(false),
   characterName: z.string().optional(),
+  characterCode: z.string().optional(),
   sect: z.string().optional(),
   avatarUrl: z.string().optional(),
   
@@ -317,6 +360,7 @@ export const gameStateSchema = z.object({
     bio: z.string().optional(),
     privacyLevel: z.enum(["public", "friends", "private"]).default("friends"),
     clanId: z.number().optional(),
+    clanName: z.string().optional(),
     clanRole: z.string().optional(),
     lastOnline: z.string().optional(),
     status: z.string().optional(),
