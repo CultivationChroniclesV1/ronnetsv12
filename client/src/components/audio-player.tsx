@@ -22,34 +22,52 @@ export function AudioPlayer() {
   const { toast } = useToast();
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
-  // Create audio element once
+  // Find or create audio element
   useEffect(() => {
-    const audio = document.createElement("audio");
-    audio.src = "/audio/bg.mp3";
-    audio.loop = true;
-    audio.volume = volume;
+    // First, look for the existing audio element that might have been created by MusicAutoStarter
+    let audio = document.getElementById('background-music-player') as HTMLAudioElement;
     
-    // Handle end of track to ensure looping works
-    audio.addEventListener("ended", () => {
-      // Force replay
-      audio.currentTime = 0;
-      audio.play().catch(error => {
-        console.error("Audio replay failed:", error);
+    // If not found, create a new one
+    if (!audio) {
+      audio = document.createElement("audio");
+      audio.id = "background-music-player";
+      audio.src = "/audio/bg.mp3";
+      audio.loop = true;
+      audio.volume = volume;
+      
+      // Handle end of track to ensure looping works
+      audio.addEventListener("ended", () => {
+        // Force replay
+        console.log("Audio ended, restarting from player component");
+        audio.currentTime = 0;
+        audio.play().catch(error => {
+          console.error("Audio replay failed:", error);
+        });
       });
-    });
+      
+      // Add to document
+      document.body.appendChild(audio);
+    } else {
+      // Update existing audio element
+      audio.loop = true;
+      audio.volume = volume;
+      
+      // Update play state based on current state
+      if (audio.paused === false) {
+        setIsPlaying(true);
+      }
+    }
     
     // Set the audio element
     audioRef.current = audio;
     setAudioElement(audio);
     
-    // Clean up on unmount
+    // Don't clean up on unmount to maintain continuous playback
     return () => {
-      if (audio) {
-        audio.pause();
-        audio.src = "";
-      }
+      // We deliberately don't remove the audio element
+      // This ensures playback continues across component remounts
     };
-  }, []);
+  }, [volume]);
 
   // Try to start playing once the component mounts and after any user interaction
   useEffect(() => {

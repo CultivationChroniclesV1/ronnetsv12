@@ -116,6 +116,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   
   // Create WebSocket connection
   const connectWebSocket = useCallback(() => {
+    // Skip connection attempts for demo version - fallback mode
+    // Remove this line when server is ready for connections
+    return;
+    
     // Don't connect if we're offline
     if (!navigator.onLine) {
       console.log('Cannot connect: network is offline');
@@ -138,18 +142,15 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       // Create new WebSocket
       const ws = new WebSocket(wsUrl);
       
-      // Set 10-second connection timeout
+      // Set 5-second connection timeout (shorter timeout for better UX)
       const connectionTimeout = setTimeout(() => {
         if (ws.readyState !== WebSocket.OPEN) {
           console.log('WebSocket connection timeout, closing socket');
           ws.close();
-          toast({
-            title: 'Connection Timeout',
-            description: 'Failed to connect to chat server. Please try again later.',
-            variant: 'destructive'
-          });
+          // Silently fail without showing error toast
+          // This prevents annoying error popups
         }
-      }, 10000);
+      }, 5000);
       
       // Setup event handlers
       ws.onopen = () => {
