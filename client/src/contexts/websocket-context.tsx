@@ -123,6 +123,12 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     }
     
     try {
+      // Close existing connection if any
+      if (socket) {
+        console.log('Closing existing connection before creating a new one');
+        socket.close();
+      }
+      
       // Create WebSocket URL from current origin
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}/ws`;
@@ -132,10 +138,26 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       // Create new WebSocket
       const ws = new WebSocket(wsUrl);
       
+      // Set 10-second connection timeout
+      const connectionTimeout = setTimeout(() => {
+        if (ws.readyState !== WebSocket.OPEN) {
+          console.log('WebSocket connection timeout, closing socket');
+          ws.close();
+          toast({
+            title: 'Connection Timeout',
+            description: 'Failed to connect to chat server. Please try again later.',
+            variant: 'destructive'
+          });
+        }
+      }, 10000);
+      
       // Setup event handlers
       ws.onopen = () => {
         console.log('WebSocket connected');
         setIsConnected(true);
+        
+        // Clear connection timeout
+        clearTimeout(connectionTimeout);
         
         // Authenticate with the server
         if (gameEngine.game.characterCreated) {
@@ -292,7 +314,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         }, 5000);
       }
     }
-  }, [gameEngine]);
+  }, [gameEngine, socket, toast]);
   
   // Connect WebSocket when component mounts and character is created
   useEffect(() => {

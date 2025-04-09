@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { queryClient } from '@/lib/queryClient';
 import { z } from 'zod';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, UserX, User, Users, Crown, ShieldCheck, Shield } from 'lucide-react';
@@ -62,6 +62,7 @@ type CreateClanFormValues = z.infer<typeof createClanSchema>;
 export function ClanManagement() {
   const { isConnected, isOnline } = useWebSocket();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [browseSearchQuery, setBrowseSearchQuery] = useState('');
   const { toast } = useToast();
   
   const form = useForm<CreateClanFormValues>({
@@ -84,15 +85,47 @@ export function ClanManagement() {
     queryKey: ['/api/clan-members'],
     enabled: isOnline && !!userClans?.length,
   });
+  
+  // Query to get all clans for browsing
+  const { 
+    data: allClans, 
+    isLoading: isLoadingAllClans,
+    refetch: refetchAllClans 
+  } = useQuery({
+    queryKey: ['/api/clans/all'],
+    enabled: isOnline,
+  });
+  
+  // Filter clans based on search query
+  const filteredClans = React.useMemo(() => {
+    if (!allClans) return [];
+    
+    if (!browseSearchQuery.trim()) {
+      return allClans;
+    }
+    
+    const query = browseSearchQuery.toLowerCase();
+    return allClans.filter((clan: any) => 
+      clan.name.toLowerCase().includes(query) || 
+      (clan.description && clan.description.toLowerCase().includes(query))
+    );
+  }, [allClans, browseSearchQuery]);
 
   const handleCreateClan = async (data: CreateClanFormValues) => {
     try {
-      await apiRequest('/api/clans', {
+      const res = await fetch('/api/clans', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+        credentials: 'include'
       });
       
+      if (!res.ok) {
+        throw new Error('Failed to create clan');
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['/api/clans'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/clans/all'] });
       setIsCreateDialogOpen(false);
       form.reset();
       
@@ -111,11 +144,17 @@ export function ClanManagement() {
 
   const handleJoinClan = async (clanId: number) => {
     try {
-      await apiRequest(`/api/clans/${clanId}/join`, {
+      const res = await fetch(`/api/clans/${clanId}/join`, {
         method: 'POST',
+        credentials: 'include'
       });
       
+      if (!res.ok) {
+        throw new Error('Failed to join clan');
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['/api/clans'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/clans/all'] });
       
       toast({
         title: "Success",
@@ -132,11 +171,17 @@ export function ClanManagement() {
 
   const handleLeaveClan = async (clanId: number) => {
     try {
-      await apiRequest(`/api/clans/${clanId}/leave`, {
+      const res = await fetch(`/api/clans/${clanId}/leave`, {
         method: 'POST',
+        credentials: 'include'
       });
       
+      if (!res.ok) {
+        throw new Error('Failed to leave clan');
+      }
+      
       queryClient.invalidateQueries({ queryKey: ['/api/clans'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/clans/all'] });
       
       toast({
         title: "Success",
@@ -154,18 +199,30 @@ export function ClanManagement() {
   const handleManageMember = async (clanId: number, userId: number, action: 'promote' | 'demote' | 'kick') => {
     try {
       if (action === 'kick') {
-        await apiRequest(`/api/clans/${clanId}/members/${userId}`, {
+        const res = await fetch(`/api/clans/${clanId}/members/${userId}`, {
           method: 'DELETE',
+          credentials: 'include'
         });
+        
+        if (!res.ok) {
+          throw new Error(`Failed to ${action} member`);
+        }
       } else {
         const role = action === 'promote' ? 'admin' : 'member';
-        await apiRequest(`/api/clans/${clanId}/members/${userId}`, {
+        const res = await fetch(`/api/clans/${clanId}/members/${userId}`, {
           method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role }),
+          credentials: 'include'
         });
+        
+        if (!res.ok) {
+          throw new Error(`Failed to ${action} member`);
+        }
       }
       
       queryClient.invalidateQueries({ queryKey: ['/api/clan-members'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/clans'] });
       
       toast({
         title: "Success",
@@ -451,10 +508,76 @@ export function ClanManagement() {
           </TabsContent>
           
           <TabsContent value="browse" className="h-full">
-            <div className="text-center py-8">
-              <p className="mb-4 text-muted-foreground">
-                Browse available clans coming soon...
-              </p>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Input 
+                  placeholder="Search clans..." 
+                  className="flex-1"
+                  onChange={(e) => setBrowseSearchQuery(e.target.value)}
+                  value={browseSearchQuery}
+                />
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setBrowseSearchQuery('');
+                    refetchAllClans();
+                  }}
+                >
+                  Reset
+                </Button>
+              </div>
+              
+              {isLoadingAllClans ? (
+                <div className="text-center py-8">Loading clans...</div>
+              ) : !allClans?.length ? (
+                <div className="text-center py-8">
+                  <p className="mb-4 text-muted-foreground">No clans found. Why not create one?</p>
+                </div>
+              ) : (
+                <ScrollArea className="h-[calc(100%-60px)]">
+                  <div className="space-y-4 pr-4">
+                    {filteredClans.map((clan: any) => (
+                      <Card key={clan.id} className="overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary/20 to-primary/5 p-4 flex items-center">
+                          <div className="h-12 w-12 rounded-md bg-primary/20 flex items-center justify-center mr-4">
+                            <ClanIconDisplay iconName={clan.icon} />
+                          </div>
+                          <div className="flex-grow">
+                            <h3 className="font-semibold text-lg">{clan.name}</h3>
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <Users className="h-4 w-4 mr-1" />
+                              <span>{clan.memberCount || 1} / {clan.maxMembers || 30} members</span>
+                            </div>
+                          </div>
+                          {clan.isMember && (
+                            <Badge variant="outline" className="ml-2 bg-green-100 text-green-800">
+                              Joined
+                            </Badge>
+                          )}
+                        </div>
+                        {clan.description && (
+                          <CardContent className="pt-4">
+                            <p className="text-sm">{clan.description}</p>
+                          </CardContent>
+                        )}
+                        <Separator />
+                        <CardFooter className="justify-between p-4">
+                          <Button variant="outline" size="sm">View Details</Button>
+                          {!clan.isMember && (
+                            <Button 
+                              variant="default" 
+                              size="sm"
+                              onClick={() => handleJoinClan(clan.id)}
+                            >
+                              Request to Join
+                            </Button>
+                          )}
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
             </div>
           </TabsContent>
         </Tabs>

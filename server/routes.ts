@@ -716,23 +716,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Clan Routes
   
   // Get clans
+  // Get all clans for the current user
   app.get('/api/clans', async (req: Request, res: Response) => {
     try {
+      const userId = req.body.userId;
+      
+      // Get all clans
       const clans = await storage.getClans();
       
-      // Add member count for each clan
-      const clansWithMemberCount = await Promise.all(clans.map(async clan => {
+      // Get user's clan memberships
+      const userClans = await storage.getUserClans(userId);
+      const userClanIds = new Set(userClans.map(clan => clan.id));
+      
+      // Add member count and user's role for each clan
+      const clansWithDetails = await Promise.all(clans.map(async clan => {
         const members = await storage.getClanMembers(clan.id);
+        const userMembership = members.find(member => member.userId === userId);
+        
         return {
           ...clan,
-          memberCount: members.length
+          memberCount: members.length,
+          isMember: userClanIds.has(clan.id),
+          userRole: userMembership ? userMembership.role : null
         };
       }));
       
-      res.json({ success: true, clans: clansWithMemberCount });
+      // Filter to include only clans the user is a member of
+      const userClansWithDetails = clansWithDetails.filter(clan => clan.isMember);
+      
+      res.json({ success: true, clans: userClansWithDetails });
     } catch (error) {
       console.error("Get clans error:", error);
       res.status(500).json({ success: false, message: "Failed to get clans" });
+    }
+  });
+  
+  // Get all clans for browsing
+  app.get('/api/clans/all', async (req: Request, res: Response) => {
+    try {
+      const userId = req.body.userId;
+      
+      // Get all clans
+      const clans = await storage.getClans();
+      
+      // Get user's clan memberships
+      const userClans = await storage.getUserClans(userId);
+      const userClanIds = new Set(userClans.map(clan => clan.id));
+      
+      // Add member count and membership status for each clan
+      const clansWithDetails = await Promise.all(clans.map(async clan => {
+        const members = await storage.getClanMembers(clan.id);
+        return {
+          ...clan,
+          memberCount: members.length,
+          isMember: userClanIds.has(clan.id)
+        };
+      }));
+      
+      res.json({ success: true, clans: clansWithDetails });
+    } catch (error) {
+      console.error("Get all clans error:", error);
+      res.status(500).json({ success: false, message: "Failed to get all clans" });
     }
   });
   
@@ -1070,9 +1114,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   
   // Setup WebSocket server for real-time communication
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  const wss = new WebSocketServer({ 
+    server: httpServer, 
+    path: '/ws',
+    clientTracking: true 
+  });
   
   console.log('WebSocket server created on path: /ws');
+  
+  // Log WebSocket server details
+  wss.on('listening', () => {
+    console.log(`WebSocket server is listening at path: /ws`);
+  });
+  
+  wss.on('error', (error) => {
+    console.error('WebSocket server error:', error);
+  });
   
   wss.on('connection', function connection(ws) {
     let currentUserId: number | null = null;
