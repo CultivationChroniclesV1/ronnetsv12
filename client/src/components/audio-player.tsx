@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Volume2, VolumeX, Music, Volume1 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -12,101 +14,158 @@ import {
 
 export function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(true); // Default to playing
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
+  // Create audio element once
   useEffect(() => {
-    // Create audio element
-    const audio = new Audio("/audio/bg.mp3");
+    const audio = document.createElement("audio");
+    audio.src = "/audio/bg.mp3";
     audio.loop = true;
     audio.volume = volume;
+    
+    // Handle end of track to ensure looping works
+    audio.addEventListener("ended", () => {
+      // Force replay
+      audio.currentTime = 0;
+      audio.play().catch(error => {
+        console.error("Audio replay failed:", error);
+      });
+    });
+    
+    // Set the audio element
     audioRef.current = audio;
+    setAudioElement(audio);
+    
+    // Clean up on unmount
+    return () => {
+      if (audio) {
+        audio.pause();
+        audio.src = "";
+      }
+    };
+  }, []);
 
-    // Try to autoplay
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
+  // Try to start playing once the component mounts and after any user interaction
+  useEffect(() => {
+    if (audioElement && hasUserInteracted) {
+      audioElement.play()
         .then(() => {
           setIsPlaying(true);
+          toast({
+            title: "Music Playing",
+            description: "Background music is now playing.",
+          });
         })
         .catch(error => {
           console.error("Audio play failed:", error);
           setIsPlaying(false);
         });
     }
+  }, [audioElement, hasUserInteracted, toast]);
 
-    // Clean up on unmount
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
+  // Handle volume changes
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume;
+    if (audioElement) {
+      audioElement.volume = isMuted ? 0 : volume;
     }
-  }, [volume, isMuted]);
+  }, [audioElement, volume, isMuted]);
 
+  // Function to toggle play/pause
   const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        // Some browsers require user interaction before playing audio
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true);
-            })
-            .catch(error => {
-              console.error("Audio play failed:", error);
-            });
-        }
-      }
+    if (!audioElement) return;
+    
+    setHasUserInteracted(true);
+    
+    if (isPlaying) {
+      audioElement.pause();
+      setIsPlaying(false);
+    } else {
+      audioElement.play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(error => {
+          console.error("Audio play failed:", error);
+          toast({
+            title: "Playback Failed",
+            description: "Please click the play button again to enable music.",
+            variant: "destructive"
+          });
+        });
     }
   };
 
+  // Handle mute toggle
   const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
+    if (!audioElement) return;
+    
+    setHasUserInteracted(true);
+    audioElement.muted = !isMuted;
+    setIsMuted(!isMuted);
   };
 
+  // Handle volume slider changes
   const handleVolumeChange = (value: number[]) => {
     const newVolume = value[0];
     setVolume(newVolume);
+    
+    if (!audioElement) return;
+    
+    setHasUserInteracted(true);
+    
     if (isMuted && newVolume > 0) {
       setIsMuted(false);
-      if (audioRef.current) {
-        audioRef.current.muted = false;
-      }
+      audioElement.muted = false;
+    }
+    
+    audioElement.volume = newVolume;
+  };
+
+  // Force play on dialog open
+  const handleDialogOpen = (open: boolean) => {
+    setDialogOpen(open);
+    
+    if (open && audioElement && !isPlaying) {
+      setHasUserInteracted(true);
+      audioElement.play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(error => {
+          console.error("Audio play failed:", error);
+        });
     }
   };
 
   // Compact version for navbar
   return (
     <div className="audio-player flex items-center gap-2">
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpen}>
         <DialogTrigger asChild>
           <Button 
             variant="ghost" 
             size="sm" 
-            className="w-8 h-8 p-0 rounded-full"
+            className="w-8 h-8 p-0 rounded-full relative"
+            onClick={() => setHasUserInteracted(true)}
           >
-            <Music size={16} className="text-amber-200" />
+            <Music size={16} className={isPlaying ? "text-amber-200" : "text-gray-400"} />
+            {!isPlaying && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
+            )}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Music Settings</DialogTitle>
+            <DialogDescription>
+              Enable background music for an immersive cultivation experience.
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="flex items-center justify-between">
