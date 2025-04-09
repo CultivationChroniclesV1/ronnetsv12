@@ -6,15 +6,41 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Game from "@/pages/game";
 import { useEffect } from "react";
+import { NavigationBar } from "@/components/navigation-bar";
+
+// Lazy load other pages
+import { lazy, Suspense } from "react";
+const Character = lazy(() => import("@/pages/character"));
+const Combat = lazy(() => import("@/pages/combat"));
+const Map = lazy(() => import("@/pages/map"));
+const Inventory = lazy(() => import("@/pages/inventory"));
+
+// Loading component for lazy-loaded pages
+const PageLoading = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="text-center">
+      <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-primary mb-4" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+      <p className="text-gray-600">Loading page...</p>
+    </div>
+  </div>
+);
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/game" component={Game} />
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<PageLoading />}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/game" component={Game} />
+        <Route path="/character" component={Character} />
+        <Route path="/combat" component={Combat} />
+        <Route path="/map" component={Map} />
+        <Route path="/inventory" component={Inventory} />
+        {/* Fallback to 404 */}
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 
@@ -44,7 +70,12 @@ function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
+      <div className="flex flex-col min-h-screen">
+        <NavigationBar />
+        <main className="flex-grow">
+          <Router />
+        </main>
+      </div>
       <Toaster />
     </QueryClientProvider>
   );

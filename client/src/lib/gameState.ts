@@ -35,6 +35,12 @@ export function getInitialGameState(): GameState {
   });
 
   return {
+    // Character info
+    characterCreated: false,
+    characterName: undefined,
+    sect: undefined,
+    
+    // Basic cultivation stats
     energy: 0,
     energyRate: BASE_QI_RATE + 0.1, // Base + basic-qi level 1
     manualCultivationAmount: DEFAULT_QI_PER_CLICK,
@@ -44,6 +50,46 @@ export function getInitialGameState(): GameState {
     realm: 'qi',
     realmStage: 1,
     realmMaxStage: 9,
+    
+    // Attributes
+    attributes: {
+      strength: 10,
+      agility: 10,
+      endurance: 10,
+      intelligence: 10,
+      perception: 10
+    },
+    
+    // Combat stats
+    health: 100,
+    maxHealth: 100,
+    defense: 5,
+    attack: 10,
+    critChance: 5,
+    dodgeChance: 5,
+    
+    // Martial arts techniques - empty initially
+    martialArts: {},
+    
+    // Inventory
+    inventory: {
+      spiritualStones: 0,
+      herbs: {},
+      equipment: {}
+    },
+    
+    // Exploration
+    exploration: {
+      currentArea: "sect",
+      discoveredAreas: { "sect": true },
+      completedChallenges: {},
+      dailyTasksCompleted: {}
+    },
+    
+    // NPC relations
+    npcRelations: {},
+    
+    // Original stats
     totalQiGenerated: 0,
     timesMeditated: 0,
     successfulBreakthroughs: 0,
@@ -51,6 +97,8 @@ export function getInitialGameState(): GameState {
     highestQi: 0,
     timeCultivating: 0, // In seconds
     lastSaved: new Date().toISOString(),
+    
+    // Systems
     upgrades,
     skills,
     achievements
