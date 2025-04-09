@@ -45,6 +45,8 @@ export interface WorldChatMessage {
   userId: number;
   username: string;
   characterName?: string;
+  realm?: string;
+  sect?: string;
   content: string;
   timestamp: Date;
 }
@@ -380,6 +382,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         userId: 1,
         username: 'You',
         characterName: gameEngine.game.characterName || 'Unknown',
+        realm: gameEngine.game.realm,
+        sect: gameEngine.game.sect,
         content,
         timestamp: new Date()
       };
