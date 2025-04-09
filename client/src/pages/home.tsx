@@ -1,15 +1,25 @@
 import { useEffect } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useGameEngine } from '@/lib/gameEngine';
 
 export default function Home() {
-  const { initialize } = useGameEngine();
+  const { initialize, game } = useGameEngine();
+  const [, setLocation] = useLocation();
   
   useEffect(() => {
     // Initialize game engine when component mounts
     initialize();
   }, [initialize]);
+  
+  // Function to start the journey - redirects to character creation if no character exists
+  const startJourney = () => {
+    if (game.characterCreated) {
+      setLocation('/game');
+    } else {
+      setLocation('/character');
+    }
+  };
   
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-scroll text-center p-4">
@@ -50,13 +60,26 @@ export default function Home() {
             <p className="text-sm text-gray-600">Advance to higher stages of spiritual enlightenment</p>
           </div>
         </div>
+        
+        {game.characterCreated && (
+          <div className="mt-4 py-3 px-4 border border-green-200 bg-green-50 rounded-md">
+            <p className="text-sm text-green-700 flex items-center">
+              <i className="fas fa-user-check mr-2"></i>
+              Welcome back, {game.characterName} of the {game.sect} sect!
+            </p>
+          </div>
+        )}
       </div>
       
-      <Link href="/game">
-        <Button size="lg" className="font-serif bg-primary hover:bg-primary/90 text-white px-8 py-6 h-auto">
-          <span className="text-xl">Begin Cultivation</span>
-        </Button>
-      </Link>
+      <Button 
+        size="lg" 
+        className="font-serif bg-primary hover:bg-primary/90 text-white px-8 py-6 h-auto"
+        onClick={startJourney}
+      >
+        <span className="text-xl">
+          {game.characterCreated ? 'Continue Cultivation' : 'Create Character'}
+        </span>
+      </Button>
     </div>
   );
 }

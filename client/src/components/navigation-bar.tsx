@@ -13,10 +13,10 @@ export function NavigationBar() {
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-1">
           <Link href="/">
-            <a className="text-xl font-serif flex items-center">
+            <div className="text-xl font-serif flex items-center cursor-pointer">
               <span className="font-['Ma_Shan_Zheng'] text-amber-200 mr-2">仙道</span>
               <span className="hidden sm:inline">Immortal Cultivation Path</span>
-            </a>
+            </div>
           </Link>
         </div>
         
@@ -24,34 +24,34 @@ export function NavigationBar() {
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-4 items-center">
             <Link href="/">
-              <a className={`px-2 py-1 rounded-md transition-colors ${location === '/' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Home
-              </a>
+              </div>
             </Link>
             <Link href="/game">
-              <a className={`px-2 py-1 rounded-md transition-colors ${location === '/game' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/game' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Cultivation
-              </a>
+              </div>
             </Link>
             <Link href="/character">
-              <a className={`px-2 py-1 rounded-md transition-colors ${location === '/character' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/character' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Character
-              </a>
+              </div>
             </Link>
             <Link href="/combat">
-              <a className={`px-2 py-1 rounded-md transition-colors ${location === '/combat' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/combat' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Combat
-              </a>
+              </div>
             </Link>
             <Link href="/map">
-              <a className={`px-2 py-1 rounded-md transition-colors ${location === '/map' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/map' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Map
-              </a>
+              </div>
             </Link>
             <Link href="/inventory">
-              <a className={`px-2 py-1 rounded-md transition-colors ${location === '/inventory' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/inventory' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Inventory
-              </a>
+              </div>
             </Link>
           </div>
           
@@ -118,34 +118,34 @@ export function NavigationBar() {
             <SheetContent side="right">
               <div className="flex flex-col space-y-4 mt-6">
                 <Link href="/">
-                  <a className={`px-2 py-2 rounded-md transition-colors ${location === '/' ? 'bg-primary/10 text-primary' : ''}`}>
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-home mr-2"></i> Home
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/game">
-                  <a className={`px-2 py-2 rounded-md transition-colors ${location === '/game' ? 'bg-primary/10 text-primary' : ''}`}>
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/game' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-fire mr-2"></i> Cultivation
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/character">
-                  <a className={`px-2 py-2 rounded-md transition-colors ${location === '/character' ? 'bg-primary/10 text-primary' : ''}`}>
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/character' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-user mr-2"></i> Character
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/combat">
-                  <a className={`px-2 py-2 rounded-md transition-colors ${location === '/combat' ? 'bg-primary/10 text-primary' : ''}`}>
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/combat' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-fist-raised mr-2"></i> Combat
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/map">
-                  <a className={`px-2 py-2 rounded-md transition-colors ${location === '/map' ? 'bg-primary/10 text-primary' : ''}`}>
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/map' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-map-marked-alt mr-2"></i> Map
-                  </a>
+                  </div>
                 </Link>
                 <Link href="/inventory">
-                  <a className={`px-2 py-2 rounded-md transition-colors ${location === '/inventory' ? 'bg-primary/10 text-primary' : ''}`}>
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/inventory' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-backpack mr-2"></i> Inventory
-                  </a>
+                  </div>
                 </Link>
                 
                 <div className="border-t border-gray-200 my-2 pt-2">

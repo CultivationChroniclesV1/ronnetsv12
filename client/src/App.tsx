@@ -10,10 +10,11 @@ import { NavigationBar } from "@/components/navigation-bar";
 
 // Lazy load other pages
 import { lazy, Suspense } from "react";
-const Character = lazy(() => import("@/pages/character"));
-const Combat = lazy(() => import("@/pages/combat"));
-const Map = lazy(() => import("@/pages/map"));
-const Inventory = lazy(() => import("@/pages/inventory"));
+// Use relative paths for lazy loading to avoid import issues
+const Character = lazy(() => import("./pages/character"));
+const Combat = lazy(() => import("./pages/combat"));
+const Map = lazy(() => import("./pages/map"));
+const Inventory = lazy(() => import("./pages/inventory"));
 
 // Loading component for lazy-loaded pages
 const PageLoading = () => (

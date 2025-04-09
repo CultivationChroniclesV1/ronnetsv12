@@ -58,28 +58,7 @@ const CombatPage = () => {
     }
   }, [cooldowns, combatStatus]);
 
-  // Start combat with an enemy
-  const startCombat = (enemyId: string) => {
-    const enemyData = ENEMIES[enemyId as keyof typeof ENEMIES];
-    const newEnemy: Enemy = {
-      id: enemyId,
-      name: enemyData.name,
-      description: enemyData.description,
-      health: enemyData.health,
-      maxHealth: enemyData.health,
-      attack: enemyData.attack,
-      defense: enemyData.defense
-    };
-    
-    setEnemy(newEnemy);
-    setCombatStatus("fighting");
-    setCombatLog([`You encounter a ${enemyData.name}!`]);
-    
-    // Initialize cooldowns
-    const initialCooldowns: Record<string, number> = {};
-    Object.keys(game.martialArts).forEach(id => initialCooldowns[id] = 0);
-    setCooldowns(initialCooldowns);
-  };
+
 
   // Use a martial arts technique
   const useTechnique = (techniqueId: string) => {
@@ -188,6 +167,29 @@ const CombatPage = () => {
     if (newHealth <= 0) {
       handleDefeat();
     }
+  };
+  
+  // Fix type for enemyId parameter
+  const startCombat = (enemyId: string) => {
+    const enemyData = ENEMIES[enemyId as keyof typeof ENEMIES];
+    const newEnemy: Enemy = {
+      id: enemyId,
+      name: enemyData.name,
+      description: enemyData.description,
+      health: enemyData.health,
+      maxHealth: enemyData.health,
+      attack: enemyData.attack,
+      defense: enemyData.defense
+    };
+    
+    setEnemy(newEnemy);
+    setCombatStatus("fighting");
+    setCombatLog([`You encounter a ${enemyData.name}!`]);
+    
+    // Initialize cooldowns
+    const initialCooldowns: Record<string, number> = {};
+    Object.keys(game.martialArts).forEach(id => initialCooldowns[id] = 0);
+    setCooldowns(initialCooldowns);
   };
 
   // Handle player victory
@@ -350,7 +352,7 @@ const CombatPage = () => {
             {/* Enemy Selection */}
             <h2 className="text-xl font-medium mb-4">Choose Your Opponent</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {getAreaEnemies().map((enemyId) => {
+              {getAreaEnemies().map((enemyId: string) => {
                 const enemyData = ENEMIES[enemyId as keyof typeof ENEMIES];
                 return (
                   <Card key={enemyId} className="bg-white shadow-md">
@@ -413,8 +415,7 @@ const CombatPage = () => {
                     </div>
                     <Progress 
                       value={(game.health / game.maxHealth) * 100} 
-                      className="h-2" 
-                      indicatorColor="bg-red-500"
+                      className="h-2 [&>div]:bg-red-500"
                     />
                   </div>
                   
@@ -425,8 +426,7 @@ const CombatPage = () => {
                     </div>
                     <Progress 
                       value={(game.energy / game.maxCultivationProgress) * 100} 
-                      className="h-2"
-                      indicatorColor="bg-blue-500"
+                      className="h-2 [&>div]:bg-blue-500"
                     />
                   </div>
                   
@@ -461,8 +461,7 @@ const CombatPage = () => {
                       </div>
                       <Progress 
                         value={(enemy.health / enemy.maxHealth) * 100} 
-                        className="h-2"
-                        indicatorColor="bg-red-500"
+                        className="h-2 [&>div]:bg-red-500"
                       />
                     </div>
                     
