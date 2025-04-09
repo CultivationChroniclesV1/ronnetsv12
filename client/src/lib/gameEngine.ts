@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getInitialGameState, updateAchievements, getBreakthroughChance, getNextLevelRequirements, getCurrentRealmData } from './gameState';
 import { apiRequest } from './queryClient';
-import { AUTO_SAVE_INTERVAL } from './constants';
+import { AUTO_SAVE_INTERVAL, SILENT_AUTO_SAVE } from './constants';
 import { toast } from '@/hooks/use-toast';
 import { calculateOfflineProgress } from './utils';
 import type { GameState } from '@shared/schema';
@@ -47,7 +47,7 @@ export const useGameEngine = create<GameEngineState>()(
       autoSaveInterval: null,
       isAutoSaveEnabled: true,
       isOfflineProgressEnabled: true,
-      showNotifications: true,
+      showNotifications: !SILENT_AUTO_SAVE, // Use SILENT_AUTO_SAVE constant to control notifications
       settingsOpen: false,
       
       initialize: () => {

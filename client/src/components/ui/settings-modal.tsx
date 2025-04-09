@@ -61,7 +61,7 @@ export function SettingsModal() {
             <div className="space-y-1">
               <Label htmlFor="notifications">Show Notifications</Label>
               <p className="text-sm text-muted-foreground">
-                Display achievement and progression notifications
+                Display auto-save, achievement and progression notifications
               </p>
             </div>
             <Switch

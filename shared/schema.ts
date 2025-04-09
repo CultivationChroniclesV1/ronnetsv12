@@ -89,29 +89,92 @@ export const gameStateSchema = z.object({
     attributeScaling: z.enum(["strength", "agility", "endurance", "intelligence", "perception"])
   })).default({}),
   
+  // Currencies
+  gold: z.number().default(100),
+  spiritualStones: z.number().default(10),
+  
   // Inventory
   inventory: z.object({
-    spiritualStones: z.number().default(0),
+    resources: z.record(z.object({
+      id: z.string(),
+      name: z.string(),
+      quantity: z.number(),
+      description: z.string(),
+      icon: z.string(),
+      value: z.number(), // gold value
+      rarity: z.enum(["common", "uncommon", "rare", "epic", "legendary", "mythic"]).default("common")
+    })).default({}),
+    
     herbs: z.record(z.object({
       id: z.string(),
       name: z.string(),
       quantity: z.number(),
       quality: z.number(),  // 1-5 stars
-      effects: z.record(z.number())
+      effects: z.record(z.number()),
+      icon: z.string(),
+      description: z.string(),
+      value: z.number() // gold value
     })).default({}),
-    equipment: z.record(z.object({
+    
+    weapons: z.record(z.object({
       id: z.string(),
       name: z.string(),
-      type: z.enum(["weapon", "armor", "accessory", "artifact"]),
+      type: z.enum(["sword", "saber", "spear", "staff", "dagger", "bow", "fan", "whip", "hammer", "axe"]),
       rarity: z.enum(["common", "uncommon", "rare", "epic", "legendary", "mythic"]),
       level: z.number(),
       stats: z.record(z.number()),
-      equipped: z.boolean().default(false)
+      equipped: z.boolean().default(false),
+      icon: z.string(),
+      description: z.string(),
+      price: z.object({
+        gold: z.number().default(0),
+        spiritualStones: z.number().default(0),
+        qi: z.number().default(0)
+      }),
+      requiredLevel: z.number().default(1)
+    })).default({}),
+    
+    apparel: z.record(z.object({
+      id: z.string(),
+      name: z.string(),
+      type: z.enum(["robe", "armor", "innerWear", "outerWear", "belt", "boots", "gloves", "hat", "mask", "accessory"]),
+      rarity: z.enum(["common", "uncommon", "rare", "epic", "legendary", "mythic"]),
+      level: z.number(),
+      stats: z.record(z.number()),
+      equipped: z.boolean().default(false),
+      icon: z.string(),
+      description: z.string(),
+      price: z.object({
+        gold: z.number().default(0),
+        spiritualStones: z.number().default(0),
+        qi: z.number().default(0)
+      }),
+      requiredLevel: z.number().default(1)
+    })).default({}),
+    
+    artifacts: z.record(z.object({
+      id: z.string(),
+      name: z.string(),
+      type: z.enum(["talisman", "pill", "manual", "elixir", "treasure", "insignia"]),
+      rarity: z.enum(["common", "uncommon", "rare", "epic", "legendary", "mythic"]),
+      level: z.number(),
+      stats: z.record(z.number()),
+      equipped: z.boolean().default(false),
+      icon: z.string(),
+      description: z.string(),
+      price: z.object({
+        gold: z.number().default(0),
+        spiritualStones: z.number().default(0),
+        qi: z.number().default(0)
+      }),
+      requiredLevel: z.number().default(1)
     })).default({})
   }).default({
-    spiritualStones: 0,
+    resources: {},
     herbs: {},
-    equipment: {}
+    weapons: {},
+    apparel: {},
+    artifacts: {}
   }),
   
   // Map exploration
@@ -119,12 +182,85 @@ export const gameStateSchema = z.object({
     currentArea: z.string().default("sect"),
     discoveredAreas: z.record(z.boolean()).default({}),
     completedChallenges: z.record(z.boolean()).default({}),
-    dailyTasksCompleted: z.record(z.boolean()).default({})
+    dailyTasksCompleted: z.record(z.boolean()).default({}),
+    huntingGrounds: z.record(z.object({
+      discovered: z.boolean().default(false),
+      cleared: z.boolean().default(false),
+      lastVisit: z.string().optional(),
+      treasuresFound: z.record(z.boolean()).default({})
+    })).default({}),
+    activeQuests: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string(),
+      objective: z.string(),
+      type: z.enum(["sect", "main", "side", "hidden", "daily", "weekly"]),
+      progress: z.number().default(0),
+      target: z.number(),
+      rewards: z.object({
+        gold: z.number().default(0),
+        spiritualStones: z.number().default(0),
+        experience: z.number().default(0),
+        items: z.array(z.string()).default([])
+      }),
+      deadline: z.string().optional(),
+      completed: z.boolean().default(false)
+    })).default([]),
+    completedQuests: z.array(z.string()).default([])
   }).default({
     currentArea: "sect",
     discoveredAreas: {},
     completedChallenges: {},
-    dailyTasksCompleted: {}
+    dailyTasksCompleted: {},
+    huntingGrounds: {},
+    activeQuests: [],
+    completedQuests: []
+  }),
+  
+  // Sect activities and progress
+  sectActivities: z.object({
+    reputation: z.number().default(0), // 0-100 reputation with sect
+    contributions: z.number().default(0), // total contributions to sect
+    rank: z.string().default("Outer Disciple"),
+    dailyTrainingCompleted: z.boolean().default(false),
+    weeklyMissionCompleted: z.boolean().default(false),
+    assignedTasks: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string(),
+      deadline: z.string(), // ISO date string
+      completed: z.boolean().default(false),
+      rewards: z.object({
+        gold: z.number().default(0),
+        spiritualStones: z.number().default(0),
+        reputation: z.number().default(0), 
+        experience: z.number().default(0)
+      })
+    })).default([]),
+    permissions: z.object({
+      canAccessLibrary: z.boolean().default(false),
+      canAccessRestrictedAreas: z.boolean().default(false),
+      canTeachJuniors: z.boolean().default(false),
+      canLeadMissions: z.boolean().default(false)
+    }).default({
+      canAccessLibrary: false,
+      canAccessRestrictedAreas: false,
+      canTeachJuniors: false,
+      canLeadMissions: false
+    })
+  }).default({
+    reputation: 0,
+    contributions: 0,
+    rank: "Outer Disciple",
+    dailyTrainingCompleted: false,
+    weeklyMissionCompleted: false,
+    assignedTasks: [],
+    permissions: {
+      canAccessLibrary: false,
+      canAccessRestrictedAreas: false,
+      canTeachJuniors: false,
+      canLeadMissions: false
+    }
   }),
   
   // NPC interactions

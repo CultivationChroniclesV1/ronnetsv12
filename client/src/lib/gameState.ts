@@ -1,4 +1,4 @@
-import { REALMS, UPGRADES, SKILLS, ACHIEVEMENTS, BASE_QI_RATE, DEFAULT_QI_PER_CLICK, BASE_STORAGE } from './constants';
+import { REALMS, UPGRADES, SKILLS, ACHIEVEMENTS, BASE_QI_RATE, DEFAULT_QI_PER_CLICK, BASE_STORAGE, STARTING_GOLD, STARTING_SPIRITUAL_STONES } from './constants';
 import type { GameState } from '@shared/schema';
 
 // Default initial game state
@@ -71,11 +71,17 @@ export function getInitialGameState(): GameState {
     // Martial arts techniques - empty initially
     martialArts: {},
     
+    // Currencies
+    gold: STARTING_GOLD,
+    spiritualStones: STARTING_SPIRITUAL_STONES,
+    
     // Inventory
     inventory: {
-      spiritualStones: 0,
+      resources: {},
       herbs: {},
-      equipment: {}
+      weapons: {},
+      apparel: {},
+      artifacts: {}
     },
     
     // Exploration
@@ -83,7 +89,26 @@ export function getInitialGameState(): GameState {
       currentArea: "sect",
       discoveredAreas: { "sect": true },
       completedChallenges: {},
-      dailyTasksCompleted: {}
+      dailyTasksCompleted: {},
+      huntingGrounds: {},
+      activeQuests: [],
+      completedQuests: []
+    },
+    
+    // Sect activities
+    sectActivities: {
+      reputation: 0,
+      contributions: 0,
+      rank: "Outer Disciple",
+      dailyTrainingCompleted: false,
+      weeklyMissionCompleted: false,
+      assignedTasks: [],
+      permissions: {
+        canAccessLibrary: false,
+        canAccessRestrictedAreas: false,
+        canTeachJuniors: false,
+        canLeadMissions: false
+      }
     },
     
     // NPC relations

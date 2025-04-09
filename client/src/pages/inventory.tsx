@@ -269,7 +269,7 @@ const InventoryPage = () => {
                   
                   <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
                     <div className="flex items-center mb-1">
-                      <i className="fas fa-sword text-purple-500 mr-2"></i>
+                      <i className="fas fa-gavel text-purple-500 mr-2"></i>
                       <span className="font-medium">Equipment</span>
                     </div>
                     <p className="text-xl">{itemCounts.equipment} items</p>

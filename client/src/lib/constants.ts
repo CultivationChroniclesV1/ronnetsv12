@@ -383,50 +383,508 @@ export const MARTIAL_ARTS = {
 
 // Map/location information
 export const LOCATIONS = {
+  // Starting location - Level 1
   'sect': {
     name: 'Sect Grounds',
     description: 'Your sect\'s home base, where disciples train and elders impart wisdom.',
     requiredLevel: 1,
-    activities: ['train', 'meditate', 'study', 'visit-elders']
+    realm: 'qi',
+    activities: [
+      'train', 'meditate', 'study', 'visit-elders', 'sect-quest', 
+      'pill-refining', 'formation-practice', 'sparring', 'manual-copying',
+      'herb-garden-tending', 'spiritual-healing'
+    ],
+    enemies: [],
+    rewards: {
+      spiritualStones: [5, 15],
+      gold: [10, 30],
+      experience: [5, 20]
+    }
   },
+
+  // Level 5-10 Locations
   'forest': {
     name: 'Ancient Spirit Forest',
     description: 'A mystical forest filled with spiritual energy and low-level beasts.',
     requiredLevel: 5,
-    activities: ['explore', 'gather-herbs', 'hunt', 'meditate']
+    realm: 'qi',
+    activities: ['explore', 'gather-herbs', 'hunt', 'meditate'],
+    enemies: ['beast', 'forest-wolf', 'wild-boar', 'shadow-wolf', 'spirit-fox', 'spirit-monkey'],
+    rewards: {
+      spiritualStones: [10, 25],
+      gold: [15, 35],
+      experience: [10, 30]
+    }
   },
-  'mountain': {
-    name: 'Azure Peak Mountain',
-    description: 'A towering mountain with harsh conditions that temper the body and spirit.',
-    requiredLevel: 15,
-    activities: ['explore', 'mine-spiritual-stones', 'face-trial', 'secluded-cultivation']
+  'bamboo-grove': {
+    name: 'Emerald Bamboo Grove',
+    description: 'A tranquil bamboo forest where the bamboo absorbs spiritual energy, attracting unique beasts.',
+    requiredLevel: 6,
+    realm: 'qi',
+    activities: ['explore', 'gather-bamboo', 'hunt', 'cultivate-tranquility'],
+    enemies: ['fox-spirit', 'poisonous-snake', 'wild-tiger', 'bamboo-snake'],
+    rewards: {
+      spiritualStones: [12, 28],
+      gold: [18, 40],
+      experience: [12, 35]
+    }
+  },
+  'caverns': {
+    name: 'Echo Spirit Caverns',
+    description: 'A complex cave system that echoes with spiritual resonance, home to many cave-dwelling creatures.',
+    requiredLevel: 8,
+    realm: 'qi',
+    activities: ['explore', 'mine-crystals', 'hunt', 'sound-cultivation'],
+    enemies: ['cave-bat', 'giant-centipede'],
+    rewards: {
+      spiritualStones: [15, 30],
+      gold: [20, 45],
+      experience: [15, 40]
+    }
+  },
+  'poison-marsh': {
+    name: 'Venom Mist Marsh',
+    description: 'A dangerous marsh filled with poisonous mists and venomous creatures.',
+    requiredLevel: 9,
+    realm: 'qi',
+    activities: ['explore', 'gather-poison', 'hunt', 'poison-resistance-training'],
+    enemies: ['venomous-toad', 'marsh-crocodile', 'swamp-toad'],
+    rewards: {
+      spiritualStones: [18, 35],
+      gold: [25, 50],
+      experience: [18, 45]
+    }
+  },
+  'mist-forest': {
+    name: 'Spirit Mist Forest',
+    description: 'A mysterious forest perpetually shrouded in spiritual mists that enhance perception cultivation.',
+    requiredLevel: 7,
+    realm: 'qi',
+    activities: ['explore', 'gather-mist-essence', 'hunt', 'perception-cultivation'],
+    enemies: ['vine-horror', 'spirit-deer'],
+    rewards: {
+      spiritualStones: [14, 30],
+      gold: [20, 42],
+      experience: [14, 38]
+    }
   },
   'city': {
     name: 'Spirit Dragon City',
     description: 'A bustling city where cultivators from all sects gather to trade and exchange information.',
     requiredLevel: 10,
-    activities: ['trade', 'gather-information', 'take-missions', 'auction-house']
+    realm: 'qi',
+    activities: ['trade', 'gather-information', 'take-missions', 'auction-house', 
+                'martial-tournament', 'treasure-exchange', 'sect-diplomacy'],
+    enemies: [],
+    rewards: {
+      spiritualStones: [20, 40],
+      gold: [30, 60],
+      experience: [15, 35]
+    }
+  },
+
+  // Level 10-20 Locations
+  'jade-valley': {
+    name: 'Nine Jade Valley',
+    description: 'A valley where nine types of spiritual jade grow naturally, attracting jade-affinity creatures.',
+    requiredLevel: 12,
+    realm: 'foundation',
+    activities: ['explore', 'mine-jade', 'hunt', 'jade-essence-absorption'],
+    enemies: ['jade-serpent', 'jade-scorpion'],
+    rewards: {
+      spiritualStones: [25, 50],
+      gold: [35, 70],
+      experience: [25, 55]
+    }
+  },
+  'thunder-peak': {
+    name: 'Purple Thunder Peak',
+    description: 'A mountain peak constantly struck by spiritual lightning, home to thunder-attuned creatures.',
+    requiredLevel: 14,
+    realm: 'foundation',
+    activities: ['explore', 'gather-thunder-essence', 'hunt', 'lightning-tempering'],
+    enemies: ['thunder-bird', 'thunder-bird-fledgling', 'thunder-beast', 'thunder-serpent', 'thunder-tiger'],
+    rewards: {
+      spiritualStones: [30, 60],
+      gold: [40, 80],
+      experience: [30, 65]
+    }
+  },
+  'stone-forest': {
+    name: 'Living Stone Forest',
+    description: 'A forest of stone pillars that have absorbed spiritual energy and developed rudimentary sentience.',
+    requiredLevel: 13,
+    realm: 'foundation',
+    activities: ['explore', 'harvest-living-stone', 'hunt', 'earth-energy-cultivation'],
+    enemies: ['rock-tortoise', 'stone-golem'],
+    rewards: {
+      spiritualStones: [28, 55],
+      gold: [38, 75],
+      experience: [28, 60]
+    }
+  },
+  'mountain': {
+    name: 'Azure Peak Mountain',
+    description: 'A towering mountain with harsh conditions that temper the body and spirit.',
+    requiredLevel: 15,
+    realm: 'foundation',
+    activities: ['explore', 'mine-spiritual-stones', 'face-trial', 'secluded-cultivation', 'cliff-hanging-practice'],
+    enemies: ['spirit-ape', 'mountain-goat', 'earth-bear'],
+    rewards: {
+      spiritualStones: [35, 70],
+      gold: [45, 90],
+      experience: [35, 75]
+    }
+  },
+  'ancient-battlefield': {
+    name: 'Ancient Immortal Battlefield',
+    description: 'The site of a battle between ancient cultivators, now haunted by remnant spirits and war energies.',
+    requiredLevel: 16,
+    realm: 'foundation',
+    activities: ['explore', 'gather-battle-remnants', 'hunt', 'battle-spirit-tempering'],
+    enemies: ['ghost-warrior', 'bone-vulture'],
+    rewards: {
+      spiritualStones: [38, 75],
+      gold: [50, 100],
+      experience: [38, 80]
+    }
+  },
+  'crimson-cave': {
+    name: 'Crimson Blood Caves',
+    description: 'Cave systems where the walls seep with blood-like spiritual essence that enhances body cultivation.',
+    requiredLevel: 17,
+    realm: 'foundation',
+    activities: ['explore', 'collect-blood-essence', 'hunt', 'blood-refining-cultivation'],
+    enemies: ['blood-bat', 'blood-crow'],
+    rewards: {
+      spiritualStones: [40, 80],
+      gold: [55, 110],
+      experience: [40, 85]
+    }
+  },
+  'flame-desert': {
+    name: 'Nine Flame Desert',
+    description: 'A scorching desert where nine types of spiritual flames occasionally erupt from the ground.',
+    requiredLevel: 18,
+    realm: 'foundation',
+    activities: ['explore', 'capture-flame-essence', 'hunt', 'heat-resistance-training'],
+    enemies: ['flame-scorpion', 'flame-lizard', 'flame-fox'],
+    rewards: {
+      spiritualStones: [45, 90],
+      gold: [60, 120],
+      experience: [45, 95]
+    }
+  },
+  'frozen-peak': {
+    name: 'Eternal Frost Peak',
+    description: 'A mountain peak covered in never-melting ice that contains ancient frozen spiritual energy.',
+    requiredLevel: 19,
+    realm: 'foundation',
+    activities: ['explore', 'harvest-eternal-ice', 'hunt', 'cold-resistance-training'],
+    enemies: ['ice-sprite', 'snow-leopard', 'frost-dragon'],
+    rewards: {
+      spiritualStones: [48, 95],
+      gold: [65, 130],
+      experience: [48, 100]
+    }
+  },
+  'iron-plateau': {
+    name: 'Iron Spirit Plateau',
+    description: 'A vast plateau rich in spiritual iron that naturally forms into weapons and armor-like shapes.',
+    requiredLevel: 15,
+    realm: 'foundation',
+    activities: ['explore', 'mine-spirit-iron', 'hunt', 'metal-attribute-cultivation'],
+    enemies: ['armored-beast', 'iron-tortoise'],
+    rewards: {
+      spiritualStones: [35, 70],
+      gold: [45, 90],
+      experience: [35, 75]
+    }
   },
   'ruins': {
     name: 'Forgotten Immortal Ruins',
     description: 'Ancient ruins left by past immortals, filled with dangers and treasures.',
     requiredLevel: 25,
-    activities: ['explore', 'search-for-treasures', 'fight-guardians', 'study-formations']
+    realm: 'core',
+    activities: ['explore', 'search-for-treasures', 'fight-guardians', 'study-formations', 'decipher-inscriptions'],
+    enemies: ['guardian', 'living-statue'],
+    rewards: {
+      spiritualStones: [60, 120],
+      gold: [80, 160],
+      experience: [60, 130]
+    }
+  },
+
+  // Level 20+ Locations
+  'great-river': {
+    name: 'Celestial River',
+    description: 'A massive river said to be a reflection of a heavenly river, containing special water-attribute energy.',
+    requiredLevel: 22,
+    realm: 'core',
+    activities: ['explore', 'gather-river-essence', 'hunt', 'water-dao-meditation'],
+    enemies: ['river-snake', 'water-dragon', 'elder-dragon'],
+    rewards: {
+      spiritualStones: [55, 110],
+      gold: [75, 150],
+      experience: [55, 115]
+    }
+  },
+  'golden-forest': {
+    name: 'Golden Scripture Forest',
+    description: 'A forest where the leaves of ancient trees contain fragments of golden scriptures from the heavens.',
+    requiredLevel: 23,
+    realm: 'core',
+    activities: ['explore', 'collect-scripture-leaves', 'hunt', 'scripture-comprehension'],
+    enemies: ['golden-ape'],
+    rewards: {
+      spiritualStones: [58, 115],
+      gold: [80, 160],
+      experience: [58, 120]
+    }
+  },
+  'phoenix-nest': {
+    name: 'Phoenix Ash Mountain',
+    description: 'A volcanic mountain where the descendants of phoenixes nest, rich in fire attribute energy.',
+    requiredLevel: 24,
+    realm: 'core',
+    activities: ['explore', 'gather-phoenix-ash', 'hunt', 'flame-dao-meditation'],
+    enemies: ['phoenix-descendant', 'blood-phoenix'],
+    rewards: {
+      spiritualStones: [60, 120],
+      gold: [85, 170],
+      experience: [60, 125]
+    }
+  },
+  'tiger-mountain': {
+    name: 'White Tiger Mountain',
+    description: 'A mountain ruled by ancient tiger spirits, where wind energy flows abundantly.',
+    requiredLevel: 25,
+    realm: 'core',
+    activities: ['explore', 'collect-wind-crystals', 'hunt', 'wind-dao-meditation'],
+    enemies: ['ancient-tiger'],
+    rewards: {
+      spiritualStones: [65, 130],
+      gold: [90, 180],
+      experience: [65, 135]
+    }
+  },
+  'crystal-mines': {
+    name: 'Spirit Crystal Mines',
+    description: 'Vast underground mines filled with spiritual crystals that amplify and store energy.',
+    requiredLevel: 20,
+    realm: 'core',
+    activities: ['explore', 'mine-spirit-crystals', 'hunt', 'crystal-resonance-cultivation'],
+    enemies: ['crystal-beetle', 'crystal-wolf', 'crystal-mantis'],
+    rewards: {
+      spiritualStones: [50, 100],
+      gold: [70, 140],
+      experience: [50, 105]
+    }
+  },
+  'forbidden-grounds': {
+    name: 'Forbidden Dao Grounds',
+    description: 'A restricted area where dangerous forbidden techniques and energies have leaked into the environment.',
+    requiredLevel: 26,
+    realm: 'core',
+    activities: ['explore', 'study-forbidden-energy', 'hunt', 'forbidden-dao-resistance'],
+    enemies: ['demonic-cultivator'],
+    rewards: {
+      spiritualStones: [70, 140],
+      gold: [95, 190],
+      experience: [70, 145]
+    }
+  },
+  'shadow-valley': {
+    name: 'Night Shadow Valley',
+    description: 'A valley in perpetual darkness where shadow energy has condensed into physical form.',
+    requiredLevel: 24,
+    realm: 'core',
+    activities: ['explore', 'harvest-shadow-essence', 'hunt', 'darkness-dao-cultivation'],
+    enemies: ['shadow-panther'],
+    rewards: {
+      spiritualStones: [60, 120],
+      gold: [85, 170],
+      experience: [60, 125]
+    }
+  },
+  'cloud-peaks': {
+    name: 'Nine Cloud Peaks',
+    description: 'A range of nine mountains that reach above the clouds, rich in heaven-attribute energy.',
+    requiredLevel: 27,
+    realm: 'core',
+    activities: ['explore', 'gather-cloud-essence', 'hunt', 'heaven-dao-meditation'],
+    enemies: ['wind-falcon', 'celestial-crane'],
+    rewards: {
+      spiritualStones: [75, 150],
+      gold: [100, 200],
+      experience: [75, 155]
+    }
+  },
+
+  // Level 30+ Locations
+  'imperial-tomb': {
+    name: 'Celestial Emperor\'s Tomb',
+    description: 'The ancient burial site of a cultivation emperor, protected by powerful guardians.',
+    requiredLevel: 32,
+    realm: 'nascent',
+    activities: ['explore', 'study-imperial-artifacts', 'hunt', 'imperial-dao-comprehension'],
+    enemies: ['ancient-sovereign'],
+    rewards: {
+      spiritualStones: [100, 200],
+      gold: [150, 300],
+      experience: [100, 210]
+    }
+  },
+  'immortal-ruins': {
+    name: 'Failed Immortal\'s Domain',
+    description: 'The remnants of a domain created by a cultivator who failed to ascend to immortality.',
+    requiredLevel: 35,
+    realm: 'nascent',
+    activities: ['explore', 'collect-immortal-remnants', 'hunt', 'immortality-dao-study'],
+    enemies: ['immortal-remnant'],
+    rewards: {
+      spiritualStones: [120, 240],
+      gold: [180, 360],
+      experience: [120, 250]
+    }
+  },
+  'qilin-plateau': {
+    name: 'Sacred Qilin Plateau',
+    description: 'A plateau where mythical qilin once roamed in abundance, leaving behind powerful lightning essence.',
+    requiredLevel: 33,
+    realm: 'nascent',
+    activities: ['explore', 'gather-qilin-essence', 'hunt', 'supreme-lightning-cultivation'],
+    enemies: ['lightning-qilin'],
+    rewards: {
+      spiritualStones: [110, 220],
+      gold: [165, 330],
+      experience: [110, 230]
+    }
+  },
+  'void-rift': {
+    name: 'Void Boundary Rift',
+    description: 'A tear in reality leading to the void between realms, home to creatures that defy normal laws.',
+    requiredLevel: 34,
+    realm: 'nascent',
+    activities: ['explore', 'collect-void-fragments', 'hunt', 'space-dao-cultivation'],
+    enemies: ['void-serpent'],
+    rewards: {
+      spiritualStones: [115, 230],
+      gold: [175, 350],
+      experience: [115, 240]
+    }
+  },
+  'divine-lake': {
+    name: 'Divine Reflection Lake',
+    description: 'A lake whose waters reflect not physical reality but the spiritual world and divine principles.',
+    requiredLevel: 36,
+    realm: 'nascent',
+    activities: ['explore', 'collect-divine-water', 'hunt', 'divine-law-meditation'],
+    enemies: ['divine-tortoise'],
+    rewards: {
+      spiritualStones: [130, 260],
+      gold: [195, 390],
+      experience: [130, 270]
+    }
+  },
+  'sacred-mountain': {
+    name: 'Primordial Foundation Mountain',
+    description: 'A mountain said to be one of the pillars supporting the heavens, rich in earth-attribute divine energy.',
+    requiredLevel: 40,
+    realm: 'nascent',
+    activities: ['explore', 'mine-divine-earth', 'hunt', 'foundation-law-comprehension'],
+    enemies: ['mountain-spirit', 'earth-behemoth'],
+    rewards: {
+      spiritualStones: [150, 300],
+      gold: [225, 450],
+      experience: [150, 310]
+    }
+  },
+
+  // Ultra high-level locations (Level 45+)
+  'dragon-volcano': {
+    name: 'Dragon King\'s Volcano',
+    description: 'An active volcano where dragon kings occasionally rest, infusing the area with royal dragon energy.',
+    requiredLevel: 45,
+    realm: 'divine',
+    activities: ['explore', 'collect-dragon-fire', 'hunt', 'dragon-dao-comprehension'],
+    enemies: ['fire-dragon-king'],
+    rewards: {
+      spiritualStones: [200, 400],
+      gold: [300, 600],
+      experience: [200, 410]
+    }
+  },
+  'illusion-forest': {
+    name: 'Nine Illusions Ancient Forest',
+    description: 'A forest where reality constantly shifts under the influence of ancient fox spirits.',
+    requiredLevel: 42,
+    realm: 'divine',
+    activities: ['explore', 'gather-illusion-essence', 'hunt', 'illusion-dao-understanding'],
+    enemies: ['nine-tailed-fox', 'phantom-fox'],
+    rewards: {
+      spiritualStones: [180, 360],
+      gold: [270, 540],
+      experience: [180, 370]
+    }
+  },
+  'blood-palace': {
+    name: 'Blood Emperor\'s Palace',
+    description: 'The terrifying palace of a legendary blood cultivator, saturated with blood essence and forbidden power.',
+    requiredLevel: 48,
+    realm: 'divine',
+    activities: ['explore', 'harvest-blood-crystals', 'hunt', 'blood-dao-refinement'],
+    enemies: ['blood-emperor'],
+    rewards: {
+      spiritualStones: [250, 500],
+      gold: [375, 750],
+      experience: [250, 510]
+    }
+  },
+  'dragon-throne': {
+    name: 'Heavenly Dragon\'s Throne',
+    description: 'The former throne of a heavenly dragon that defied celestial law, now abandoned but still filled with authority.',
+    requiredLevel: 60,
+    realm: 'divine',
+    activities: ['explore', 'absorb-authority-essence', 'hunt', 'authority-dao-contemplation'],
+    enemies: ['heaven-defying-dragon'],
+    rewards: {
+      spiritualStones: [400, 800],
+      gold: [600, 1200],
+      experience: [400, 820]
+    }
+  },
+  'chaos-origin': {
+    name: 'Primordial Chaos Origin',
+    description: 'A forbidden realm where remnants of primordial chaos still exist from before the world\'s formation.',
+    requiredLevel: 70,
+    realm: 'tribulation',
+    activities: ['explore', 'gather-chaos-essence', 'hunt', 'chaos-dao-comprehension'],
+    enemies: ['primordial-beast'],
+    rewards: {
+      spiritualStones: [600, 1200],
+      gold: [900, 1800],
+      experience: [600, 1230]
+    }
   }
 };
 
 // Enemy types for combat
 export const ENEMIES = {
-  // Basic enemies
+  // Basic enemies - Qi Condensation Realm (Levels 1-10)
   'beast': {
     name: 'Spirit Beast',
     description: 'A wild beast that has absorbed spiritual energy from its environment.',
     health: 50,
     attack: 5,
     defense: 2,
+    level: 1,
+    realm: 'qi',
+    location: 'forest',
     rewards: {
       experience: 10,
       spiritualStones: 5,
+      gold: 3,
       loot: ['beast-core', 'hide']
     }
   },
@@ -436,23 +894,159 @@ export const ENEMIES = {
     health: 80,
     attack: 8,
     defense: 4,
+    level: 3,
+    realm: 'qi',
+    location: 'forest',
     rewards: {
       experience: 15,
       spiritualStones: 10,
+      gold: 8,
       loot: ['low-grade-pill', 'technique-scroll']
     }
   },
+  'fox-spirit': {
+    name: 'Fox Spirit',
+    description: 'A fox that has cultivated for decades and gained human form and illusion abilities.',
+    health: 65,
+    attack: 12,
+    defense: 3,
+    level: 5,
+    realm: 'qi',
+    location: 'bamboo-grove',
+    rewards: {
+      experience: 18,
+      spiritualStones: 12,
+      gold: 15,
+      loot: ['fox-pelt', 'illusion-pearl']
+    }
+  },
+  'jade-serpent': {
+    name: 'Jade Serpent',
+    description: 'A serpent with scales like jade that has absorbed mineral essence for centuries.',
+    health: 60,
+    attack: 15,
+    defense: 8,
+    level: 6,
+    realm: 'qi',
+    location: 'jade-valley',
+    rewards: {
+      experience: 20,
+      spiritualStones: 15,
+      gold: 18,
+      loot: ['jade-scale', 'serpent-venom']
+    }
+  },
+  'shadow-wolf': {
+    name: 'Shadow Wolf',
+    description: 'A wolf that can merge with shadows and strike from darkness.',
+    health: 70,
+    attack: 14,
+    defense: 5,
+    level: 7,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 22,
+      spiritualStones: 14,
+      gold: 12,
+      loot: ['shadow-pelt', 'wolf-fang']
+    }
+  },
+  'spirit-ape': {
+    name: 'Azure Mountain Ape',
+    description: 'An intelligent ape with tremendous strength that roams sacred mountains.',
+    health: 95,
+    attack: 18,
+    defense: 7,
+    level: 8,
+    realm: 'qi',
+    location: 'mountain',
+    rewards: {
+      experience: 25,
+      spiritualStones: 16,
+      gold: 20,
+      loot: ['ape-fur', 'spiritual-fruit']
+    }
+  },
+  'thunder-bird': {
+    name: 'Thunder Peak Hawk',
+    description: 'A hawk that nests on peaks where lightning strikes, absorbing thunder essence.',
+    health: 65,
+    attack: 20,
+    defense: 4,
+    level: 8,
+    realm: 'qi',
+    location: 'thunder-peak',
+    rewards: {
+      experience: 25,
+      spiritualStones: 18,
+      gold: 22,
+      loot: ['thunder-feather', 'hawk-talon']
+    }
+  },
+  'tomb-guardian': {
+    name: 'Ancestral Tomb Guardian',
+    description: 'A lower guardian spirit bound to protect family tombs and ancestral grounds.',
+    health: 100,
+    attack: 13,
+    defense: 15,
+    level: 9,
+    realm: 'qi',
+    location: 'ancestral-grounds',
+    rewards: {
+      experience: 28,
+      spiritualStones: 20,
+      gold: 25,
+      loot: ['guardian-essence', 'tomb-talisman']
+    }
+  },
+  'venomous-toad': {
+    name: 'Five-Colored Venomous Toad',
+    description: 'A toad with five-colored markings that spits corrosive venom.',
+    health: 80,
+    attack: 16,
+    defense: 8,
+    level: 7,
+    realm: 'qi',
+    location: 'poison-marsh',
+    rewards: {
+      experience: 24,
+      spiritualStones: 15,
+      gold: 15,
+      loot: ['toad-venom', 'poison-sac']
+    }
+  },
+  'vine-horror': {
+    name: 'Strangling Vine Horror',
+    description: 'Sentient vines that have absorbed blood and qi from countless prey.',
+    health: 70,
+    attack: 15,
+    defense: 6,
+    level: 6,
+    realm: 'qi',
+    location: 'mist-forest',
+    rewards: {
+      experience: 20,
+      spiritualStones: 13,
+      gold: 14,
+      loot: ['spirit-vine', 'blood-flower']
+    }
+  },
   
-  // Advanced enemies
+  // Intermediate enemies - Foundation Establishment Realm (Levels 10-20)
   'guardian': {
     name: 'Ancient Guardian',
     description: 'A construct created by ancient cultivators to protect their treasures.',
     health: 200,
-    attack: 15,
-    defense: 10,
+    attack: 25,
+    defense: 15,
+    level: 12,
+    realm: 'foundation',
+    location: 'ruins',
     rewards: {
       experience: 40,
       spiritualStones: 30,
+      gold: 35,
       loot: ['artifact-fragment', 'ancient-manual']
     }
   },
@@ -460,15 +1054,1119 @@ export const ENEMIES = {
     name: 'Lesser Demon',
     description: 'A malevolent entity born from the negative energy of the world.',
     health: 150,
-    attack: 20,
-    defense: 5,
+    attack: 30,
+    defense: 10,
+    level: 15,
+    realm: 'foundation',
+    location: 'demon-valley',
     rewards: {
       experience: 50,
       spiritualStones: 25,
+      gold: 40,
       loot: ['demon-core', 'forbidden-scroll']
+    }
+  },
+  'armored-beast': {
+    name: 'Iron-Backed Beast',
+    description: 'A massive creature with plates of natural armor as hard as refined iron.',
+    health: 220,
+    attack: 22,
+    defense: 25,
+    level: 14,
+    realm: 'foundation',
+    location: 'iron-plateau',
+    rewards: {
+      experience: 45,
+      spiritualStones: 23,
+      gold: 30,
+      loot: ['iron-scale', 'beast-horn']
+    }
+  },
+  'blood-bat': {
+    name: 'Blood-Drinking Bat',
+    description: 'A giant bat that has evolved to drain both blood and qi from its victims.',
+    health: 120,
+    attack: 35,
+    defense: 8,
+    level: 13,
+    realm: 'foundation',
+    location: 'crimson-cave',
+    rewards: {
+      experience: 42,
+      spiritualStones: 20,
+      gold: 28,
+      loot: ['blood-essence', 'bat-wing']
+    }
+  },
+  'stone-golem': {
+    name: 'Living Stone Golem',
+    description: 'A massive humanoid formed from living stone that has gained sentience over centuries.',
+    health: 280,
+    attack: 28,
+    defense: 30,
+    level: 16,
+    realm: 'foundation',
+    location: 'stone-forest',
+    rewards: {
+      experience: 55,
+      spiritualStones: 30,
+      gold: 45,
+      loot: ['living-stone', 'earth-crystal']
+    }
+  },
+  'flame-scorpion': {
+    name: 'Nine-Tailed Flame Scorpion',
+    description: 'A scorpion with nine tails that each contain different types of flame poison.',
+    health: 160,
+    attack: 40,
+    defense: 15,
+    level: 17,
+    realm: 'foundation',
+    location: 'flame-desert',
+    rewards: {
+      experience: 58,
+      spiritualStones: 32,
+      gold: 48,
+      loot: ['flame-stinger', 'scorpion-shell']
+    }
+  },
+  'ghost-warrior': {
+    name: 'Vengeful Ghost Warrior',
+    description: 'The spirit of a warrior who died in battle and cannot rest.',
+    health: 140,
+    attack: 38,
+    defense: 12,
+    level: 15,
+    realm: 'foundation',
+    location: 'ancient-battlefield',
+    rewards: {
+      experience: 48,
+      spiritualStones: 28,
+      gold: 38,
+      loot: ['ghost-essence', 'ancient-weapon']
+    }
+  },
+  'ice-sprite': {
+    name: 'Thousand-Year Ice Sprite',
+    description: 'A beautiful but deadly spirit formed from the essence of eternal ice.',
+    health: 130,
+    attack: 32,
+    defense: 18,
+    level: 14,
+    realm: 'foundation',
+    location: 'frozen-peak',
+    rewards: {
+      experience: 46,
+      spiritualStones: 26,
+      gold: 36,
+      loot: ['eternal-ice', 'frost-crystal']
+    }
+  },
+  'giant-centipede': {
+    name: 'Hundred-Legged Earth Tunneler',
+    description: 'A massive centipede that can burrow through solid rock and ambush prey.',
+    health: 175,
+    attack: 30,
+    defense: 20,
+    level: 16,
+    realm: 'foundation',
+    location: 'caverns',
+    rewards: {
+      experience: 52,
+      spiritualStones: 29,
+      gold: 42,
+      loot: ['centipede-fang', 'tunnel-dust']
+    }
+  },
+  'thunder-beast': {
+    name: 'Violet Thunder Beast',
+    description: 'A beast born in a lightning storm with the power to generate electricity.',
+    health: 165,
+    attack: 42,
+    defense: 12,
+    level: 18,
+    realm: 'foundation',
+    location: 'thunder-peak',
+    rewards: {
+      experience: 60,
+      spiritualStones: 35,
+      gold: 50,
+      loot: ['thunder-core', 'beast-pelt']
+    }
+  },
+  
+  // Advanced enemies - Core Formation Realm (Levels 20-30)
+  'elder-dragon': {
+    name: 'Juvenile River Dragon',
+    description: 'A young dragon that controls water and can summon storms.',
+    health: 350,
+    attack: 45,
+    defense: 25,
+    level: 22,
+    realm: 'core',
+    location: 'great-river',
+    rewards: {
+      experience: 80,
+      spiritualStones: 50,
+      gold: 70,
+      loot: ['dragon-scale', 'river-pearl']
+    }
+  },
+  'phoenix-descendant': {
+    name: 'Phoenix Descendant',
+    description: 'A bird with traces of phoenix bloodline, capable of limited rebirth and flame manipulation.',
+    health: 300,
+    attack: 55,
+    defense: 20,
+    level: 24,
+    realm: 'core',
+    location: 'phoenix-nest',
+    rewards: {
+      experience: 85,
+      spiritualStones: 55,
+      gold: 75,
+      loot: ['phoenix-feather', 'rebirth-ash']
+    }
+  },
+  'ancient-tiger': {
+    name: 'White-Striped Mountain Lord',
+    description: 'An ancient tiger that has ruled its mountain for centuries, with power over wind.',
+    health: 380,
+    attack: 50,
+    defense: 30,
+    level: 25,
+    realm: 'core',
+    location: 'tiger-mountain',
+    rewards: {
+      experience: 90,
+      spiritualStones: 60,
+      gold: 80,
+      loot: ['tiger-fang', 'wind-crystal']
+    }
+  },
+  'golden-ape': {
+    name: 'Golden-Furred Sage Ape',
+    description: 'An ape with golden fur that has gained intelligence rivaling humans and limited spiritual abilities.',
+    health: 320,
+    attack: 45,
+    defense: 35,
+    level: 23,
+    realm: 'core',
+    location: 'golden-forest',
+    rewards: {
+      experience: 82,
+      spiritualStones: 52,
+      gold: 72,
+      loot: ['golden-fur', 'wisdom-fruit']
+    }
+  },
+  'demonic-cultivator': {
+    name: 'Fallen Core Disciple',
+    description: 'A once-promising cultivator who has fallen to demonic cultivation for power.',
+    health: 290,
+    attack: 60,
+    defense: 25,
+    level: 26,
+    realm: 'core',
+    location: 'forbidden-grounds',
+    rewards: {
+      experience: 95,
+      spiritualStones: 65,
+      gold: 85,
+      loot: ['dark-core', 'forbidden-technique']
+    }
+  },
+  
+  // Elite enemies - Nascent Soul and beyond (Levels 30+)
+  'ancient-sovereign': {
+    name: 'Tomb Guardian Sovereign',
+    description: 'A powerful spirit that has guarded an emperor\'s tomb for millennia.',
+    health: 500,
+    attack: 70,
+    defense: 50,
+    level: 32,
+    realm: 'nascent',
+    location: 'imperial-tomb',
+    rewards: {
+      experience: 150,
+      spiritualStones: 100,
+      gold: 200,
+      loot: ['sovereign-seal', 'imperial-jade']
+    }
+  },
+  'immortal-remnant': {
+    name: 'Failed Immortal',
+    description: 'The twisted remnant of a cultivator who failed in their ascension to immortality.',
+    health: 450,
+    attack: 80,
+    defense: 40,
+    level: 35,
+    realm: 'nascent',
+    location: 'immortal-ruins',
+    rewards: {
+      experience: 180,
+      spiritualStones: 120,
+      gold: 250,
+      loot: ['immortal-essence', 'heavenly-script']
+    }
+  },
+  
+  // Special Mini-Boss Enemies
+  'fire-dragon-king': {
+    name: 'Juvenile Fire Dragon King',
+    description: 'A young dragon of royal bloodline with mastery over spiritual fire.',
+    health: 800,
+    attack: 90,
+    defense: 60,
+    level: 40,
+    realm: 'nascent',
+    location: 'dragon-volcano',
+    isBoss: true,
+    rewards: {
+      experience: 300,
+      spiritualStones: 200,
+      gold: 500,
+      loot: ['dragon-king-scale', 'fire-dragon-pearl', 'royal-dragon-blood']
+    }
+  },
+  'nine-tailed-fox': {
+    name: 'Nine-Tailed Spirit Fox',
+    description: 'A fox that has cultivated for a thousand years and mastered illusions and transformations.',
+    health: 750,
+    attack: 85,
+    defense: 55,
+    level: 38,
+    realm: 'nascent',
+    location: 'illusion-forest',
+    isBoss: true,
+    rewards: {
+      experience: 280,
+      spiritualStones: 180,
+      gold: 450,
+      loot: ['nine-tail-fur', 'fox-spirit-core', 'illusion-gem']
+    }
+  },
+  'blood-emperor': {
+    name: 'Blood Emperor',
+    description: 'A human cultivator who has walked the path of blood cultivation to terrible power.',
+    health: 700,
+    attack: 100,
+    defense: 50,
+    level: 45,
+    realm: 'divine',
+    location: 'blood-palace',
+    isBoss: true,
+    rewards: {
+      experience: 350,
+      spiritualStones: 250,
+      gold: 600,
+      loot: ['blood-emperor-heart', 'crimson-jade', 'emperor-technique']
+    }
+  },
+  'mountain-spirit': {
+    name: 'Ancient Mountain Spirit',
+    description: 'The sentient spirit of a sacred mountain, embodying incredible earth power.',
+    health: 1000,
+    attack: 80,
+    defense: 100,
+    level: 50,
+    realm: 'divine',
+    location: 'sacred-mountain',
+    isBoss: true,
+    rewards: {
+      experience: 400,
+      spiritualStones: 300,
+      gold: 700,
+      loot: ['mountain-heart', 'earth-law-fragment', 'spirit-stone-vein']
+    }
+  },
+  
+  // The remaining enemies to reach 100+ total enemies
+  // Qi Condensation realm additional enemies
+  'forest-wolf': {
+    name: 'Spirit Forest Wolf',
+    description: 'A common wolf that has absorbed minimal spiritual energy from its environment.',
+    health: 40,
+    attack: 6,
+    defense: 2,
+    level: 2,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 8,
+      spiritualStones: 4,
+      gold: 5,
+      loot: ['wolf-pelt', 'beast-bone']
+    }
+  },
+  'wild-boar': {
+    name: 'Iron-Tusked Boar',
+    description: 'A wild boar with unnaturally hard tusks that can pierce stone.',
+    health: 55,
+    attack: 9,
+    defense: 5,
+    level: 3,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 12,
+      spiritualStones: 6,
+      gold: 9,
+      loot: ['boar-tusk', 'tough-hide']
+    }
+  },
+  'poisonous-snake': {
+    name: 'Three-Pattern Viper',
+    description: 'A venomous snake with three distinct patterns that denote different poison types.',
+    health: 35,
+    attack: 12,
+    defense: 1,
+    level: 4,
+    realm: 'qi',
+    location: 'bamboo-grove',
+    rewards: {
+      experience: 14,
+      spiritualStones: 7,
+      gold: 10,
+      loot: ['snake-venom', 'snake-skin']
+    }
+  },
+  'rock-tortoise': {
+    name: 'Stone-Shelled Tortoise',
+    description: 'A tortoise with a shell as hard as mountain stone that has lived for centuries.',
+    health: 100,
+    attack: 4,
+    defense: 15,
+    level: 5,
+    realm: 'qi',
+    location: 'stone-forest',
+    rewards: {
+      experience: 16,
+      spiritualStones: 8,
+      gold: 12,
+      loot: ['stone-shell', 'longevity-essence']
+    }
+  },
+  'spirit-fox': {
+    name: 'One-Tailed Spirit Fox',
+    description: 'A young fox that has just begun its path of cultivation and can perform simple tricks.',
+    health: 45,
+    attack: 8,
+    defense: 3,
+    level: 4,
+    realm: 'qi',
+    location: 'forest',
+    rewards: {
+      experience: 13,
+      spiritualStones: 7,
+      gold: 9,
+      loot: ['fox-tail', 'illusion-dust']
+    }
+  },
+  'mountain-goat': {
+    name: 'Azure Horn Mountain Goat',
+    description: 'A goat with azure horns that has adapted to climbing steep spiritual mountains.',
+    health: 60,
+    attack: 7,
+    defense: 6,
+    level: 5,
+    realm: 'qi',
+    location: 'mountain',
+    rewards: {
+      experience: 15,
+      spiritualStones: 8,
+      gold: 11,
+      loot: ['azure-horn', 'goat-hide']
+    }
+  },
+  'cave-bat': {
+    name: 'Echo Cave Bat',
+    description: 'A bat with the ability to emit disorienting sonic waves that confuse prey.',
+    health: 30,
+    attack: 10,
+    defense: 2,
+    level: 4,
+    realm: 'qi',
+    location: 'caverns',
+    rewards: {
+      experience: 12,
+      spiritualStones: 6,
+      gold: 8,
+      loot: ['bat-wing', 'echo-crystal']
+    }
+  },
+  'marsh-crocodile': {
+    name: 'Iron-Jaw Marsh Crocodile',
+    description: 'A crocodile with jaws strong enough to crush stone, lurking in spiritual marshes.',
+    health: 75,
+    attack: 15,
+    defense: 10,
+    level: 7,
+    realm: 'qi',
+    location: 'poison-marsh',
+    rewards: {
+      experience: 22,
+      spiritualStones: 11,
+      gold: 18,
+      loot: ['crocodile-tooth', 'tough-scale']
+    }
+  },
+  'spirit-monkey': {
+    name: 'Nimble Spirit Monkey',
+    description: 'A small, incredibly agile monkey that has absorbed spirit energy from fruits.',
+    health: 40,
+    attack: 6,
+    defense: 4,
+    level: 3,
+    realm: 'qi',
+    location: 'mist-forest',
+    rewards: {
+      experience: 10,
+      spiritualStones: 5,
+      gold: 7,
+      loot: ['spirit-fruit', 'monkey-fur']
+    }
+  },
+  'thunder-bird-fledgling': {
+    name: 'Thunder Bird Fledgling',
+    description: 'A young thunder bird that can generate small electrical discharges but lacks control.',
+    health: 45,
+    attack: 12,
+    defense: 3,
+    level: 6,
+    realm: 'qi',
+    location: 'thunder-peak',
+    rewards: {
+      experience: 18,
+      spiritualStones: 9,
+      gold: 15,
+      loot: ['small-thunder-feather', 'static-essence']
+    }
+  },
+  'swamp-toad': {
+    name: 'Poison Swamp Toad',
+    description: 'A toad that secretes mild toxins and has adapted to life in spiritual swamps.',
+    health: 50,
+    attack: 8,
+    defense: 6,
+    level: 5,
+    realm: 'qi',
+    location: 'poison-marsh',
+    rewards: {
+      experience: 14,
+      spiritualStones: 7,
+      gold: 10,
+      loot: ['toad-toxin', 'swamp-pearl']
+    }
+  },
+  'wild-tiger': {
+    name: 'Striped Forest Tiger',
+    description: 'A tiger that has begun absorbing spiritual energy, making it stronger than normal tigers.',
+    health: 70,
+    attack: 14,
+    defense: 7,
+    level: 6,
+    realm: 'qi',
+    location: 'bamboo-grove',
+    rewards: {
+      experience: 20,
+      spiritualStones: 10,
+      gold: 16,
+      loot: ['tiger-claw', 'striped-pelt']
+    }
+  },
+  'river-snake': {
+    name: 'Azure River Serpent',
+    description: 'A water serpent that has adapted to rivers rich in water-attribute spiritual energy.',
+    health: 55,
+    attack: 10,
+    defense: 5,
+    level: 5,
+    realm: 'qi',
+    location: 'great-river',
+    rewards: {
+      experience: 15,
+      spiritualStones: 8,
+      gold: 12,
+      loot: ['water-scale', 'serpent-fang']
+    }
+  },
+  'crystal-beetle': {
+    name: 'Earth Crystal Beetle',
+    description: 'A beetle that feeds on spiritual crystals and has developed a crystalline carapace.',
+    health: 60,
+    attack: 7,
+    defense: 12,
+    level: 6,
+    realm: 'qi',
+    location: 'crystal-mines',
+    rewards: {
+      experience: 18,
+      spiritualStones: 12,
+      gold: 14,
+      loot: ['crystal-fragment', 'beetle-shell']
+    }
+  },
+  'bamboo-snake': {
+    name: 'Emerald Bamboo Viper',
+    description: 'A green snake that blends perfectly with bamboo and strikes with surprising speed.',
+    health: 40,
+    attack: 14,
+    defense: 2,
+    level: 5,
+    realm: 'qi',
+    location: 'bamboo-grove',
+    rewards: {
+      experience: 16,
+      spiritualStones: 8,
+      gold: 13,
+      loot: ['emerald-scale', 'viper-venom']
+    }
+  },
+  
+  // Foundation Establishment additional enemies
+  'wind-falcon': {
+    name: 'Azure Wind Falcon',
+    description: 'A falcon that has mastered wind energy for incredibly fast and precise attacks.',
+    health: 150,
+    attack: 35,
+    defense: 15,
+    level: 12,
+    realm: 'foundation',
+    location: 'cloud-peaks',
+    rewards: {
+      experience: 40,
+      spiritualStones: 25,
+      gold: 35,
+      loot: ['wind-feather', 'falcon-talon']
+    }
+  },
+  'earth-bear': {
+    name: 'Mountain Heart Bear',
+    description: 'A massive bear with control over earth energy and incredible strength.',
+    health: 250,
+    attack: 30,
+    defense: 20,
+    level: 14,
+    realm: 'foundation',
+    location: 'mountain',
+    rewards: {
+      experience: 45,
+      spiritualStones: 28,
+      gold: 38,
+      loot: ['bear-claw', 'earth-crystal']
+    }
+  },
+  'snow-leopard': {
+    name: 'Frost Peak Leopard',
+    description: 'A leopard adapted to snow peaks with control over ice energy.',
+    health: 180,
+    attack: 32,
+    defense: 16,
+    level: 15,
+    realm: 'foundation',
+    location: 'frozen-peak',
+    rewards: {
+      experience: 48,
+      spiritualStones: 30,
+      gold: 40,
+      loot: ['frost-pelt', 'cold-core']
+    }
+  },
+  'flame-lizard': {
+    name: 'Magma Scale Lizard',
+    description: 'A lizard that dwells near volcanic vents and can manipulate fire.',
+    health: 160,
+    attack: 36,
+    defense: 14,
+    level: 13,
+    realm: 'foundation',
+    location: 'flame-desert',
+    rewards: {
+      experience: 43,
+      spiritualStones: 27,
+      gold: 36,
+      loot: ['flame-scale', 'magma-crystal']
+    }
+  },
+  'spirit-deer': {
+    name: 'Nine-Point Spirit Deer',
+    description: 'A rare deer with nine-pointed antlers that can sense energy fluctuations and danger.',
+    health: 140,
+    attack: 22,
+    defense: 18,
+    level: 12,
+    realm: 'foundation',
+    location: 'mist-forest',
+    rewards: {
+      experience: 38,
+      spiritualStones: 32,
+      gold: 42,
+      loot: ['spirit-antler', 'perception-pearl']
+    }
+  },
+  'iron-tortoise': {
+    name: 'Iron-Back Ancient Tortoise',
+    description: 'A tortoise with an indestructible shell that has lived for thousands of years.',
+    health: 300,
+    attack: 15,
+    defense: 40,
+    level: 16,
+    realm: 'foundation',
+    location: 'iron-plateau',
+    rewards: {
+      experience: 50,
+      spiritualStones: 35,
+      gold: 45,
+      loot: ['longevity-essence', 'iron-shell']
+    }
+  },
+  'thunder-serpent': {
+    name: 'Purple Thunder Serpent',
+    description: 'A serpent that channels lightning through its body for devastating strikes.',
+    health: 170,
+    attack: 38,
+    defense: 12,
+    level: 15,
+    realm: 'foundation',
+    location: 'thunder-peak',
+    rewards: {
+      experience: 47,
+      spiritualStones: 32,
+      gold: 43,
+      loot: ['thunder-scale', 'lightning-essence']
+    }
+  },
+  'phantom-fox': {
+    name: 'Three-Tailed Phantom Fox',
+    description: 'A fox with three tails that has mastered illusions and can temporarily become intangible.',
+    health: 160,
+    attack: 30,
+    defense: 15,
+    level: 14,
+    realm: 'foundation',
+    location: 'illusion-forest',
+    rewards: {
+      experience: 45,
+      spiritualStones: 30,
+      gold: 40,
+      loot: ['phantom-tail', 'illusion-core']
+    }
+  },
+  'jade-scorpion': {
+    name: 'Jade Sting Scorpion',
+    description: 'A scorpion with a stinger made of spiritual jade that contains potent venom.',
+    health: 140,
+    attack: 42,
+    defense: 10,
+    level: 15,
+    realm: 'foundation',
+    location: 'jade-valley',
+    rewards: {
+      experience: 46,
+      spiritualStones: 29,
+      gold: 38,
+      loot: ['jade-stinger', 'venom-crystal']
+    }
+  },
+  'crystal-wolf': {
+    name: 'Crystal Fang Wolf',
+    description: 'A wolf with crystalline fangs that can shear through metal and stone.',
+    health: 165,
+    attack: 34,
+    defense: 16,
+    level: 13,
+    realm: 'foundation',
+    location: 'crystal-mines',
+    rewards: {
+      experience: 42,
+      spiritualStones: 28,
+      gold: 37,
+      loot: ['crystal-fang', 'wolf-pelt']
+    }
+  },
+  'bone-vulture': {
+    name: 'Ancient Bone Vulture',
+    description: 'A vulture that feeds on death essence and can manipulate bones.',
+    health: 145,
+    attack: 32,
+    defense: 14,
+    level: 14,
+    realm: 'foundation',
+    location: 'ancient-battlefield',
+    rewards: {
+      experience: 44,
+      spiritualStones: 26,
+      gold: 36,
+      loot: ['bone-feather', 'death-essence']
+    }
+  },
+  'marsh-dragon': {
+    name: 'Swamp Drake',
+    description: 'A lesser dragon that inhabits toxic marshes and commands poison energy.',
+    health: 190,
+    attack: 38,
+    defense: 18,
+    level: 16,
+    realm: 'foundation',
+    location: 'poison-marsh',
+    rewards: {
+      experience: 52,
+      spiritualStones: 34,
+      gold: 44,
+      loot: ['drake-scale', 'poison-sac']
+    }
+  },
+  'living-statue': {
+    name: 'Animated Stone Guardian',
+    description: 'A stone statue brought to life by ancient formation techniques.',
+    health: 230,
+    attack: 25,
+    defense: 30,
+    level: 15,
+    realm: 'foundation',
+    location: 'ruins',
+    rewards: {
+      experience: 48,
+      spiritualStones: 32,
+      gold: 42,
+      loot: ['formation-fragment', 'animated-stone']
+    }
+  },
+  'blood-crow': {
+    name: 'Crimson Blood Crow',
+    description: 'A crow that has absorbed blood essence and can manipulate blood energy.',
+    health: 130,
+    attack: 36,
+    defense: 12,
+    level: 13,
+    realm: 'foundation',
+    location: 'crimson-cave',
+    rewards: {
+      experience: 42,
+      spiritualStones: 25,
+      gold: 35,
+      loot: ['blood-feather', 'crimson-essence']
+    }
+  },
+  'ghost-face': {
+    name: 'Hundred-Face Ghost',
+    description: 'A spirit that can wear the faces of those it has consumed for different abilities.',
+    health: 150,
+    attack: 34,
+    defense: 14,
+    level: 14,
+    realm: 'foundation',
+    location: 'ghost-forest',
+    rewards: {
+      experience: 45,
+      spiritualStones: 28,
+      gold: 38,
+      loot: ['spirit-mask', 'ghost-essence']
+    }
+  },
+  
+  // Core Formation additional enemies
+  'water-dragon': {
+    name: 'Azure Water Wyrm',
+    description: 'A serpentine dragon that commands water and can create devastating floods.',
+    health: 320,
+    attack: 45,
+    defense: 30,
+    level: 21,
+    realm: 'core',
+    location: 'great-river',
+    rewards: {
+      experience: 75,
+      spiritualStones: 45,
+      gold: 65,
+      loot: ['water-dragon-scale', 'river-heart']
+    }
+  },
+  'thunder-eagle': {
+    name: 'Grand Thunder Eagle',
+    description: 'A massive eagle wreathed in lightning that can summon thunderstorms.',
+    health: 280,
+    attack: 55,
+    defense: 20,
+    level: 22,
+    realm: 'core',
+    location: 'thunder-peak',
+    rewards: {
+      experience: 78,
+      spiritualStones: 48,
+      gold: 68,
+      loot: ['storm-feather', 'thunder-crystal']
+    }
+  },
+  'flame-fox': {
+    name: 'Five-Tailed Flame Fox',
+    description: 'A fox with five tails that each control a different aspect of fire.',
+    health: 270,
+    attack: 50,
+    defense: 25,
+    level: 23,
+    realm: 'core',
+    location: 'flame-desert',
+    rewards: {
+      experience: 82,
+      spiritualStones: 50,
+      gold: 70,
+      loot: ['flame-tail', 'fox-core']
+    }
+  },
+  'jade-lion': {
+    name: 'Emerald Mane Lion',
+    description: 'A lion with a mane of flowing jade-like hair that commands earth energy.',
+    health: 310,
+    attack: 48,
+    defense: 35,
+    level: 24,
+    realm: 'core',
+    location: 'jade-valley',
+    rewards: {
+      experience: 85,
+      spiritualStones: 53,
+      gold: 75,
+      loot: ['jade-mane', 'lion-fang']
+    }
+  },
+  'frost-dragon': {
+    name: 'Frost Wyrm',
+    description: 'A serpentine dragon that commands ice and can freeze everything around it.',
+    health: 330,
+    attack: 52,
+    defense: 30,
+    level: 25,
+    realm: 'core',
+    location: 'frozen-peak',
+    rewards: {
+      experience: 88,
+      spiritualStones: 55,
+      gold: 78,
+      loot: ['frost-scale', 'ice-heart']
+    }
+  },
+  'thunder-tiger': {
+    name: 'Violet Thunder Tiger',
+    description: 'A tiger whose stripes crackle with purple lightning and can move at incredible speeds.',
+    health: 300,
+    attack: 58,
+    defense: 25,
+    level: 26,
+    realm: 'core',
+    location: 'thunder-peak',
+    rewards: {
+      experience: 92,
+      spiritualStones: 58,
+      gold: 82,
+      loot: ['lightning-pelt', 'thunder-fang']
+    }
+  },
+  'stone-dragon': {
+    name: 'Mountain Vein Dragon',
+    description: 'A dragon formed from living stone that can merge with mountains and control earth.',
+    health: 360,
+    attack: 45,
+    defense: 40,
+    level: 27,
+    realm: 'core',
+    location: 'stone-forest',
+    rewards: {
+      experience: 95,
+      spiritualStones: 60,
+      gold: 85,
+      loot: ['stone-scale', 'mountain-core']
+    }
+  },
+  'shadow-panther': {
+    name: 'Void Shadow Panther',
+    description: 'A panther that can merge with shadows and strike from darkness with incredible precision.',
+    health: 290,
+    attack: 60,
+    defense: 22,
+    level: 24,
+    realm: 'core',
+    location: 'shadow-valley',
+    rewards: {
+      experience: 86,
+      spiritualStones: 54,
+      gold: 76,
+      loot: ['shadow-pelt', 'void-crystal']
+    }
+  },
+  'blood-phoenix': {
+    name: 'Crimson Rebirth Bird',
+    description: 'A bird with traces of phoenix blood that can regenerate from wounds using blood essence.',
+    health: 270,
+    attack: 54,
+    defense: 25,
+    level: 25,
+    realm: 'core',
+    location: 'crimson-cave',
+    rewards: {
+      experience: 88,
+      spiritualStones: 56,
+      gold: 78,
+      loot: ['crimson-feather', 'rebirth-blood']
+    }
+  },
+  'crystal-mantis': {
+    name: 'Crystal Blade Mantis',
+    description: 'A mantis with forelimbs of pure crystal that can cut through almost anything.',
+    health: 250,
+    attack: 65,
+    defense: 20,
+    level: 23,
+    realm: 'core',
+    location: 'crystal-mines',
+    rewards: {
+      experience: 80,
+      spiritualStones: 50,
+      gold: 70,
+      loot: ['crystal-blade', 'mantis-essence']
+    }
+  },
+  
+  // Nascent Soul additional enemies
+  'lightning-qilin': {
+    name: 'Azure Lightning Qilin',
+    description: 'A mythical beast with a dragon\'s head and deer\'s body that commands supreme lightning.',
+    health: 450,
+    attack: 75,
+    defense: 50,
+    level: 32,
+    realm: 'nascent',
+    location: 'qilin-plateau',
+    rewards: {
+      experience: 150,
+      spiritualStones: 100,
+      gold: 200,
+      loot: ['qilin-horn', 'supreme-lightning']
+    }
+  },
+  'void-serpent': {
+    name: 'Primordial Void Serpent',
+    description: 'A serpent born from the void between realms that can devour space itself.',
+    health: 420,
+    attack: 85,
+    defense: 45,
+    level: 33,
+    realm: 'nascent',
+    location: 'void-rift',
+    rewards: {
+      experience: 160,
+      spiritualStones: 110,
+      gold: 220,
+      loot: ['void-scale', 'space-crystal']
+    }
+  },
+  'celestial-crane': {
+    name: 'Heavenly Wisdom Crane',
+    description: 'A crane that has absorbed celestial energy and gained prophetic abilities.',
+    health: 380,
+    attack: 65,
+    defense: 60,
+    level: 31,
+    realm: 'nascent',
+    location: 'cloud-peaks',
+    rewards: {
+      experience: 140,
+      spiritualStones: 95,
+      gold: 190,
+      loot: ['celestial-feather', 'wisdom-pearl']
+    }
+  },
+  'earth-behemoth': {
+    name: 'Mountain-Crushing Behemoth',
+    description: 'A titanic beast that can level mountains with its strength and control earth.',
+    health: 550,
+    attack: 80,
+    defense: 65,
+    level: 34,
+    realm: 'nascent',
+    location: 'sacred-mountain',
+    rewards: {
+      experience: 170,
+      spiritualStones: 115,
+      gold: 230,
+      loot: ['behemoth-horn', 'mountain-essence']
+    }
+  },
+  'divine-tortoise': {
+    name: 'Divine Black Tortoise',
+    description: 'A tortoise with divine bloodline that commands water and possesses incredible longevity.',
+    health: 500,
+    attack: 60,
+    defense: 80,
+    level: 35,
+    realm: 'nascent',
+    location: 'divine-lake',
+    rewards: {
+      experience: 175,
+      spiritualStones: 120,
+      gold: 240,
+      loot: ['divine-shell', 'longevity-pearl']
+    }
+  },
+  
+  // Ultra-rare boss enemies
+  'heaven-defying-dragon': {
+    name: 'Heaven-Defying Golden Dragon',
+    description: 'A true dragon with golden scales that has defied heaven\'s will and commands supreme authority.',
+    health: 1500,
+    attack: 150,
+    defense: 120,
+    level: 60,
+    realm: 'divine',
+    location: 'dragon-throne',
+    isBoss: true,
+    rewards: {
+      experience: 800,
+      spiritualStones: 500,
+      gold: 1000,
+      loot: ['golden-dragon-scale', 'authority-core', 'heavenly-dragon-blood']
+    }
+  },
+  'immortal-phoenix': {
+    name: 'Nine-Colored Immortal Phoenix',
+    description: 'A true phoenix with nine-colored plumage that commands the power of rebirth and supreme fire.',
+    health: 1200,
+    attack: 180,
+    defense: 90,
+    level: 60,
+    realm: 'divine',
+    location: 'phoenix-nest',
+    isBoss: true,
+    rewards: {
+      experience: 800,
+      spiritualStones: 500,
+      gold: 1000,
+      loot: ['nine-colored-feather', 'rebirth-flame', 'phoenix-marrow']
+    }
+  },
+  'primordial-beast': {
+    name: 'Primordial Chaos Beast',
+    description: 'A beast born from primordial chaos before the separation of heaven and earth.',
+    health: 2000,
+    attack: 120,
+    defense: 150,
+    level: 70,
+    realm: 'tribulation',
+    location: 'chaos-origin',
+    isBoss: true,
+    rewards: {
+      experience: 1000,
+      spiritualStones: 800,
+      gold: 1500,
+      loot: ['chaos-core', 'primordial-essence', 'creation-scripture']
     }
   }
 };
+
+// Currency settings
+export const STARTING_GOLD = 100;
+export const STARTING_SPIRITUAL_STONES = 10;
 
 // Game settings and mechanics
 export const DEFAULT_QI_PER_CLICK = 5;
@@ -476,3 +2174,1440 @@ export const BASE_QI_RATE = 0.2;
 export const BASE_STORAGE = 1000;
 export const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 export const COMBAT_TICK_RATE = 1000; // 1 second
+
+// Weapons, equipment and items
+export const EQUIPMENT_SLOTS = {
+  WEAPON: 'weapon',
+  HEAD: 'head',
+  BODY: 'body',
+  HANDS: 'hands',
+  LEGS: 'legs',
+  FEET: 'feet',
+  ACCESSORY1: 'accessory1',
+  ACCESSORY2: 'accessory2',
+};
+
+export const EQUIPMENT_TYPES = {
+  WEAPON: 'weapon',
+  ARMOR: 'armor',
+  ACCESSORY: 'accessory',
+};
+
+export const EQUIPMENT_CATEGORIES = {
+  SWORD: 'sword',
+  SABER: 'saber',
+  SPEAR: 'spear',
+  STAFF: 'staff',
+  WHIP: 'whip',
+  BOW: 'bow',
+  DAGGER: 'dagger',
+  AXE: 'axe',
+  ROBE: 'robe',
+  LIGHT_ARMOR: 'light-armor',
+  MEDIUM_ARMOR: 'medium-armor',
+  HEAVY_ARMOR: 'heavy-armor',
+  RING: 'ring',
+  NECKLACE: 'necklace',
+  BELT: 'belt',
+  BRACELET: 'bracelet',
+  TALISMAN: 'talisman',
+};
+
+export const EQUIPMENT_RARITY = {
+  COMMON: {
+    name: 'Common',
+    color: 'text-gray-200',
+    statMultiplier: 1.0,
+    dropChance: 0.5,
+  },
+  UNCOMMON: {
+    name: 'Uncommon',
+    color: 'text-green-400',
+    statMultiplier: 1.2,
+    dropChance: 0.25,
+  },
+  RARE: {
+    name: 'Rare',
+    color: 'text-blue-400',
+    statMultiplier: 1.5,
+    dropChance: 0.15,
+  },
+  EPIC: {
+    name: 'Epic',
+    color: 'text-purple-400',
+    statMultiplier: 2.0,
+    dropChance: 0.08,
+  },
+  LEGENDARY: {
+    name: 'Legendary',
+    color: 'text-orange-400',
+    statMultiplier: 3.0,
+    dropChance: 0.02,
+  },
+  MYTHIC: {
+    name: 'Mythic',
+    color: 'text-pink-400',
+    statMultiplier: 5.0,
+    dropChance: 0.005,
+  },
+  ARTIFACT: {
+    name: 'Artifact',
+    color: 'text-red-400',
+    statMultiplier: 10.0,
+    dropChance: 0.001,
+  },
+};
+
+export const CURRENCY_TYPES = {
+  GOLD: 'gold',
+  SPIRITUAL_STONES: 'spiritualStones',
+  CONTRIBUTION_POINTS: 'contributionPoints',
+  REPUTATION: 'reputation',
+};
+
+// Weapons - 25 iconic weapons
+export const WEAPONS = {
+  // Swords
+  'azure-dragon-sword': {
+    id: 'azure-dragon-sword',
+    name: 'Azure Dragon Sword',
+    description: 'A straight sword infused with azure dragon energy, capable of unleashing wind slashes.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SWORD,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'sword',
+    baseStats: {
+      attack: 20,
+      intelligence: 5,
+    },
+    requiredLevel: 10,
+    requiredRealm: 'qi',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 500,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'crimson-tassel-sword': {
+    id: 'crimson-tassel-sword',
+    name: 'Crimson Tassel Sword',
+    description: 'An elegant sword with a crimson tassel that trails fire when swung.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SWORD,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'sword',
+    baseStats: {
+      attack: 35,
+      agility: 8,
+    },
+    requiredLevel: 20,
+    requiredRealm: 'foundation',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 2000,
+    },
+    rarity: 'RARE',
+  },
+  'frost-moon-sword': {
+    id: 'frost-moon-sword',
+    name: 'Frost Moon Sword',
+    description: 'A translucent sword that resembles a crescent moon, radiating cold energy.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SWORD,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'sword',
+    baseStats: {
+      attack: 65,
+      endurance: 15,
+      perception: 10,
+    },
+    requiredLevel: 35,
+    requiredRealm: 'core',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 8000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 100,
+    },
+    rarity: 'EPIC',
+  },
+  'heaven-cleaving-sword': {
+    id: 'heaven-cleaving-sword',
+    name: 'Heaven Cleaving Sword',
+    description: 'A massive two-handed sword said to be capable of splitting the heavens themselves.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SWORD,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'sword',
+    baseStats: {
+      attack: 100,
+      strength: 30,
+      endurance: -10, // Heavy to wield
+    },
+    requiredLevel: 50,
+    requiredRealm: 'nascent',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 20000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
+    },
+    rarity: 'LEGENDARY',
+  },
+  'void-rift-sword': {
+    id: 'void-rift-sword',
+    name: 'Void Rift Sword',
+    description: 'A sword forged from void essence, capable of tearing rifts in space with each swing.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SWORD,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'sword',
+    baseStats: {
+      attack: 200,
+      intelligence: 50,
+      perception: 30,
+      agility: 25,
+    },
+    requiredLevel: 70,
+    requiredRealm: 'divine',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 100000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 2000,
+    },
+    rarity: 'MYTHIC',
+  },
+
+  // Sabers
+  'crescent-moon-saber': {
+    id: 'crescent-moon-saber',
+    name: 'Crescent Moon Saber',
+    description: 'A curved saber shaped like a crescent moon, excellent for sweeping attacks.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SABER,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'saber',
+    baseStats: {
+      attack: 25,
+      agility: 5,
+    },
+    requiredLevel: 15,
+    requiredRealm: 'qi',
+    requiredStage: 8,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 800,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'dragon-slaying-saber': {
+    id: 'dragon-slaying-saber',
+    name: 'Dragon Slaying Saber',
+    description: 'A heavy saber with serrated edges designed to pierce dragon scales.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SABER,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'saber',
+    baseStats: {
+      attack: 75,
+      strength: 20,
+      endurance: 10,
+    },
+    requiredLevel: 40,
+    requiredRealm: 'core',
+    requiredStage: 2,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 12000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 200,
+    },
+    rarity: 'EPIC',
+  },
+
+  // Spears
+  'white-jade-spear': {
+    id: 'white-jade-spear',
+    name: 'White Jade Spear',
+    description: 'A lightweight spear made of white jade that amplifies qi channeled through it.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SPEAR,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'spear',
+    baseStats: {
+      attack: 22,
+      agility: 8,
+      qiRegen: 0.1,
+    },
+    requiredLevel: 12,
+    requiredRealm: 'qi',
+    requiredStage: 6,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 650,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'coiling-dragon-spear': {
+    id: 'coiling-dragon-spear',
+    name: 'Coiling Dragon Spear',
+    description: 'A serpentine spear with a blade that curves like a dragon in flight.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SPEAR,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'spear',
+    baseStats: {
+      attack: 60,
+      agility: 15,
+      perception: 10,
+    },
+    requiredLevel: 30,
+    requiredRealm: 'foundation',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 5000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 50,
+    },
+    rarity: 'RARE',
+  },
+  'mountain-piercing-spear': {
+    id: 'mountain-piercing-spear',
+    name: 'Mountain Piercing Spear',
+    description: 'A massive spear said to be able to penetrate mountains with a single thrust.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SPEAR,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'spear',
+    baseStats: {
+      attack: 120,
+      strength: 40,
+      penetration: 25, // Special stat for piercing defense
+    },
+    requiredLevel: 55,
+    requiredRealm: 'nascent',
+    requiredStage: 2,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 30000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 800,
+    },
+    rarity: 'LEGENDARY',
+  },
+
+  // Staves
+  'autumn-maple-staff': {
+    id: 'autumn-maple-staff',
+    name: 'Autumn Maple Staff',
+    description: 'A wooden staff made from a sacred maple tree that enhances spiritual awareness.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.STAFF,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'staff',
+    baseStats: {
+      attack: 15,
+      intelligence: 10,
+      perception: 5,
+      qiRegen: 0.2,
+    },
+    requiredLevel: 8,
+    requiredRealm: 'qi',
+    requiredStage: 4,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 400,
+    },
+    rarity: 'COMMON',
+  },
+  'spirit-guiding-staff': {
+    id: 'spirit-guiding-staff',
+    name: 'Spirit Guiding Staff',
+    description: 'A staff topped with a spirit pearl that can guide wandering spirits and enhance spiritual techniques.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.STAFF,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'staff',
+    baseStats: {
+      attack: 40,
+      intelligence: 25,
+      perception: 15,
+      qiRegen: 0.5,
+    },
+    requiredLevel: 28,
+    requiredRealm: 'foundation',
+    requiredStage: 4,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 4500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 40,
+    },
+    rarity: 'RARE',
+  },
+  'nine-stars-ruler-staff': {
+    id: 'nine-stars-ruler-staff',
+    name: 'Nine Stars Ruler Staff',
+    description: 'A staff topped with nine star crystals that can channel the power of constellations.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.STAFF,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'staff',
+    baseStats: {
+      attack: 85,
+      intelligence: 60,
+      perception: 40,
+      qiRegen: 1.0,
+    },
+    requiredLevel: 45,
+    requiredRealm: 'core',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 15000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 300,
+    },
+    rarity: 'EPIC',
+  },
+
+  // Whips
+  'spirit-binding-whip': {
+    id: 'spirit-binding-whip',
+    name: 'Spirit Binding Whip',
+    description: 'A flexible whip that can bind spirits and restrain spiritual energy.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.WHIP,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'whip',
+    baseStats: {
+      attack: 18,
+      agility: 12,
+      perception: 8,
+    },
+    requiredLevel: 14,
+    requiredRealm: 'qi',
+    requiredStage: 7,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 750,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'nine-sections-divine-whip': {
+    id: 'nine-sections-divine-whip',
+    name: 'Nine Sections Divine Whip',
+    description: 'A sectioned whip with nine different segments, each imbued with different spiritual properties.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.WHIP,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'whip',
+    baseStats: {
+      attack: 70,
+      agility: 45,
+      perception: 30,
+      range: 3, // Special stat for attack range
+    },
+    requiredLevel: 38,
+    requiredRealm: 'core',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 10000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 180,
+    },
+    rarity: 'EPIC',
+  },
+
+  // Bows
+  'spirit-hunting-bow': {
+    id: 'spirit-hunting-bow',
+    name: 'Spirit Hunting Bow',
+    description: 'A bow designed for hunting spirit beasts, with arrows that can track spiritual energy.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.BOW,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'bow',
+    baseStats: {
+      attack: 20,
+      perception: 15,
+      agility: 5,
+    },
+    requiredLevel: 12,
+    requiredRealm: 'qi',
+    requiredStage: 6,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 600,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'heavenly-judgment-bow': {
+    id: 'heavenly-judgment-bow',
+    name: 'Heavenly Judgment Bow',
+    description: 'A massive bow that can fire arrows imbued with heavenly judgment, striking down enemies from incredible distances.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.BOW,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'bow',
+    baseStats: {
+      attack: 90,
+      perception: 55,
+      agility: 25,
+      range: 5, // Special stat for attack range
+    },
+    requiredLevel: 48,
+    requiredRealm: 'nascent',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 18000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 450,
+    },
+    rarity: 'LEGENDARY',
+  },
+
+  // Daggers
+  'shadow-severing-dagger': {
+    id: 'shadow-severing-dagger',
+    name: 'Shadow Severing Dagger',
+    description: 'A dagger that can cut through shadows and spiritual defenses with ease.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.DAGGER,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'dagger',
+    baseStats: {
+      attack: 15,
+      agility: 15,
+      penetration: 10, // Special stat for piercing defense
+    },
+    requiredLevel: 10,
+    requiredRealm: 'qi',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 550,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'heart-seeking-kris': {
+    id: 'heart-seeking-kris',
+    name: 'Heart Seeking Kris',
+    description: 'A wavy-bladed dagger with a blade that seems to bend towards vital points on its own.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.DAGGER,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'dagger',
+    baseStats: {
+      attack: 45,
+      agility: 30,
+      penetration: 25,
+      critChance: 0.15, // 15% critical hit chance
+    },
+    requiredLevel: 25,
+    requiredRealm: 'foundation',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 3800,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
+    },
+    rarity: 'RARE',
+  },
+  'soul-draining-dagger': {
+    id: 'soul-draining-dagger',
+    name: 'Soul Draining Dagger',
+    description: 'A sinister dagger that can drain the spiritual essence of its victims to empower the wielder.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.DAGGER,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'dagger',
+    baseStats: {
+      attack: 75,
+      agility: 50,
+      lifesteal: 0.1, // 10% lifesteal
+      qiSteal: 0.05, // 5% qi drain on hit
+    },
+    requiredLevel: 42,
+    requiredRealm: 'core',
+    requiredStage: 2,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 14000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 250,
+    },
+    rarity: 'EPIC',
+  },
+
+  // Axes
+  'mountain-splitting-axe': {
+    id: 'mountain-splitting-axe',
+    name: 'Mountain Splitting Axe',
+    description: 'A massive battle axe that can split boulders with a single swing.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.AXE,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'axe',
+    baseStats: {
+      attack: 28,
+      strength: 15,
+      endurance: 8,
+      agility: -5, // Heavy to wield
+    },
+    requiredLevel: 18,
+    requiredRealm: 'qi',
+    requiredStage: 9,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 900,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'demon-beheading-axe': {
+    id: 'demon-beheading-axe',
+    name: 'Demon Beheading Axe',
+    description: 'A fearsome axe covered in demonic runes, particularly effective against demonic entities.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.AXE,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'axe',
+    baseStats: {
+      attack: 110,
+      strength: 70,
+      endurance: 30,
+      agility: -15,
+      demonDamage: 0.5, // 50% extra damage to demons
+    },
+    requiredLevel: 52,
+    requiredRealm: 'nascent',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 25000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 600,
+    },
+    rarity: 'LEGENDARY',
+  },
+  
+  // Supreme Artifact Weapons
+  'heavenly-dao-sword': {
+    id: 'heavenly-dao-sword',
+    name: 'Heavenly Dao Sword',
+    description: 'A sword containing a fragment of heavenly dao, capable of implementing heavenly principles with each strike.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.SWORD,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'sword',
+    baseStats: {
+      attack: 500,
+      intelligence: 150,
+      strength: 100,
+      agility: 100,
+      perception: 100,
+      endurance: 100,
+      qiRegen: 5.0,
+      penetration: 100,
+      // Special effect: ignore defense
+    },
+    requiredLevel: 90,
+    requiredRealm: 'tribulation',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 1000000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 10000,
+    },
+    rarity: 'ARTIFACT',
+  },
+  'eternal-dao-scripture-staff': {
+    id: 'eternal-dao-scripture-staff',
+    name: 'Eternal Dao Scripture Staff',
+    description: 'A staff inscribed with the eternal dao scripture, capable of manifesting any dao principle at will.',
+    type: EQUIPMENT_TYPES.WEAPON,
+    category: EQUIPMENT_CATEGORIES.STAFF,
+    slot: EQUIPMENT_SLOTS.WEAPON,
+    icon: 'staff',
+    baseStats: {
+      attack: 450,
+      intelligence: 200,
+      perception: 150,
+      strength: 50,
+      agility: 50,
+      endurance: 100,
+      qiRegen: 10.0,
+      // Special effect: all elemental affinities
+    },
+    requiredLevel: 90,
+    requiredRealm: 'tribulation',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 1000000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 10000,
+    },
+    rarity: 'ARTIFACT',
+  },
+};
+
+// Armors - just a selection of the 100 different clothing items
+export const ARMORS = {
+  // Robes - Light Armor (Focus on Intelligence, Perception, Qi Regeneration)
+  'disciple-robe': {
+    id: 'disciple-robe',
+    name: 'Disciple\'s Robe',
+    description: 'A simple robe worn by sect disciples, with basic energy circulation patterns.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.ROBE,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'robe',
+    baseStats: {
+      defense: 5,
+      intelligence: 3,
+      qiRegen: 0.1,
+    },
+    requiredLevel: 1,
+    requiredRealm: 'qi',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 100,
+    },
+    rarity: 'COMMON',
+  },
+  'cloudsilk-robe': {
+    id: 'cloudsilk-robe',
+    name: 'Cloud Silk Robe',
+    description: 'A robe woven from silk infused with cloud essence, as light as a cloud but protective.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.ROBE,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'robe',
+    baseStats: {
+      defense: 15,
+      intelligence: 10,
+      perception: 8,
+      qiRegen: 0.3,
+    },
+    requiredLevel: 15,
+    requiredRealm: 'qi',
+    requiredStage: 8,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 800,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'five-elements-robe': {
+    id: 'five-elements-robe',
+    name: 'Five Elements Robe',
+    description: 'A robe embroidered with the five elements pattern, harmonizing with environmental energy.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.ROBE,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'robe',
+    baseStats: {
+      defense: 30,
+      intelligence: 25,
+      perception: 15,
+      qiRegen: 0.6,
+      elementalResistance: 0.2, // 20% resistance to all elemental damage
+    },
+    requiredLevel: 30,
+    requiredRealm: 'foundation',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 5000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 50,
+    },
+    rarity: 'RARE',
+  },
+  'starry-cosmos-robe': {
+    id: 'starry-cosmos-robe',
+    name: 'Starry Cosmos Robe',
+    description: 'A magnificent robe that seems to contain a miniature cosmos, with stars twinkling across its surface.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.ROBE,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'robe',
+    baseStats: {
+      defense: 65,
+      intelligence: 55,
+      perception: 40,
+      qiRegen: 1.5,
+      elementalResistance: 0.3,
+      spaceProtection: 0.5, // 50% resistance to space-based attacks
+    },
+    requiredLevel: 50,
+    requiredRealm: 'nascent',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 25000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
+    },
+    rarity: 'LEGENDARY',
+  },
+  
+  // Light Armor (Focus on Agility and Perception)
+  'spirit-beast-hide': {
+    id: 'spirit-beast-hide',
+    name: 'Spirit Beast Hide',
+    description: 'Light armor crafted from the hide of a spirit beast, offering flexibility and protection.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.LIGHT_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-light',
+    baseStats: {
+      defense: 10,
+      agility: 5,
+      perception: 3,
+    },
+    requiredLevel: 5,
+    requiredRealm: 'qi',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 200,
+    },
+    rarity: 'COMMON',
+  },
+  'shadowfox-garb': {
+    id: 'shadowfox-garb',
+    name: 'Shadow Fox Garb',
+    description: 'Light armor made from shadow fox pelts, allowing for silent movement and concealment.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.LIGHT_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-light',
+    baseStats: {
+      defense: 20,
+      agility: 18,
+      perception: 12,
+      stealth: 15, // Bonus to stealth
+    },
+    requiredLevel: 20,
+    requiredRealm: 'foundation',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 2200,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 20,
+    },
+    rarity: 'RARE',
+  },
+  'wind-weaver-attire': {
+    id: 'wind-weaver-attire',
+    name: 'Wind Weaver Attire',
+    description: 'Armor woven with wind essence, allowing the wearer to move like the wind itself.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.LIGHT_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-light',
+    baseStats: {
+      defense: 40,
+      agility: 45,
+      perception: 25,
+      movementSpeed: 0.3, // 30% movement speed increase
+    },
+    requiredLevel: 35,
+    requiredRealm: 'core',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 9000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 150,
+    },
+    rarity: 'EPIC',
+  },
+  
+  // Medium Armor (Balanced Stats)
+  'iron-spirit-vest': {
+    id: 'iron-spirit-vest',
+    name: 'Iron Spirit Vest',
+    description: 'A vest forged from iron infused with spiritual energy, offering balanced protection.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.MEDIUM_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-medium',
+    baseStats: {
+      defense: 15,
+      strength: 5,
+      endurance: 5,
+      agility: 3,
+    },
+    requiredLevel: 8,
+    requiredRealm: 'qi',
+    requiredStage: 4,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 350,
+    },
+    rarity: 'COMMON',
+  },
+  'flowing-cloud-armor': {
+    id: 'flowing-cloud-armor',
+    name: 'Flowing Cloud Armor',
+    description: 'Armor that shifts like clouds, distributing impact energy throughout its structure.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.MEDIUM_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-medium',
+    baseStats: {
+      defense: 35,
+      strength: 15,
+      endurance: 20,
+      agility: 10,
+      qiRegen: 0.4,
+    },
+    requiredLevel: 25,
+    requiredRealm: 'foundation',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 3500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
+    },
+    rarity: 'RARE',
+  },
+  'five-dragons-scale-armor': {
+    id: 'five-dragons-scale-armor',
+    name: 'Five Dragons Scale Armor',
+    description: 'Armor crafted from the scales of five different elemental dragons, offering incredible versatile protection.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.MEDIUM_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-medium',
+    baseStats: {
+      defense: 75,
+      strength: 35,
+      endurance: 40,
+      agility: 25,
+      intelligence: 30,
+      elementalResistance: 0.4, // 40% resistance to all elemental damage
+    },
+    requiredLevel: 45,
+    requiredRealm: 'nascent',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 18000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 400,
+    },
+    rarity: 'LEGENDARY',
+  },
+  
+  // Heavy Armor (Focus on Defense, Strength, Endurance)
+  'earth-infused-plate': {
+    id: 'earth-infused-plate',
+    name: 'Earth-Infused Plate',
+    description: 'Heavy plate armor infused with earth energy, as sturdy as bedrock.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.HEAVY_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-heavy',
+    baseStats: {
+      defense: 25,
+      strength: 8,
+      endurance: 10,
+      agility: -5, // Heavy to wear
+    },
+    requiredLevel: 12,
+    requiredRealm: 'qi',
+    requiredStage: 6,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 600,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'mountain-heart-plate': {
+    id: 'mountain-heart-plate',
+    name: 'Mountain Heart Plate',
+    description: 'Armor forged from ore found at the heart of a sacred mountain, nearly indestructible.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.HEAVY_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-heavy',
+    baseStats: {
+      defense: 50,
+      strength: 25,
+      endurance: 30,
+      agility: -10,
+      physicalResistance: 0.3, // 30% resistance to physical damage
+    },
+    requiredLevel: 30,
+    requiredRealm: 'foundation',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 6000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 60,
+    },
+    rarity: 'RARE',
+  },
+  'divine-golden-armor': {
+    id: 'divine-golden-armor',
+    name: 'Divine Golden Armor',
+    description: 'Brilliant golden armor that radiates divine protection, once worn by an immortal in battle.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.HEAVY_ARMOR,
+    slot: EQUIPMENT_SLOTS.BODY,
+    icon: 'armor-heavy',
+    baseStats: {
+      defense: 100,
+      strength: 50,
+      endurance: 60,
+      agility: -5, // Divine nature reduces the normal weight penalty
+      intelligence: 25,
+      physicalResistance: 0.5,
+      divineProtection: 0.4, // 40% damage reduction from divine/heavenly attacks
+    },
+    requiredLevel: 60,
+    requiredRealm: 'divine',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 50000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 1000,
+    },
+    rarity: 'MYTHIC',
+  },
+  
+  // Headgear
+  'scholars-band': {
+    id: 'scholars-band',
+    name: 'Scholar\'s Headband',
+    description: 'A simple headband worn by scholarly cultivators to enhance mental focus.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.ROBE,
+    slot: EQUIPMENT_SLOTS.HEAD,
+    icon: 'headband',
+    baseStats: {
+      defense: 3,
+      intelligence: 5,
+      perception: 3,
+    },
+    requiredLevel: 5,
+    requiredRealm: 'qi',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 150,
+    },
+    rarity: 'COMMON',
+  },
+  'spirit-fox-circlet': {
+    id: 'spirit-fox-circlet',
+    name: 'Spirit Fox Circlet',
+    description: 'A circlet adorned with spirit fox fur that enhances sensory perception.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.LIGHT_ARMOR,
+    slot: EQUIPMENT_SLOTS.HEAD,
+    icon: 'circlet',
+    baseStats: {
+      defense: 8,
+      perception: 15,
+      agility: 5,
+      illusion: 10, // Bonus to illusion techniques
+    },
+    requiredLevel: 20,
+    requiredRealm: 'foundation',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 1800,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 15,
+    },
+    rarity: 'RARE',
+  },
+  'dragon-scale-helm': {
+    id: 'dragon-scale-helm',
+    name: 'Dragon Scale Helm',
+    description: 'A helmet forged from dragon scales, offering robust protection and intimidating appearance.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.HEAVY_ARMOR,
+    slot: EQUIPMENT_SLOTS.HEAD,
+    icon: 'helmet',
+    baseStats: {
+      defense: 20,
+      strength: 10,
+      endurance: 15,
+      intimidation: 20, // Bonus to intimidation
+    },
+    requiredLevel: 35,
+    requiredRealm: 'core',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 7500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 120,
+    },
+    rarity: 'EPIC',
+  },
+  
+  // Feet
+  'cloud-stepping-shoes': {
+    id: 'cloud-stepping-shoes',
+    name: 'Cloud Stepping Shoes',
+    description: 'Shoes that allow the wearer to step as lightly as if walking on clouds.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.LIGHT_ARMOR,
+    slot: EQUIPMENT_SLOTS.FEET,
+    icon: 'shoes',
+    baseStats: {
+      defense: 5,
+      agility: 10,
+      movementSpeed: 0.15, // 15% movement speed increase
+    },
+    requiredLevel: 10,
+    requiredRealm: 'qi',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 450,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'mountain-root-boots': {
+    id: 'mountain-root-boots',
+    name: 'Mountain Root Boots',
+    description: 'Heavy boots that grant incredible stability, as if rooted to the earth itself.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.HEAVY_ARMOR,
+    slot: EQUIPMENT_SLOTS.FEET,
+    icon: 'boots',
+    baseStats: {
+      defense: 15,
+      endurance: 20,
+      stability: 25, // Bonus to stability against knockbacks
+      movementSpeed: -0.1, // 10% movement speed reduction
+    },
+    requiredLevel: 25,
+    requiredRealm: 'foundation',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 2800,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 25,
+    },
+    rarity: 'RARE',
+  },
+  
+  // Hands
+  'spirit-channeling-gloves': {
+    id: 'spirit-channeling-gloves',
+    name: 'Spirit Channeling Gloves',
+    description: 'Gloves that enhance the wearer\'s ability to manipulate spiritual energy with precision.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.ROBE,
+    slot: EQUIPMENT_SLOTS.HANDS,
+    icon: 'gloves',
+    baseStats: {
+      defense: 5,
+      intelligence: 8,
+      qiControl: 15, // Bonus to qi control
+    },
+    requiredLevel: 15,
+    requiredRealm: 'qi',
+    requiredStage: 8,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 700,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'dragon-claw-gauntlets': {
+    id: 'dragon-claw-gauntlets',
+    name: 'Dragon Claw Gauntlets',
+    description: 'Gauntlets modeled after dragon claws, enhancing striking power tremendously.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.HEAVY_ARMOR,
+    slot: EQUIPMENT_SLOTS.HANDS,
+    icon: 'gauntlets',
+    baseStats: {
+      defense: 18,
+      strength: 25,
+      attack: 15, // Direct boost to attack
+    },
+    requiredLevel: 30,
+    requiredRealm: 'foundation',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 5500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 55,
+    },
+    rarity: 'RARE',
+  },
+  
+  // Legs
+  'swift-pursuit-greaves': {
+    id: 'swift-pursuit-greaves',
+    name: 'Swift Pursuit Greaves',
+    description: 'Leg armor designed for rapid pursuit, with inscriptions that enhance movement speed.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.MEDIUM_ARMOR,
+    slot: EQUIPMENT_SLOTS.LEGS,
+    icon: 'greaves',
+    baseStats: {
+      defense: 12,
+      agility: 15,
+      movementSpeed: 0.2, // 20% movement speed increase
+    },
+    requiredLevel: 20,
+    requiredRealm: 'foundation',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 1600,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 15,
+    },
+    rarity: 'RARE',
+  },
+  'mountain-crushing-legplates': {
+    id: 'mountain-crushing-legplates',
+    name: 'Mountain Crushing Legplates',
+    description: 'Heavy leg armor that amplifies kicking strength to mountain-crushing levels.',
+    type: EQUIPMENT_TYPES.ARMOR,
+    category: EQUIPMENT_CATEGORIES.HEAVY_ARMOR,
+    slot: EQUIPMENT_SLOTS.LEGS,
+    icon: 'legplates',
+    baseStats: {
+      defense: 25,
+      strength: 30,
+      endurance: 20,
+      kickPower: 50, // Bonus to kicking attacks
+      movementSpeed: -0.15, // 15% movement speed reduction
+    },
+    requiredLevel: 40,
+    requiredRealm: 'core',
+    requiredStage: 2,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 11000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 200,
+    },
+    rarity: 'EPIC',
+  },
+  
+  // Accessories
+  'jade-spirit-pendant': {
+    id: 'jade-spirit-pendant',
+    name: 'Jade Spirit Pendant',
+    description: 'A pendant made of spiritual jade that helps regulate qi flow through the body.',
+    type: EQUIPMENT_TYPES.ACCESSORY,
+    category: EQUIPMENT_CATEGORIES.NECKLACE,
+    slot: EQUIPMENT_SLOTS.ACCESSORY1,
+    icon: 'pendant',
+    baseStats: {
+      qiRegen: 0.3,
+      intelligence: 5,
+    },
+    requiredLevel: 10,
+    requiredRealm: 'qi',
+    requiredStage: 5,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 500,
+    },
+    rarity: 'UNCOMMON',
+  },
+  'dragon-blood-ring': {
+    id: 'dragon-blood-ring',
+    name: 'Dragon Blood Ring',
+    description: 'A ring infused with a drop of dragon blood, enhancing physical power significantly.',
+    type: EQUIPMENT_TYPES.ACCESSORY,
+    category: EQUIPMENT_CATEGORIES.RING,
+    slot: EQUIPMENT_SLOTS.ACCESSORY1,
+    icon: 'ring',
+    baseStats: {
+      strength: 15,
+      endurance: 10,
+      attack: 10,
+    },
+    requiredLevel: 25,
+    requiredRealm: 'foundation',
+    requiredStage: 3,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 3500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
+    },
+    rarity: 'RARE',
+  },
+  'celestial-starlight-belt': {
+    id: 'celestial-starlight-belt',
+    name: 'Celestial Starlight Belt',
+    description: 'A belt woven with threads containing starlight essence, enhancing energy circulation.',
+    type: EQUIPMENT_TYPES.ACCESSORY,
+    category: EQUIPMENT_CATEGORIES.BELT,
+    slot: EQUIPMENT_SLOTS.ACCESSORY2,
+    icon: 'belt',
+    baseStats: {
+      qiRegen: 1.0,
+      intelligence: 20,
+      perception: 15,
+      qiCapacity: 500, // Increases maximum qi by 500
+    },
+    requiredLevel: 40,
+    requiredRealm: 'core',
+    requiredStage: 2,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 12000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 250,
+    },
+    rarity: 'EPIC',
+  },
+  'immortal-fate-bracelet': {
+    id: 'immortal-fate-bracelet',
+    name: 'Immortal Fate Bracelet',
+    description: 'A bracelet said to have been worn by an immortal, with the power to slightly alter fate in the wearer\'s favor.',
+    type: EQUIPMENT_TYPES.ACCESSORY,
+    category: EQUIPMENT_CATEGORIES.BRACELET,
+    slot: EQUIPMENT_SLOTS.ACCESSORY2,
+    icon: 'bracelet',
+    baseStats: {
+      luck: 30, // Bonus to luck
+      lootQuality: 0.2, // 20% better loot quality
+      critChance: 0.1, // 10% critical hit chance
+      intelligence: 15,
+      perception: 15,
+    },
+    requiredLevel: 50,
+    requiredRealm: 'nascent',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 25000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
+    },
+    rarity: 'LEGENDARY',
+  },
+  'dao-heart-amulet': {
+    id: 'dao-heart-amulet',
+    name: 'Dao Heart Amulet',
+    description: 'A mystic amulet that resonates with the wearer\'s dao heart, enhancing comprehension of all dao principles.',
+    type: EQUIPMENT_TYPES.ACCESSORY,
+    category: EQUIPMENT_CATEGORIES.TALISMAN,
+    slot: EQUIPMENT_SLOTS.ACCESSORY1,
+    icon: 'amulet',
+    baseStats: {
+      intelligence: 50,
+      perception: 40,
+      enlightenment: 25, // Bonus to dao comprehension
+      cultivationSpeed: 0.3, // 30% faster cultivation
+    },
+    requiredLevel: 60,
+    requiredRealm: 'divine',
+    requiredStage: 1,
+    price: {
+      [CURRENCY_TYPES.GOLD]: 60000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 1200,
+    },
+    rarity: 'MYTHIC',
+  },
+};
+
+// Combine all equipment into one collection for easier access
+export const ALL_EQUIPMENT = {
+  ...WEAPONS,
+  ...ARMORS,
+};
+
+// Resource types
+export const RESOURCE_TYPES = {
+  // Cultivation resources
+  SPIRIT_HERB: 'spiritHerb',
+  PILL: 'pill',
+  ELIXIR: 'elixir',
+  SPIRITUAL_STONE: 'spiritualStone',
+  
+  // Crafting materials
+  ORE: 'ore',
+  WOOD: 'wood',
+  BEAST_PART: 'beastPart',
+  ESSENCE: 'essence',
+  
+  // Special items
+  TECHNIQUE_MANUAL: 'techniqueManual',
+  TALISMAN: 'talisman',
+  FORMATION_CORE: 'formationCore',
+  TREASURE: 'treasure',
+};
+
+// Resource items
+export const RESOURCES = {
+  // Spirit herbs for medicine refining
+  'spirit-grass': {
+    id: 'spirit-grass',
+    name: 'Low-Grade Spirit Grass',
+    description: 'Common spirit grass used in basic pill refinement.',
+    type: RESOURCE_TYPES.SPIRIT_HERB,
+    rarity: 'COMMON',
+    value: 10,
+    effects: {
+      qi: 50, // Restores 50 qi when consumed
+    },
+    locations: ['forest', 'sect'],
+  },
+  'azure-cloud-herb': {
+    id: 'azure-cloud-herb',
+    name: 'Azure Cloud Herb',
+    description: 'A herb that grows in high mountains, imbued with spiritual energy from clouds.',
+    type: RESOURCE_TYPES.SPIRIT_HERB,
+    rarity: 'UNCOMMON',
+    value: 50,
+    effects: {
+      qi: 150, // Restores 150 qi when consumed
+      qiRegen: 0.1, // Temporary boost to qi regeneration
+    },
+    locations: ['mountain', 'cloud-peaks'],
+  },
+  
+  // Spirit stones for cultivation
+  'low-grade-stone': {
+    id: 'low-grade-stone',
+    name: 'Low-Grade Spiritual Stone',
+    description: 'A basic spiritual stone containing a small amount of pure energy.',
+    type: RESOURCE_TYPES.SPIRITUAL_STONE,
+    rarity: 'COMMON',
+    value: 100,
+    effects: {
+      qiValue: 100, // Can be converted to 100 qi
+      currency: true, // Can be used as currency
+    },
+    locations: ['mountain', 'ruins', 'caverns'],
+  },
+  'mid-grade-stone': {
+    id: 'mid-grade-stone',
+    name: 'Mid-Grade Spiritual Stone',
+    description: 'A spiritual stone with significant energy, commonly used by Foundation Establishment cultivators.',
+    type: RESOURCE_TYPES.SPIRITUAL_STONE,
+    rarity: 'UNCOMMON',
+    value: 1000,
+    effects: {
+      qiValue: 1000, // Can be converted to 1000 qi
+      currency: true, // Can be used as currency
+    },
+    locations: ['stone-forest', 'jade-valley', 'crystal-mines'],
+  },
+  'high-grade-stone': {
+    id: 'high-grade-stone',
+    name: 'High-Grade Spiritual Stone',
+    description: 'A premium spiritual stone with concentrated energy, highly valued by Core Formation cultivators.',
+    type: RESOURCE_TYPES.SPIRITUAL_STONE,
+    rarity: 'RARE',
+    value: 10000,
+    effects: {
+      qiValue: 10000, // Can be converted to 10000 qi
+      currency: true, // Can be used as currency
+    },
+    locations: ['ruins', 'sacred-mountain', 'void-rift'],
+  },
+  
+  // Beast parts for crafting
+  'beast-core': {
+    id: 'beast-core',
+    name: 'Spirit Beast Core',
+    description: 'The energy core of a spirit beast, useful for crafting and refining.',
+    type: RESOURCE_TYPES.BEAST_PART,
+    rarity: 'UNCOMMON',
+    value: 200,
+    effects: {
+      craftingMaterial: true,
+    },
+    locations: ['forest', 'mountain'],
+  },
+  'dragon-scale': {
+    id: 'dragon-scale',
+    name: 'Dragon Scale',
+    description: 'A scale from a spiritual dragon, extremely durable and rich in energy.',
+    type: RESOURCE_TYPES.BEAST_PART,
+    rarity: 'RARE',
+    value: 1500,
+    effects: {
+      craftingMaterial: true,
+    },
+    locations: ['great-river', 'dragon-volcano'],
+  },
+  
+  // Technique manuals
+  'basic-cultivation-manual': {
+    id: 'basic-cultivation-manual',
+    name: 'Basic Cultivation Manual',
+    description: 'A simple manual teaching fundamental cultivation techniques.',
+    type: RESOURCE_TYPES.TECHNIQUE_MANUAL,
+    rarity: 'COMMON',
+    value: 300,
+    effects: {
+      learnable: true,
+      technique: 'basic-cultivation',
+    },
+    locations: ['sect', 'city'],
+  },
+  'heavenly-sword-scripture': {
+    id: 'heavenly-sword-scripture',
+    name: 'Heavenly Sword Scripture',
+    description: 'An advanced sword technique manual from a prestigious sword sect.',
+    type: RESOURCE_TYPES.TECHNIQUE_MANUAL,
+    rarity: 'EPIC',
+    value: 5000,
+    effects: {
+      learnable: true,
+      technique: 'heavenly-sword-art',
+    },
+    locations: ['ruins', 'imperial-tomb'],
+  },
+};
+export const SILENT_AUTO_SAVE = true; // Auto save without showing messages
