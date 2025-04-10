@@ -15,8 +15,8 @@ export function NavigationBar() {
         <div className="flex items-center space-x-1">
           <Link href="/">
             <div className="text-xl font-serif flex items-center cursor-pointer">
-              <span className="font-['Ma_Shan_Zheng'] text-amber-200 mr-2">仙道</span>
-              <span className="hidden sm:inline">Immortal Cultivation Path</span>
+              <span className="text-amber-200 mr-2">Cultivation</span>
+              <span className="hidden sm:inline">Chronicles</span>
             </div>
           </Link>
         </div>
@@ -109,22 +109,13 @@ export function NavigationBar() {
                 <div className="flex flex-col space-y-2">
                   <h4 className="font-semibold">Connect with me:</h4>
                   <a 
-                    href="https://facebook.com/ronaldpancho" 
+                    href="https://www.facebook.com/ronald.c.pancho" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center text-blue-600 hover:text-blue-800"
                   >
                     <i className="fab fa-facebook text-xl mr-2"></i>
                     Facebook
-                  </a>
-                  <a 
-                    href="https://github.com/ronaldpancho" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center text-gray-700 hover:text-gray-900"
-                  >
-                    <i className="fab fa-github text-xl mr-2"></i>
-                    GitHub
                   </a>
                 </div>
               </div>

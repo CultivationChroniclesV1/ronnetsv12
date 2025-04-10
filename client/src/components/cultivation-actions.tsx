@@ -40,7 +40,7 @@ export function CultivationActions() {
         <div className="mb-4">
           <div className="flex justify-between text-sm mb-1">
             <span>Current Technique:</span>
-            <span className="font-['Ma_Shan_Zheng'] text-blue-500">气功</span>
+            <span className="text-blue-500">Basic Qi Technique</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Base Production:</span>
@@ -73,9 +73,7 @@ export function CultivationActions() {
           
           <Progress 
             value={breakthroughProgress} 
-            className="h-2 mb-2"
-            // Change color based on progress
-            indicatorColor={breakthroughProgress >= 100 ? 'bg-amber-500' : undefined}
+            className={`h-2 mb-2 ${breakthroughProgress >= 100 ? 'bg-amber-100' : ''}`}
           />
           
           <div className="text-xs text-center text-gray-600 italic">

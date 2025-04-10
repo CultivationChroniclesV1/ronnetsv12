@@ -142,12 +142,12 @@ export default function SectQuests() {
     
     // Add combat quests with Wuxia-themed names
     const enemyTypes = [
-      { type: 'demonic-beast', name: 'Demonic Spirit Beast' },
-      { type: 'qi-wolf', name: 'Frost Wind Spirit Wolf' },
-      { type: 'bloodbear', name: 'Blood Mist Cave Bear' },
-      { type: 'venomsnake', name: 'Nine-Pattern Poison Serpent' },
-      { type: 'celestial-tiger', name: 'White Mountain Spirit Tiger' },
-      { type: 'golden-eagle', name: 'Golden Wing Thunder Eagle' },
+      { type: 'beast', name: 'Spirit Beast' },
+      { type: 'wolf', name: 'Frost Wind Wolf' },
+      { type: 'bear', name: 'Blood Mist Bear' },
+      { type: 'snake', name: 'Nine-Pattern Serpent' },
+      { type: 'tiger', name: 'White Mountain Tiger' },
+      { type: 'eagle', name: 'Golden Wing Eagle' },
       { type: 'rogue-cultivator', name: 'Rogue Cultivator' }
     ];
     
@@ -160,7 +160,7 @@ export default function SectQuests() {
       objective: `Defeat ${randomEnemy.name}s in combat`,
       type: "sect",
       progress: 0,
-      target: Math.max(5, Math.floor(playerLevel * 0.7)), // More challenging
+      target: Math.max(3, Math.floor(playerLevel * 0.5)), // Make it easier to complete
       rewards: {
         gold: playerLevel * 45,
         spiritualStones: Math.ceil(playerLevel * 0.6) + 2,
@@ -197,11 +197,7 @@ export default function SectQuests() {
     const locationsWithNames = [
       { id: 'forest', name: 'Verdant Spirit Forest' },
       { id: 'mountain', name: 'Azure Dragon Mountains' },
-      { id: 'ruins', name: 'Immortal Emperor Ruins' },
-      { id: 'jade-valley', name: 'Nine Treasures Jade Valley' },
-      { id: 'poison-marsh', name: 'Miasma Venom Marsh' },
-      { id: 'flame-desert', name: 'Nine Suns Flame Desert' },
-      { id: 'frozen-peak', name: 'Frost Immortal Summit' }
+      { id: 'ruins', name: 'Immortal Emperor Ruins' }
     ];
     
     const randomLocation = locationsWithNames[Math.floor(Math.random() * locationsWithNames.length)];
@@ -209,8 +205,7 @@ export default function SectQuests() {
     // Select a random resource type based on location
     const resourceTypes = [
       'Spirit Herbs', 'Heavenly Ores', 'Lightning Essence', 
-      'Soul Crystals', 'Dragon Veins', 'Phoenix Feathers', 
-      'Immortal Fruits', 'Ancient Scripture Fragments'
+      'Soul Crystals', 'Dragon Veins', 'Phoenix Feathers'
     ];
     
     const randomResource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
@@ -222,7 +217,7 @@ export default function SectQuests() {
       objective: `Gather ${randomResource} from ${randomLocation.name}`,
       type: "sect",
       progress: 0,
-      target: Math.max(4, Math.floor(playerLevel * 0.5)), // More challenging
+      target: 1, // Always one gather to complete the quest
       rewards: {
         gold: playerLevel * 40,
         spiritualStones: Math.ceil(playerLevel * 0.7),
@@ -230,12 +225,12 @@ export default function SectQuests() {
         items: []
       },
       completed: false,
-      requiredLevel: 2,
+      requiredLevel: 1,
       location: randomLocation.id
     });
     
-    // Add additional random quests based on player level
-    for (let i = 0; i < Math.min(10, playerLevel); i++) {
+    // Add up to 3 additional random quests based on player level
+    for (let i = 0; i < Math.min(3, playerLevel); i++) {
       const questTypes = [
         {
           name: "Herb Collection",
@@ -269,28 +264,6 @@ export default function SectQuests() {
             experience: playerLevel * 25,
             items: []
           }
-        },
-        {
-          name: "Artifact Refinement",
-          description: "Assist the sect's artifact refinement division",
-          objective: "Help refine artifacts",
-          rewards: {
-            gold: playerLevel * 25 + Math.floor(Math.random() * 30),
-            spiritualStones: Math.max(2, Math.floor(playerLevel / 2)),
-            experience: playerLevel * 15,
-            items: []
-          }
-        },
-        {
-          name: "Elder's Request",
-          description: "Complete a special request from a sect elder",
-          objective: "Fulfill the elder's request",
-          rewards: {
-            gold: playerLevel * 40 + Math.floor(Math.random() * 25),
-            spiritualStones: Math.max(3, Math.floor(playerLevel / 2)),
-            experience: playerLevel * 22,
-            items: []
-          }
         }
       ];
       
@@ -303,10 +276,10 @@ export default function SectQuests() {
         objective: randomQuest.objective,
         type: "sect",
         progress: 0,
-        target: Math.max(1, Math.floor(playerLevel / 3)) + Math.floor(Math.random() * 3),
+        target: Math.max(1, Math.floor(playerLevel / 3)),
         rewards: randomQuest.rewards,
         completed: false,
-        requiredLevel: Math.max(1, Math.floor(i / 2))
+        requiredLevel: 1
       });
     }
     
@@ -315,10 +288,11 @@ export default function SectQuests() {
       quest.requiredLevel === undefined || quest.requiredLevel <= playerLevel
     );
     
-    // Limit to 15 quests maximum
-    const finalQuests = filteredQuests.slice(0, 15);
+    // Limit to 6 quests maximum to avoid clutter
+    const finalQuests = filteredQuests.slice(0, 6);
     
-    setQuests(finalQuests);
+    // Use the functional update form
+    setQuests(() => finalQuests);
   };
   
   // Progress a quest
@@ -361,17 +335,22 @@ export default function SectQuests() {
     
     toast({
       title: "Rewards Claimed",
-      description: `You gained ${quest.rewards.gold} gold, ${quest.rewards.spiritualStones} spiritual stones, and ${quest.rewards.experience} cultivation experience.`,
+      description: `You gained ${quest.rewards.gold} gold, ${quest.rewards.spiritualStones} Qi stones, and ${quest.rewards.experience} cultivation experience.`,
       variant: "default"
     });
     
-    // Remove the completed quest
-    setQuests(quests.filter(q => q.id !== quest.id));
-    
-    // If few quests remain, generate more
-    if (quests.length <= 5) {
-      generateQuests();
-    }
+    // Remove the completed quest using the functional update pattern
+    setQuests(prevQuests => {
+      const updatedQuests = prevQuests.filter(q => q.id !== quest.id);
+      
+      // If few quests remain after this update, generate more in a timeout
+      // This prevents state updates during render
+      if (updatedQuests.length <= 5) {
+        setTimeout(() => generateQuests(), 0);
+      }
+      
+      return updatedQuests;
+    });
   };
   
   // Generate a replacement quest when one is completed
@@ -435,7 +414,8 @@ export default function SectQuests() {
       requiredLevel: Math.max(1, playerLevel - 2)
     };
     
-    setQuests([...quests, newQuest]);
+    // Use functional update pattern
+    setQuests(prevQuests => [...prevQuests, newQuest]);
     
     // Start the auto-refresh timer again when a quest is completed
     startQuestRefreshTimer();
