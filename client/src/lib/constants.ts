@@ -48,38 +48,38 @@ export const UPGRADES = {
   meridian: {
     name: 'Meridian Expansion',
     description: 'Increases Qi storage capacity',
-    baseCost: 50,
-    costMultiplier: 1.5,
-    effectPerLevel: 0.1, // 10% increase per level
-    effectDescription: (level: number) => `+${level * 10}% Qi capacity`,
-    maxLevel: 10
+    baseCost: 250,
+    costMultiplier: 1.8,
+    effectPerLevel: 1.0, // 100% increase per level
+    effectDescription: (level: number) => `+${level * 100}% Qi capacity`,
+    maxLevel: Infinity // Infinite upgrades
   },
   circulation: {
     name: 'Qi Circulation',
     description: 'Increases passive Qi generation',
-    baseCost: 75,
-    costMultiplier: 1.6,
-    effectPerLevel: 0.1, // 0.1 Qi/s per level
-    effectDescription: (level: number) => `+${level * 0.1} Qi/second`,
-    maxLevel: 10
+    baseCost: 375,
+    costMultiplier: 1.9,
+    effectPerLevel: 25, // 25 Qi/s per level
+    effectDescription: (level: number) => `+${level * 25} Qi/second`,
+    maxLevel: Infinity // Infinite upgrades
   },
   spirit: {
     name: 'Spirit Sense',
     description: 'Increases manual cultivation efficiency',
-    baseCost: 100,
-    costMultiplier: 1.7,
-    effectPerLevel: 2, // +2 Qi per click per level
-    effectDescription: (level: number) => `+${level * 2} Qi per click`,
-    maxLevel: 10
+    baseCost: 400,
+    costMultiplier: 2.0,
+    effectPerLevel: 25, // +25 Qi per click per level
+    effectDescription: (level: number) => `+${level * 25} Qi per click`,
+    maxLevel: Infinity // Infinite upgrades
   },
   breakthrough: {
     name: 'Breakthrough Insight',
     description: 'Improves breakthrough success rate',
-    baseCost: 200,
-    costMultiplier: 2,
+    baseCost: 500,
+    costMultiplier: 2.2,
     effectPerLevel: 0.05, // 5% increase per level
     effectDescription: (level: number) => `+${level * 5}% breakthrough chance`,
-    maxLevel: 5,
+    maxLevel: 10, // Limited for balance
     requiredRealm: 'foundation'
   }
 };
@@ -89,11 +89,11 @@ export const SKILLS = {
     name: 'Basic Qi Cultivation',
     chineseName: '气功',
     description: 'Foundation technique that circulates Qi through your body\'s meridians.',
-    baseCost: 75,
-    costMultiplier: 1.5,
-    effectPerLevel: 0.1, // 0.1 Qi/s per level
-    effectDescription: (level: number) => `+${level * 0.1} Qi/second`,
-    maxLevel: 10,
+    baseCost: 150,
+    costMultiplier: 1.7,
+    effectPerLevel: 10, // 10 Qi/s per level
+    effectDescription: (level: number) => `+${level * 10} Qi/second`,
+    maxLevel: 50,
     requiredRealm: 'qi',
     requiredStage: 1
   },
@@ -101,11 +101,11 @@ export const SKILLS = {
     name: 'Fireheart Scripture',
     chineseName: '火心诀',
     description: 'Harness the power of inner fire to accelerate Qi generation.',
-    baseCost: 200,
-    costMultiplier: 1.8,
-    effectPerLevel: 0.3, // 0.3 Qi/s per level
-    effectDescription: (level: number) => `+${level * 0.3} Qi/second`,
-    maxLevel: 10,
+    baseCost: 400,
+    costMultiplier: 1.9,
+    effectPerLevel: 25, // 25 Qi/s per level
+    effectDescription: (level: number) => `+${level * 25} Qi/second`,
+    maxLevel: 50,
     requiredRealm: 'foundation',
     requiredStage: 1
   },
@@ -113,10 +113,10 @@ export const SKILLS = {
     name: 'Mystic Ice Method',
     chineseName: '玄冰诀',
     description: 'Condense spiritual energy into mystic ice, enhancing breakthrough chance.',
-    baseCost: 350,
-    costMultiplier: 1.9,
-    effectPerLevel: 0.05, // 5% per level
-    effectDescription: (level: number) => `+${level * 5}% breakthrough chance`,
+    baseCost: 600,
+    costMultiplier: 2.0,
+    effectPerLevel: 0.1, // 10% per level
+    effectDescription: (level: number) => `+${level * 10}% breakthrough chance`,
     maxLevel: 10,
     requiredRealm: 'qi',
     requiredStage: 7
@@ -2331,9 +2331,9 @@ export const STARTING_GOLD = 100;
 export const STARTING_QI_STONES = 10;
 
 // Game settings and mechanics
-export const DEFAULT_QI_PER_CLICK = 5;
-export const BASE_QI_RATE = 0.2;
-export const BASE_STORAGE = 1000;
+export const DEFAULT_QI_PER_CLICK = 25;
+export const BASE_QI_RATE = 5;
+export const BASE_STORAGE = 5000;
 export const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 export const COMBAT_TICK_RATE = 1000; // 1 second
 
@@ -3817,3 +3817,4 @@ export const RESOURCES = {
   },
 };
 export const SILENT_AUTO_SAVE = true; // Auto save without showing messages
+export const GAME_NAME = 'Cultivation Chronicles';
