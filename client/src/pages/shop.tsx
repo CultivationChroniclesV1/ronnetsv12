@@ -240,7 +240,17 @@ export default function Shop() {
   // Add filter functionality
   const [rarityFilter, setRarityFilter] = useState<string>('all');
   const [levelFilter, setLevelFilter] = useState<number | null>(null);
+  const [typeFilter, setTypeFilter] = useState<string>('all');
   const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
+  
+  // Get available types based on the current tab
+  const getAvailableTypes = () => {
+    if (currentTab === 'weapons') {
+      return ['sword', 'saber', 'spear', 'staff', 'dagger', 'bow', 'fan', 'whip', 'hammer', 'axe'];
+    } else {
+      return ['robe', 'armor', 'innerWear', 'outerWear', 'belt', 'boots', 'gloves', 'hat', 'mask', 'accessory'];
+    }
+  };
   
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -357,6 +367,11 @@ export default function Shop() {
       items = items.filter(item => item.requiredLevel <= levelFilter);
     }
     
+    // Apply type filter
+    if (typeFilter !== 'all') {
+      items = items.filter(item => item.type === typeFilter);
+    }
+    
     // Apply price sorting
     if (priceSort === 'asc') {
       items = [...items].sort((a, b) => a.price.gold - b.price.gold);
@@ -425,9 +440,92 @@ export default function Shop() {
           </TabsTrigger>
         </TabsList>
         
+        <div className="flex flex-wrap gap-4 mb-6 bg-primary/5 p-4 rounded-lg">
+          <div className="w-full md:w-auto">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Rarity</label>
+            <Select value={rarityFilter} onValueChange={setRarityFilter}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="All Rarities" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Rarities</SelectItem>
+                <SelectItem value="common">Common</SelectItem>
+                <SelectItem value="uncommon">Uncommon</SelectItem>
+                <SelectItem value="rare">Rare</SelectItem>
+                <SelectItem value="epic">Epic</SelectItem>
+                <SelectItem value="legendary">Legendary</SelectItem>
+                <SelectItem value="mythic">Mythic</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="w-full md:w-auto">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Level Filter</label>
+            <Select value={levelFilter?.toString() || "all"} onValueChange={(val) => setLevelFilter(val === "all" ? null : parseInt(val))}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="All Levels" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Levels</SelectItem>
+                <SelectItem value="10">Level 10 or below</SelectItem>
+                <SelectItem value="20">Level 20 or below</SelectItem>
+                <SelectItem value="30">Level 30 or below</SelectItem>
+                <SelectItem value="40">Level 40 or below</SelectItem>
+                <SelectItem value="50">Level 50 or below</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="w-full md:w-auto">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {getAvailableTypes().map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="w-full md:w-auto">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+            <Select value={priceSort || "default"} onValueChange={(val) => setPriceSort(val === "default" ? null : val as 'asc' | 'desc')}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="Price Sorting" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Default</SelectItem>
+                <SelectItem value="asc">Price: Low to High</SelectItem>
+                <SelectItem value="desc">Price: High to Low</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="w-full md:w-auto flex items-end">
+            <Button 
+              variant="outline"
+              className="w-full md:w-auto"
+              onClick={() => {
+                setRarityFilter('all');
+                setLevelFilter(null);
+                setTypeFilter('all');
+                setPriceSort(null);
+              }}
+            >
+              <i className="fas fa-times-circle mr-2"></i> Clear Filters
+            </Button>
+          </div>
+        </div>
+        
         <TabsContent value="weapons" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {weapons.map(weapon => (
+            {itemsToDisplay.map(weapon => (
               <Card key={weapon.id} className="overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
@@ -480,7 +578,7 @@ export default function Shop() {
         
         <TabsContent value="apparel" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {apparel.map(item => (
+            {itemsToDisplay.map(item => (
               <Card key={item.id} className="overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
