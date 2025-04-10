@@ -13,6 +13,12 @@ This checklist will help ensure a smooth deployment of your Wuxia Cultivation Ga
 ✅ Netlify function (api.ts/api.mjs) builds successfully
 ✅ All required packages are installed (serverless-http, esbuild, etc.)
 
+## Required Packages
+
+- `serverless-http`: Required for Netlify Functions to work
+  - Install with: `npm install serverless-http --save`
+  - This package allows Express to work with Netlify Functions
+
 ## Required Environment Variables
 
 - `DATABASE_URL`: Your PostgreSQL connection string

@@ -44,7 +44,25 @@ This guide will help you deploy the Wuxia Cultivation Game to Netlify.
 2. Visit your site to ensure everything is working correctly
 3. Test the game functionality to verify the database connection is working
 
+## Required Packages
+
+Before deploying, make sure these packages are installed in your project:
+```
+npm install serverless-http --save
+```
+
+The `serverless-http` package is required for Netlify Functions to work correctly. Without it, you'll get a "Could not resolve serverless-http" error during deployment.
+
 ## Troubleshooting
+
+### Missing Dependencies Errors
+
+If you see errors like "Could not resolve serverless-http":
+1. Add the missing package to your dependencies:
+   ```
+   npm install serverless-http --save
+   ```
+2. Commit the updated package.json and redeploy
 
 ### Database Connection Issues
 
