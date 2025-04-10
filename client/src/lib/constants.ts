@@ -263,7 +263,29 @@ export const MARTIAL_ARTS = {
     requiredLevel: 1,
     maxLevel: 10,
     requiredRealm: 'qi',
-    requiredStage: 1
+    requiredStage: 1,
+    unlocked: true, // Make this a default skill for all players
+    level: 1
+  },
+  
+  // Advanced techniques
+  'demonic-palm': {
+    name: 'Demonic Palm Technique',
+    chineseName: '魔掌功',
+    description: 'A sinister palm technique that drains life energy from opponents and transfers it to the user.',
+    damage: 25,
+    cost: 15,
+    cooldown: 4,
+    type: 'attack',
+    attributeScaling: 'spirit',
+    icon: 'hand-sparkles',
+    requiredLevel: 5,
+    maxLevel: 10,
+    requiredRealm: 'qi',
+    requiredStage: 5,
+    unlocked: false, // Must be unlocked through progression
+    level: 1,
+    unlockCost: 50 // Spiritual stones required to unlock
   },
   'iron-body': {
     name: 'Iron Body Technique',

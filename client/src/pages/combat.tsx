@@ -37,27 +37,56 @@ const CombatPage = () => {
   }, [game.characterCreated, setLocation]);
 
   // Handle cooldown timers
+  // Handle cooldowns and health regeneration
   useEffect(() => {
-    if (combatStatus === "fighting" && Object.keys(cooldowns).length > 0) {
+    if (combatStatus === "fighting") {
+      // Main combat timer that runs every second
       const timer = setInterval(() => {
-        setCooldowns(prev => {
-          const updated = { ...prev };
-          let changed = false;
-          
-          Object.keys(updated).forEach(key => {
-            if (updated[key] > 0) {
-              updated[key] -= 1;
-              changed = true;
-            }
+        // Process cooldowns
+        if (Object.keys(cooldowns).length > 0) {
+          setCooldowns(prev => {
+            const updated = { ...prev };
+            let changed = false;
+            
+            Object.keys(updated).forEach(key => {
+              if (updated[key] > 0) {
+                updated[key] -= 1;
+                changed = true;
+              }
+            });
+            
+            return changed ? updated : prev;
           });
-          
-          return changed ? updated : prev;
-        });
-      }, 1000);
+        }
+        
+        // Health regeneration (5% of max HP every 2 seconds)
+        // Using a counter to only regenerate every other second
+        if (enemy && game.health < game.maxHealth) {
+          // Only regenerate on even seconds (every 2s)
+          const currentTime = Date.now();
+          if (Math.floor(currentTime / 2000) % 2 === 0) {
+            const regenAmount = Math.ceil(game.maxHealth * 0.05); // 5% of max health
+            const newHealth = Math.min(game.maxHealth, game.health + regenAmount);
+            
+            if (newHealth > game.health) {
+              updateGameState(state => ({
+                ...state,
+                health: newHealth
+              }));
+              
+              // Add regeneration message to combat log
+              setCombatLog(prev => [
+                ...prev,
+                `You regenerate ${regenAmount} health through qi circulation.`
+              ].slice(-15)); // Keep only the last 15 messages
+            }
+          }
+        }
+      }, 1000); // Run every second
       
       return () => clearInterval(timer);
     }
-  }, [cooldowns, combatStatus]);
+  }, [combatStatus, cooldowns, enemy, game.health, game.maxHealth, updateGameState]);
 
 
 
