@@ -422,7 +422,7 @@ export const LOCATIONS = {
     }
   },
 
-  // Level 5-10 Locations
+  // Beginner Locations (Level 5-15)
   'forest': {
     name: 'Ancient Spirit Forest',
     description: 'A mystical forest filled with spiritual energy and low-level beasts.',
@@ -439,25 +439,25 @@ export const LOCATIONS = {
   'bamboo-grove': {
     name: 'Emerald Bamboo Grove',
     description: 'A tranquil bamboo forest where the bamboo absorbs spiritual energy, attracting unique beasts.',
-    requiredLevel: 6,
+    requiredLevel: 10,
     realm: 'qi',
     activities: ['explore', 'gather-bamboo', 'hunt', 'cultivate-tranquility'],
     enemies: ['fox-spirit', 'poisonous-snake', 'wild-tiger', 'bamboo-snake'],
     rewards: {
-      spiritualStones: [12, 28],
-      gold: [18, 40],
-      experience: [12, 35]
+      spiritualStones: [15, 35],
+      gold: [20, 45],
+      experience: [15, 40]
     }
   },
   'caverns': {
     name: 'Echo Spirit Caverns',
     description: 'A complex cave system that echoes with spiritual resonance, home to many cave-dwelling creatures.',
-    requiredLevel: 8,
+    requiredLevel: 15,
     realm: 'qi',
     activities: ['explore', 'mine-crystals', 'hunt', 'sound-cultivation'],
     enemies: ['cave-bat', 'giant-centipede'],
     rewards: {
-      spiritualStones: [15, 30],
+      spiritualStones: [20, 40],
       gold: [20, 45],
       experience: [15, 40]
     }
@@ -465,27 +465,27 @@ export const LOCATIONS = {
   'poison-marsh': {
     name: 'Venom Mist Marsh',
     description: 'A dangerous marsh filled with poisonous mists and venomous creatures.',
-    requiredLevel: 9,
+    requiredLevel: 18,
     realm: 'qi',
     activities: ['explore', 'gather-poison', 'hunt', 'poison-resistance-training'],
     enemies: ['venomous-toad', 'marsh-crocodile', 'swamp-toad'],
     rewards: {
-      spiritualStones: [18, 35],
-      gold: [25, 50],
-      experience: [18, 45]
+      spiritualStones: [25, 45],
+      gold: [30, 60],
+      experience: [25, 55]
     }
   },
   'mist-forest': {
     name: 'Spirit Mist Forest',
     description: 'A mysterious forest perpetually shrouded in spiritual mists that enhance perception cultivation.',
-    requiredLevel: 7,
+    requiredLevel: 12,
     realm: 'qi',
     activities: ['explore', 'gather-mist-essence', 'hunt', 'perception-cultivation'],
     enemies: ['vine-horror', 'spirit-deer'],
     rewards: {
-      spiritualStones: [14, 30],
-      gold: [20, 42],
-      experience: [14, 38]
+      spiritualStones: [18, 38],
+      gold: [25, 50],
+      experience: [20, 45]
     }
   },
   'city': {
@@ -821,70 +821,70 @@ export const LOCATIONS = {
     }
   },
 
-  // Ultra high-level locations (Level 45+)
+  // Ultra high-level locations (Level 50-100)
   'dragon-volcano': {
     name: 'Dragon King\'s Volcano',
     description: 'An active volcano where dragon kings occasionally rest, infusing the area with royal dragon energy.',
-    requiredLevel: 45,
+    requiredLevel: 55,
     realm: 'divine',
     activities: ['explore', 'collect-dragon-fire', 'hunt', 'dragon-dao-comprehension'],
     enemies: ['fire-dragon-king'],
     rewards: {
-      spiritualStones: [200, 400],
-      gold: [300, 600],
-      experience: [200, 410]
+      spiritualStones: [250, 500],
+      gold: [350, 700],
+      experience: [250, 510]
     }
   },
   'illusion-forest': {
     name: 'Nine Illusions Ancient Forest',
     description: 'A forest where reality constantly shifts under the influence of ancient fox spirits.',
-    requiredLevel: 42,
+    requiredLevel: 50,
     realm: 'divine',
     activities: ['explore', 'gather-illusion-essence', 'hunt', 'illusion-dao-understanding'],
     enemies: ['nine-tailed-fox', 'phantom-fox'],
     rewards: {
-      spiritualStones: [180, 360],
-      gold: [270, 540],
-      experience: [180, 370]
+      spiritualStones: [220, 440],
+      gold: [320, 640],
+      experience: [220, 450]
     }
   },
   'blood-palace': {
     name: 'Blood Emperor\'s Palace',
     description: 'The terrifying palace of a legendary blood cultivator, saturated with blood essence and forbidden power.',
-    requiredLevel: 48,
+    requiredLevel: 65,
     realm: 'divine',
     activities: ['explore', 'harvest-blood-crystals', 'hunt', 'blood-dao-refinement'],
     enemies: ['blood-emperor'],
     rewards: {
-      spiritualStones: [250, 500],
-      gold: [375, 750],
-      experience: [250, 510]
+      spiritualStones: [300, 600],
+      gold: [450, 900],
+      experience: [300, 620]
     }
   },
   'dragon-throne': {
     name: 'Heavenly Dragon\'s Throne',
     description: 'The former throne of a heavenly dragon that defied celestial law, now abandoned but still filled with authority.',
-    requiredLevel: 60,
+    requiredLevel: 75,
     realm: 'divine',
     activities: ['explore', 'absorb-authority-essence', 'hunt', 'authority-dao-contemplation'],
     enemies: ['heaven-defying-dragon'],
     rewards: {
-      spiritualStones: [400, 800],
-      gold: [600, 1200],
-      experience: [400, 820]
+      spiritualStones: [450, 900],
+      gold: [700, 1400],
+      experience: [450, 920]
     }
   },
   'chaos-origin': {
     name: 'Primordial Chaos Origin',
     description: 'A forbidden realm where remnants of primordial chaos still exist from before the world\'s formation.',
-    requiredLevel: 70,
+    requiredLevel: 100,
     realm: 'tribulation',
     activities: ['explore', 'gather-chaos-essence', 'hunt', 'chaos-dao-comprehension'],
     enemies: ['primordial-beast'],
     rewards: {
-      spiritualStones: [600, 1200],
-      gold: [900, 1800],
-      experience: [600, 1230]
+      spiritualStones: [800, 1600],
+      gold: [1200, 2400],
+      experience: [800, 1600]
     }
   }
 };

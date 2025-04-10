@@ -292,7 +292,7 @@ const MapPage = () => {
                     className={`bg-white shadow-md cursor-pointer transition-all ${
                       selectedLocation === locationId ? "ring-2 ring-primary" : ""
                     } ${
-                      game.cultivationLevel < locationData.requiredLevel ? "opacity-60" : ""
+                      game.cultivationLevel < locationData.requiredLevel ? "opacity-40 blur-sm" : ""
                     }`}
                     onClick={() => {
                       if (game.cultivationLevel >= locationData.requiredLevel) {

@@ -41,23 +41,19 @@ export default function Character() {
       return;
     }
 
-    // Update game state with character info
-    updateGameState((state) => ({
-      ...state,
-      characterCreated: true,
-      characterName,
-      sect: selectedSect,
-      // Initialize starting attributes based on sect
-      attributes: {
-        ...state.attributes,
-        // Add any sect-specific attribute bonuses here
-        ...(selectedSect === 'azure-cloud' && { intelligence: state.attributes.intelligence + 2 }),
-        ...(selectedSect === 'iron-fist' && { strength: state.attributes.strength + 2 }),
-        ...(selectedSect === 'jade-lotus' && { agility: state.attributes.agility + 2 }),
-        ...(selectedSect === 'mystic-ice' && { perception: state.attributes.perception + 2 }),
-        ...(selectedSect === 'blood-moon' && { endurance: state.attributes.endurance + 2 }),
-      },
-    }));
+    // Update game state with character info and apply sect effects
+    updateGameState((state) => {
+      // Get the sect data and apply their passive effects
+      const sectData = SECTS[selectedSect as keyof typeof SECTS];
+      const withSectEffects = sectData.benefits?.effect ? sectData.benefits.effect(state) : state;
+      
+      return {
+        ...withSectEffects,
+        characterCreated: true,
+        characterName,
+        sect: selectedSect,
+      };
+    });
 
     toast({
       title: "Character Created",
@@ -99,32 +95,6 @@ export default function Character() {
               <Label className="mb-2 block">Select Your Sect</Label>
               <RadioGroup value={selectedSect || ""} onValueChange={setSelectedSect}>
                 {Object.entries(SECTS).map(([id, sect]) => {
-                  // Default attribute values for each sect
-                  const sectAttributes = {
-                    righteous: { 
-                      primaryAttribute: "strength", 
-                      values: { strength: 12, agility: 10, endurance: 10, intelligence: 9, perception: 9 } 
-                    },
-                    demonic: { 
-                      primaryAttribute: "perception", 
-                      values: { strength: 10, agility: 11, endurance: 9, intelligence: 9, perception: 11 }
-                    },
-                    scholarly: { 
-                      primaryAttribute: "intelligence", 
-                      values: { strength: 8, agility: 9, endurance: 8, intelligence: 13, perception: 12 }
-                    },
-                    medical: { 
-                      primaryAttribute: "intelligence", 
-                      values: { strength: 8, agility: 10, endurance: 11, intelligence: 12, perception: 9 }
-                    },
-                    hidden: { 
-                      primaryAttribute: "endurance", 
-                      values: { strength: 9, agility: 10, endurance: 12, intelligence: 10, perception: 9 }
-                    }
-                  };
-                  
-                  const attributes = sectAttributes[id as keyof typeof sectAttributes] || 
-                    { primaryAttribute: "strength", values: { strength: 10, agility: 10, endurance: 10, intelligence: 10, perception: 10 } };
                   
                   return (
                     <Card key={id} className={`mb-3 cursor-pointer transition-all ${selectedSect === id ? "ring-2 ring-primary" : ""}`}>
@@ -142,61 +112,11 @@ export default function Character() {
                           </div>
                         </div>
                         <div className="mt-3 pt-3 border-t border-gray-100">
-                          <div className="grid grid-cols-5 gap-2 text-sm">
-                            <div className={attributes.primaryAttribute === "strength" ? "text-primary font-medium" : ""}>
-                              <span>Strength</span>
-                              <div className="flex items-center">
-                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                                  <div
-                                    className={`${attributes.primaryAttribute === "strength" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
-                                    style={{ width: `${(attributes.values.strength / 15) * 100}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className={attributes.primaryAttribute === "agility" ? "text-primary font-medium" : ""}>
-                              <span>Agility</span>
-                              <div className="flex items-center">
-                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                                  <div
-                                    className={`${attributes.primaryAttribute === "agility" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
-                                    style={{ width: `${(attributes.values.agility / 15) * 100}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className={attributes.primaryAttribute === "endurance" ? "text-primary font-medium" : ""}>
-                              <span>Endurance</span>
-                              <div className="flex items-center">
-                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                                  <div
-                                    className={`${attributes.primaryAttribute === "endurance" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
-                                    style={{ width: `${(attributes.values.endurance / 15) * 100}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className={attributes.primaryAttribute === "intelligence" ? "text-primary font-medium" : ""}>
-                              <span>Intelligence</span>
-                              <div className="flex items-center">
-                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                                  <div
-                                    className={`${attributes.primaryAttribute === "intelligence" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
-                                    style={{ width: `${(attributes.values.intelligence / 15) * 100}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className={attributes.primaryAttribute === "perception" ? "text-primary font-medium" : ""}>
-                              <span>Perception</span>
-                              <div className="flex items-center">
-                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                                  <div
-                                    className={`${attributes.primaryAttribute === "perception" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
-                                    style={{ width: `${(attributes.values.perception / 15) * 100}%` }}
-                                  ></div>
-                                </div>
-                              </div>
+                          <div className="text-sm">
+                            <div className="font-medium text-primary mb-1">Sect Benefit:</div>
+                            <div className="flex items-center bg-gray-50 p-2 rounded-md">
+                              <i className="fas fa-star-of-life text-amber-500 mr-2"></i>
+                              <span>{sect.benefits?.description || "No special benefits"}</span>
                             </div>
                           </div>
                         </div>
@@ -212,10 +132,10 @@ export default function Character() {
         <div className="text-center">
           <Button
             size="lg"
-            className="font-serif bg-primary hover:bg-primary/90 text-white px-8 py-6 h-auto"
+            className="font-serif bg-primary hover:bg-primary/90 text-white px-6 py-4 h-auto max-w-md"
             onClick={handleCreateCharacter}
           >
-            <span className="text-xl">Begin Your Cultivation Journey</span>
+            <span className="text-lg">Begin Journey</span>
           </Button>
         </div>
       </div>
