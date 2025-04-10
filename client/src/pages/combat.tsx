@@ -205,22 +205,34 @@ const CombatPage = () => {
     }
   };
   
-  // Fix type for enemyId parameter
+  // Start combat with enhanced location difficulty scaling
   const startCombat = (enemyId: string) => {
     const enemyData = ENEMIES[enemyId as keyof typeof ENEMIES];
+    
+    // Apply location-based difficulty scaling
+    const locationScaling = getLocationDifficultyScale(selectedArea);
+    
+    // Scale enemy stats based on location difficulty
+    const scaledHealth = Math.round(enemyData.health * locationScaling.healthMultiplier);
+    const scaledAttack = Math.round(enemyData.attack * locationScaling.attackMultiplier);
+    const scaledDefense = Math.round(enemyData.defense * locationScaling.defenseMultiplier);
+    
     const newEnemy: Enemy = {
       id: enemyId,
       name: enemyData.name,
       description: enemyData.description,
-      health: enemyData.health,
-      maxHealth: enemyData.health,
-      attack: enemyData.attack,
-      defense: enemyData.defense
+      health: scaledHealth,
+      maxHealth: scaledHealth,
+      attack: scaledAttack,
+      defense: scaledDefense
     };
     
     setEnemy(newEnemy);
     setCombatStatus("fighting");
-    setCombatLog([`You encounter a ${enemyData.name}!`]);
+    setCombatLog([
+      `You encounter a ${enemyData.name}!`,
+      `This enemy appears ${getAreaDifficultyDescription(selectedArea)}.`
+    ]);
     
     // Initialize cooldowns
     const initialCooldowns: Record<string, number> = {};

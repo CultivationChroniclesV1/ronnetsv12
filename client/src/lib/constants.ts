@@ -3677,6 +3677,50 @@ export const RESOURCES = {
     locations: ['mountain', 'cloud-peaks'],
   },
   
+  // Healing herbs for combat
+  'healing-grass': {
+    id: 'healing-grass',
+    name: 'Healing Grass',
+    description: 'A common herb with mild healing properties that can close minor wounds.',
+    type: RESOURCE_TYPES.SPIRIT_HERB,
+    rarity: 'COMMON',
+    value: 15,
+    effects: {
+      health: 25, // Restores 25 health when consumed
+    },
+    locations: ['forest', 'sect', 'mountain'],
+    dropRate: 0.3, // 30% chance to drop from low-level enemies
+  },
+  'blood-lotus': {
+    id: 'blood-lotus',
+    name: 'Blood Lotus',
+    description: 'A rare crimson lotus that accelerates blood circulation and healing.',
+    type: RESOURCE_TYPES.SPIRIT_HERB,
+    rarity: 'UNCOMMON',
+    value: 60,
+    effects: {
+      health: 75, // Restores 75 health when consumed
+      defense: 5, // Temporary 5 point defense boost
+    },
+    locations: ['forest', 'jade-valley', 'stone-forest'],
+    dropRate: 0.15, // 15% chance to drop from mid-level enemies
+  },
+  'celestial-peach': {
+    id: 'celestial-peach',
+    name: 'Celestial Peach',
+    description: 'A legendary fruit said to be grown in immortal gardens, with powerful rejuvenating effects.',
+    type: RESOURCE_TYPES.SPIRIT_HERB,
+    rarity: 'RARE',
+    value: 200,
+    effects: {
+      health: 150, // Restores 150 health when consumed
+      maxHealth: 20, // Temporary boost to max health
+      strength: 10, // Temporary boost to strength
+    },
+    locations: ['ruins', 'sacred-mountain'],
+    dropRate: 0.05, // 5% chance to drop from high-level enemies
+  },
+  
   // Spirit stones for cultivation
   'low-grade-stone': {
     id: 'low-grade-stone',
