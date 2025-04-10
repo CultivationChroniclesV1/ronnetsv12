@@ -1,5 +1,5 @@
 [build]
-  command = "npm install serverless-http && node netlify/build-deploy-info.js && vite build && node netlify/build-db.js && esbuild netlify/functions/api.ts --platform=node --packages=external --bundle --format=esm --outfile=netlify/functions/api.mjs"
+  command = "npm install --include=dev serverless-http vite esbuild @vitejs/plugin-react tailwindcss postcss autoprefixer @replit/vite-plugin-shadcn-theme-json && node netlify/build-deploy-info.js && ./node_modules/.bin/vite build && node netlify/build-db.js && ./node_modules/.bin/esbuild netlify/functions/api.ts --platform=node --packages=external --bundle --format=esm --outfile=netlify/functions/api.mjs"
   publish = "dist/public"
   functions = "netlify/functions"
 
