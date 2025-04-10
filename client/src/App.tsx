@@ -16,6 +16,7 @@ import { useAchievement } from "@/hooks/use-achievement";
 // Lazy load other pages
 import { lazy, Suspense } from "react";
 // Use relative paths for lazy loading to avoid import issues
+const Character = lazy(() => import("./pages/character"));
 const CharacterInfo = lazy(() => import("./pages/character-info"));
 const Combat = lazy(() => import("./pages/combat"));
 const Map = lazy(() => import("./pages/map"));
@@ -84,6 +85,9 @@ function Router() {
           </Route>
           <Route path="/game">
             <Game />
+          </Route>
+          <Route path="/character">
+            <Character />
           </Route>
           <Route path="/character-info">
             <CharacterInfo />
