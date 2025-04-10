@@ -5,7 +5,9 @@ This checklist will help ensure a smooth deployment of your Wuxia Cultivation Ga
 ## Pre-Deployment Preparation
 
 ✅ Fixed code issues (duplicate keys in martial-techniques.tsx)
+✅ Updated build-db.js to use ES module syntax (import instead of require)
 ✅ Build script works properly (`npm run build`)
+✅ Full Netlify build process runs without errors
 ✅ Netlify configuration file (netlify.toml) is configured properly
 ✅ Netlify function (api.ts/api.mjs) builds successfully
 ✅ All required packages are installed (serverless-http, esbuild, etc.)
