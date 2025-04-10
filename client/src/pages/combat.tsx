@@ -94,6 +94,9 @@ const CombatPage = () => {
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
   const [showHerbPanel, setShowHerbPanel] = useState<boolean>(false);
   const [herbAnimating, setHerbAnimating] = useState<string | null>(null);
+  const [attackAnimation, setAttackAnimation] = useState<string | null>(null);
+  const [damageEffect, setDamageEffect] = useState<boolean>(false);
+  const [attackTarget, setAttackTarget] = useState<"player" | "enemy" | null>(null);
 
   // Check if character is created
   useEffect(() => {
@@ -296,11 +299,27 @@ const CombatPage = () => {
       energy: Math.max(0, state.energy - technique.cost)
     }));
     
-    // Update enemy
-    setEnemy(prev => prev ? {
-      ...prev,
-      health: newEnemyHealth
-    } : null);
+    // Trigger attack animation
+    setAttackAnimation(techniqueId);
+    setAttackTarget("enemy");
+    setDamageEffect(true);
+    
+    // Update enemy after animation delay
+    setTimeout(() => {
+      setEnemy(prev => prev ? {
+        ...prev,
+        health: newEnemyHealth
+      } : null);
+      
+      // Clear animations
+      setAttackAnimation(null);
+      setDamageEffect(false);
+    }, 600);
+    
+    // Longer delay for attack target to ensure animations play in sequence
+    setTimeout(() => {
+      setAttackTarget(null);
+    }, 700);
     
     // Check if enemy defeated
     if (newEnemyHealth <= 0) {
@@ -338,16 +357,32 @@ const CombatPage = () => {
       `${enemy.name} attacks you for ${damage} damage!`
     ]);
     
-    // Update game state
-    updateGameState(state => ({
-      ...state,
-      health: newHealth
-    }));
+    // Trigger enemy attack animation
+    setAttackAnimation("enemy-attack");
+    setAttackTarget("player");
+    setDamageEffect(true);
     
-    // Check if player defeated
-    if (newHealth <= 0) {
-      handleDefeat();
-    }
+    // Update game state after animation
+    setTimeout(() => {
+      updateGameState(state => ({
+        ...state,
+        health: newHealth
+      }));
+      
+      // Clear animations
+      setAttackAnimation(null);
+      setDamageEffect(false);
+    }, 600);
+    
+    // Longer delay for attack target to ensure animations play in sequence
+    setTimeout(() => {
+      setAttackTarget(null);
+      
+      // Check if player defeated
+      if (newHealth <= 0) {
+        handleDefeat();
+      }
+    }, 700);
   };
   
   // Start combat with enhanced location difficulty scaling
