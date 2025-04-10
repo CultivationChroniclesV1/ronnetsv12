@@ -78,20 +78,12 @@ export default function Game() {
           
           <div className="flex space-x-2">
             <Button 
-              onClick={saveGame}
+              onClick={() => setLocation('/utility')}
               variant="outline" 
               size="sm"
               className="text-xs border-white text-white hover:bg-primary-dark h-8"
             >
-              <i className="fas fa-save mr-1"></i> Save
-            </Button>
-            <Button 
-              onClick={toggleSettings}
-              variant="outline" 
-              size="sm"
-              className="text-xs border-white text-white hover:bg-primary-dark h-8"
-            >
-              <i className="fas fa-cog mr-1"></i> Settings
+              <i className="fas fa-cogs mr-1"></i> Utility
             </Button>
           </div>
         </div>
