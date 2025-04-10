@@ -36,7 +36,9 @@ export default function SectQuests() {
   const [completedQuests, setCompletedQuests] = useState<Quest[]>([]);
   const [activeTab, setActiveTab] = useState<string>("available");
   const [refreshTime, setRefreshTime] = useState<number | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const refreshTimer = useRef<NodeJS.Timeout | null>(null);
+  const countdownTimer = useRef<NodeJS.Timeout | null>(null);
   
   // Check if character is created and setup auto-refresh
   useEffect(() => {
@@ -51,12 +53,45 @@ export default function SectQuests() {
     }
     
     return () => {
-      // Cleanup timer on unmount
+      // Cleanup timers on unmount
       if (refreshTimer.current) {
         clearTimeout(refreshTimer.current);
       }
+      if (countdownTimer.current) {
+        clearInterval(countdownTimer.current);
+      }
     };
   }, [game.characterCreated, setLocation]);
+  
+  // Update the countdown timer every second
+  useEffect(() => {
+    if (refreshTime) {
+      // Set initial time remaining
+      setTimeRemaining(Math.max(0, Math.ceil((refreshTime - Date.now()) / 1000)));
+      
+      // Start a timer to update the countdown
+      countdownTimer.current = setInterval(() => {
+        const remaining = Math.max(0, Math.ceil((refreshTime - Date.now()) / 1000));
+        setTimeRemaining(remaining);
+        
+        // Clear interval once timer reaches 0
+        if (remaining <= 0 && countdownTimer.current) {
+          clearInterval(countdownTimer.current);
+        }
+      }, 1000);
+    } else {
+      // Clear the countdown timer if no refresh time
+      if (countdownTimer.current) {
+        clearInterval(countdownTimer.current);
+      }
+    }
+    
+    return () => {
+      if (countdownTimer.current) {
+        clearInterval(countdownTimer.current);
+      }
+    };
+  }, [refreshTime]);
   
   // Start a timer to refresh quests automatically
   const startQuestRefreshTimer = () => {
@@ -430,7 +465,7 @@ export default function SectQuests() {
                 {refreshTime && (
                   <p className="text-xs text-amber-600 mt-1">
                     <i className="fas fa-clock mr-1"></i>
-                    New quests in: {Math.max(0, Math.floor((refreshTime - Date.now()) / 1000))} seconds
+                    New quests in: {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
                   </p>
                 )}
               </div>
