@@ -156,6 +156,85 @@ const CombatPage = () => {
 
 
 
+  // Use a healing herb during combat
+  const useHerb = (herbId: string) => {
+    if (combatStatus !== "fighting") {
+      setCombatLog(prev => [...prev, "You can only use herbs during combat!"]);
+      return;
+    }
+    
+    // Ensure inventory structure exists
+    if (!game.inventory || !game.inventory.herbs) {
+      toast({
+        title: "Inventory Error",
+        description: "No herbs found in inventory.",
+        variant: "destructive"
+      });
+      setShowHerbPanel(false);
+      return;
+    }
+    
+    // Get herb data
+    const herbData = game.inventory.herbs[herbId];
+    const herb = RESOURCES[herbId as keyof typeof RESOURCES];
+    
+    if (!herbData || !herbData.count || herbData.count <= 0) {
+      toast({
+        title: "Herb Not Available",
+        description: "You don't have any of this herb.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Set herb animation
+    setHerbAnimating(herbId);
+    
+    // Get healing amount
+    const healAmount = herb.effects?.health || 20; // Default to 20 if not specified
+    
+    // Update player health
+    const newHealth = Math.min(game.maxHealth, game.health + healAmount);
+    
+    // Add to combat log
+    setCombatLog(prev => [
+      ...prev,
+      `You use ${herb.name} and recover ${healAmount} health!`
+    ]);
+    
+    // Update game state
+    updateGameState(state => {
+      const updatedInventory = { ...state.inventory };
+      
+      if (!updatedInventory.herbs) {
+        updatedInventory.herbs = {};
+      }
+      
+      // Reduce herb count
+      updatedInventory.herbs[herbId] = {
+        ...updatedInventory.herbs[herbId],
+        count: (updatedInventory.herbs[herbId]?.count || 0) - 1
+      };
+      
+      // Remove herb if count is 0
+      if (updatedInventory.herbs[herbId].count <= 0) {
+        delete updatedInventory.herbs[herbId];
+      }
+      
+      return {
+        ...state,
+        health: newHealth,
+        inventory: updatedInventory
+      };
+    });
+    
+    // Close herb panel and clear animation after a delay
+    setTimeout(() => {
+      setHerbAnimating(null);
+      setShowHerbPanel(false);
+    }, 1000);
+  };
+
   // Use a martial arts technique
   const useTechnique = (techniqueId: string) => {
     if (!enemy || combatStatus !== "fighting") return;
@@ -770,9 +849,58 @@ const CombatPage = () => {
               {/* Player Stats */}
               <Card className="bg-white shadow-md">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">{game.characterName}</CardTitle>
+                  <CardTitle className="text-lg flex justify-between items-center">
+                    <span>{game.characterName}</span>
+                    {/* Herbs button */}
+                    {combatStatus === "fighting" && (
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-xs"
+                        onClick={() => setShowHerbPanel(!showHerbPanel)}
+                      >
+                        <i className="fas fa-leaf text-green-500 mr-1"></i> Herbs
+                      </Button>
+                    )}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {/* Herb Selection Panel */}
+                  {showHerbPanel && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mb-3 p-3 bg-green-50 border border-green-200 rounded-md"
+                    >
+                      <h3 className="text-sm font-medium mb-2 text-green-700">Healing Herbs</h3>
+                      {getHealingHerbs(game.inventory || {}).length === 0 ? (
+                        <p className="text-xs text-gray-500">No healing herbs in inventory</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {getHealingHerbs(game.inventory || {}).map(herb => (
+                            <motion.div 
+                              key={herb.id}
+                              whileHover={{ scale: 1.02 }}
+                              className={`p-2 border ${herbAnimating === herb.id ? 'border-green-500 bg-green-100' : 'border-gray-200'} rounded-md cursor-pointer`}
+                              onClick={() => useHerb(herb.id)}
+                            >
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <div className="text-sm font-medium">{herb.data.name}</div>
+                                  <div className="text-xs text-gray-600">Heals {herb.data.effects.health} HP</div>
+                                </div>
+                                <div className="text-xs bg-green-100 px-2 py-1 rounded">
+                                  {herb.count}
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
                   <div className="mb-3">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Health</span>
