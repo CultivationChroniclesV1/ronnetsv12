@@ -103,10 +103,10 @@ export default function Utility() {
                         </p>
                       </div>
                       <Button 
-                        variant={game.offlineProgressEnabled ? "default" : "outline"} 
+                        variant={game.isOfflineProgressEnabled ? "default" : "outline"} 
                         onClick={toggleOfflineProgress}
                       >
-                        {game.offlineProgressEnabled ? "Enabled" : "Disabled"}
+                        {game.isOfflineProgressEnabled ? "Enabled" : "Disabled"}
                       </Button>
                     </div>
                     
@@ -173,7 +173,7 @@ export default function Utility() {
                         </div>
                         <div className="p-3 bg-gray-50 rounded-md">
                           <div className="text-sm text-gray-600">Breakthroughs</div>
-                          <div className="font-medium">{game.totalBreakthroughs || 0}</div>
+                          <div className="font-medium">{(game.successfulBreakthroughs || 0) + (game.failedBreakthroughs || 0)}</div>
                         </div>
                         <div className="p-3 bg-gray-50 rounded-md">
                           <div className="text-sm text-gray-600">Achievements Earned</div>
