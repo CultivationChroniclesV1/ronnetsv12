@@ -5,8 +5,12 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Game from "@/pages/game";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavigationBar } from "@/components/navigation-bar";
+import { BackgroundParticles } from "@/components/background-particles";
+import { LoadingAnimation } from "@/components/loading-animation";
+import { useLocation } from "wouter";
+import { getThemeForPath } from "@/lib/animations";
 
 // Lazy load other pages
 import { lazy, Suspense } from "react";
@@ -18,18 +22,33 @@ const Inventory = lazy(() => import("./pages/inventory"));
 const Shop = lazy(() => import("./pages/shop"));
 const SectQuests = lazy(() => import("./pages/sect-quests"));
 const SkillTree = lazy(() => import("./pages/skill-tree"));
+const MusicSettings = lazy(() => import("./pages/music-settings"));
 
-// Loading component for lazy-loaded pages
-const PageLoading = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="text-center">
-      <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-primary mb-4" role="status">
-        <span className="visually-hidden">Loading...</span>
+// Loading component for lazy-loaded pages with wuxia theme
+const PageLoading = () => {
+  const [location] = useLocation();
+  const theme = getThemeForPath(location);
+  
+  // Select the right loading animation based on the page
+  const getLoadingType = () => {
+    if (theme === 'combat') return 'sword';
+    if (theme === 'cultivation') return 'qi';
+    if (theme === 'skills') return 'scroll';
+    return 'lotus';
+  };
+  
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <LoadingAnimation 
+          type={getLoadingType()} 
+          size="lg" 
+          text="Gathering Qi Energy..." 
+        />
       </div>
-      <p className="text-gray-600">Loading page...</p>
     </div>
-  </div>
-);
+  );
+};
 
 function Router() {
   return (

@@ -47,11 +47,32 @@ export default function Character() {
       const sectData = SECTS[selectedSect as keyof typeof SECTS];
       const withSectEffects = sectData.benefits?.effect ? sectData.benefits.effect(state) : state;
       
+      // Ensure the starting martial art (Azure Dragon Palm) is properly initialized
+      const martialArts = {
+        ...state.martialArts,
+        'palm-strike': {
+          id: 'palm-strike',
+          name: 'Azure Dragon Palm',
+          type: 'attack',
+          level: 1,
+          maxLevel: 10,
+          unlocked: true,
+          description: 'A basic yet powerful palm technique that channels Qi to strike opponents.',
+          damage: 15,
+          cost: 5,
+          cooldown: 2,
+          attributeScaling: 'strength',
+          chineseName: '青龙掌',
+          icon: 'hand-rock',
+        }
+      };
+      
       return {
         ...withSectEffects,
         characterCreated: true,
         characterName,
         sect: selectedSect,
+        martialArts: martialArts,
       };
     });
 
