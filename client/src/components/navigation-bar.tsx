@@ -44,6 +44,13 @@ export function NavigationBar() {
                 Character
               </div>
             </Link>
+            {game.characterCreated && (
+              <Link href="/character-info">
+                <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/character-info' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                  Character Info
+                </div>
+              </Link>
+            )}
             <Link href="/combat">
               <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/combat' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Combat
@@ -148,6 +155,13 @@ export function NavigationBar() {
                     <i className="fas fa-user mr-2"></i> Character
                   </div>
                 </Link>
+                {game.characterCreated && (
+                  <Link href="/character-info">
+                    <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/character-info' ? 'bg-primary/10 text-primary' : ''}`}>
+                      <i className="fas fa-id-card mr-2"></i> Character Info
+                    </div>
+                  </Link>
+                )}
                 <Link href="/combat">
                   <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/combat' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-fist-raised mr-2"></i> Combat

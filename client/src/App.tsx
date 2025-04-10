@@ -13,6 +13,7 @@ import { MusicAutoStarter } from "@/components/music-auto-starter";
 import { lazy, Suspense } from "react";
 // Use relative paths for lazy loading to avoid import issues
 const Character = lazy(() => import("./pages/character"));
+const CharacterInfo = lazy(() => import("./pages/character-info"));
 const Combat = lazy(() => import("./pages/combat"));
 const Map = lazy(() => import("./pages/map"));
 const Inventory = lazy(() => import("./pages/inventory"));
@@ -38,6 +39,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/game" component={Game} />
         <Route path="/character" component={Character} />
+        <Route path="/character-info" component={CharacterInfo} />
         <Route path="/combat" component={Combat} />
         <Route path="/map" component={Map} />
         <Route path="/inventory" component={Inventory} />

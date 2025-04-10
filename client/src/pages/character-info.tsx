@@ -243,7 +243,7 @@ export default function CharacterInfo() {
                           <div className="grid grid-cols-2 gap-1 text-sm">
                             {Object.entries(equippedItems.weapon.stats).map(([stat, value]) => (
                               <div key={stat}>
-                                <span className="font-medium capitalize">{stat}:</span> +{value}
+                                <span className="font-medium capitalize">{stat}:</span> +{String(value)}
                               </div>
                             ))}
                           </div>
@@ -273,7 +273,7 @@ export default function CharacterInfo() {
                           <div className="grid grid-cols-2 gap-1 text-sm">
                             {Object.entries(equippedItems.armor.stats).map(([stat, value]) => (
                               <div key={stat}>
-                                <span className="font-medium capitalize">{stat}:</span> +{value}
+                                <span className="font-medium capitalize">{stat}:</span> +{String(value)}
                               </div>
                             ))}
                           </div>
@@ -304,7 +304,7 @@ export default function CharacterInfo() {
                           <div className="grid grid-cols-2 gap-1 text-sm">
                             {Object.entries(equippedItems[slotType].stats).map(([stat, value]) => (
                               <div key={stat}>
-                                <span className="font-medium capitalize">{stat}:</span> +{value}
+                                <span className="font-medium capitalize">{stat}:</span> +{String(value)}
                               </div>
                             ))}
                           </div>
