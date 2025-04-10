@@ -74,6 +74,11 @@ export function NavigationBar() {
                 <i className="fas fa-tasks mr-1"></i> Quests
               </div>
             </Link>
+            <Link href="/music-settings">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/music-settings' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-music mr-1"></i> Music
+              </div>
+            </Link>
           </div>
           
           {/* Creator Info Button */}
@@ -175,6 +180,11 @@ export function NavigationBar() {
                 <Link href="/sect-quests">
                   <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/sect-quests' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-tasks mr-2"></i> Quests
+                  </div>
+                </Link>
+                <Link href="/music-settings">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/music-settings' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-music mr-2"></i> Music
                   </div>
                 </Link>
               </div>
