@@ -29,71 +29,7 @@ interface Quest {
   enemyType?: string;
 }
 
-// Helper functions for quests
-function formatLocationName(location: string): string {
-  const names: Record<string, string> = {
-    'forest': 'Verdant Spirit Forest',
-    'mountain': 'Azure Dragon Mountains',
-    'ruins': 'Immortal Emperor Ruins',
-    'jade-valley': 'Nine Treasures Jade Valley',
-    'poison-marsh': 'Miasma Venom Marsh',
-    'flame-desert': 'Nine Suns Flame Desert',
-    'frozen-peak': 'Frost Immortal Summit',
-    'demonic-beast': 'Demonic Spirit Beast',
-    'qi-wolf': 'Frost Wind Spirit Wolf',
-    'bloodbear': 'Blood Mist Cave Bear',
-    'venomsnake': 'Nine-Pattern Poison Serpent',
-    'celestial-tiger': 'White Mountain Spirit Tiger',
-    'golden-eagle': 'Golden Wing Thunder Eagle',
-    'rogue-cultivator': 'Rogue Cultivator'
-  };
-  
-  return names[location] || location;
-}
-
-function capitalizeFirst(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// Get appropriate completion guide based on quest type
-function getQuestGuide(quest: Quest): string {
-  if (quest.name.includes("Profound Dao Heart") || quest.name.includes("Divine Scripture") || quest.name.includes("Heavenly Dao")) {
-    return "Go to the main cultivation page. Fill your cultivation bar to maximum by using the 'Cultivate' button repeatedly. Each cultivation session will increase your progress toward the target.";
-  }
-  
-  if (quest.name.includes("Breakthrough") || quest.name.includes("Realm Breakthrough")) {
-    return "Accumulate enough cultivation progress, then attempt a breakthrough on the main cultivation page by clicking the 'Attempt Breakthrough' button when it becomes available.";
-  }
-  
-  if (quest.enemyType || quest.name.includes("Subdue") || quest.name.includes("Beast") || quest.name.includes("Hunt") || quest.name.includes("Demonic Beast")) {
-    const enemyName = quest.enemyType ? formatLocationName(quest.enemyType) : "enemies";
-    return `Travel to the Combat page and battle ${enemyName} by selecting an appropriate hunting ground and engaging in combat. Defeat enemies until you reach the target number.`;
-  }
-  
-  if (quest.location || quest.name.includes("Harvest") || quest.name.includes("Gather") || quest.name.includes("Collection")) {
-    const locationName = quest.location ? formatLocationName(quest.location) : "appropriate locations";
-    return `Visit the Map page and travel to ${locationName}. Click on gathering spots to collect resources until you reach the target number.`;
-  }
-  
-  if (quest.name.includes("Artifact") || quest.name.includes("Refinement")) {
-    return "Go to the Artifact Refinement section and participate in the refinement process by contributing materials and spiritual energy. Each successful refinement session counts toward your progress.";
-  }
-  
-  if (quest.name.includes("Array") || quest.name.includes("Formation") || quest.name.includes("Defense")) {
-    return "Visit the Sect Defense page and participate in patrol duties by activating the defensive arrays. Each successful patrol adds to your progress.";
-  }
-  
-  if (quest.name.includes("Knowledge") || quest.name.includes("Study")) {
-    return "Go to the Sect Library and study cultivation techniques. Each study session will increase your comprehension and count toward quest progress.";
-  }
-  
-  if (quest.name.includes("Elder")) {
-    return "Visit the Sect Elders Hall and speak with the elders to receive their specific requests. Complete the tasks they assign to progress in the quest.";
-  }
-  
-  // Default guide if no specific category is matched
-  return "Participate in activities related to the quest objective. Your progress will update automatically as you perform relevant actions throughout the game.";
-}
+// These helper functions are defined at the bottom of the file
 
 export default function SectQuests() {
   const { game, updateGameState } = useGameEngine();
@@ -127,7 +63,7 @@ export default function SectQuests() {
         clearInterval(countdownTimer.current);
       }
     };
-  }, [game.characterCreated, setLocation]);
+  }, [game.characterCreated, setLocation, quests.length]);
   
   // Update the countdown timer every second
   useEffect(() => {
@@ -407,7 +343,8 @@ export default function SectQuests() {
       });
     }
     
-    setQuests(quests.map(q => q.id === quest.id ? updatedQuest : q));
+    // Use the callback form of setState to avoid dependency on current state
+    setQuests(prevQuests => prevQuests.map(q => q.id === quest.id ? updatedQuest : q));
   };
   
   // Complete a quest and claim rewards
