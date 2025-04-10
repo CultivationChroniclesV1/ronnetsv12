@@ -51,17 +51,31 @@ export default function Utility() {
     };
   });
   
-  // Export save data to string
+  // Export save data to string and allow download as file
   const exportSaveData = () => {
     try {
       const saveData = JSON.stringify(game);
       setExportedData(saveData);
+      
+      // Copy to clipboard
       navigator.clipboard.writeText(saveData).then(() => {
         toast({
-          title: "Save Data Exported",
-          description: "Save data copied to clipboard. You can now paste and save it somewhere safe.",
+          title: "Save Data Copied",
+          description: "Save data copied to clipboard. You can paste it somewhere safe.",
         });
       });
+      
+      // Create download file
+      const blob = new Blob([saveData], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${GAME_NAME.replace(/\s+/g, '-').toLowerCase()}-save-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
       return saveData;
     } catch (error) {
       console.error("Error exporting save data:", error);
@@ -74,9 +88,13 @@ export default function Utility() {
     }
   };
   
-  // Import save data from string
+  // Import save data from string or file
   const importSaveData = () => {
     try {
+      if (!importedData.trim()) {
+        throw new Error("No data provided");
+      }
+      
       const importedGameState = JSON.parse(importedData);
       
       // Add validation to ensure it's a valid game state
@@ -84,13 +102,17 @@ export default function Utility() {
         throw new Error("Invalid save data format");
       }
       
+      // Apply imported game state
       updateGameState(() => importedGameState);
+      saveGame(); // Save immediately to persist the imported data
+      
+      // Clean up
       setImportDialogOpen(false);
       setImportedData("");
       
       toast({
         title: "Save Data Imported",
-        description: "Your save data has been successfully imported.",
+        description: "Your save data has been successfully imported and applied to your game.",
       });
     } catch (error) {
       console.error("Error importing save data:", error);
@@ -100,6 +122,35 @@ export default function Utility() {
         variant: "destructive",
       });
     }
+  };
+  
+  // Handle file upload for import
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        setImportedData(content);
+      } catch (error) {
+        console.error("Error reading file:", error);
+        toast({
+          title: "File Read Error",
+          description: "Could not read the uploaded file. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+    reader.onerror = () => {
+      toast({
+        title: "File Read Error",
+        description: "Could not read the uploaded file. Please try again.",
+        variant: "destructive",
+      });
+    };
+    reader.readAsText(file);
   };
   
   return (
@@ -213,12 +264,25 @@ export default function Utility() {
                           <DialogHeader>
                             <DialogTitle>Import Game Data</DialogTitle>
                             <DialogDescription>
-                              Paste your saved game data below to restore your progress.
+                              Upload a save file or paste your save data to continue your cultivation journey on this device.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4 py-4">
                             <div className="space-y-2">
-                              <Label htmlFor="import-data">Game Data:</Label>
+                              <Label htmlFor="file-upload">Upload Save File:</Label>
+                              <div className="flex items-center gap-3">
+                                <Input 
+                                  id="file-upload" 
+                                  type="file" 
+                                  accept=".json"
+                                  onChange={handleFileUpload}
+                                  className="flex-1"
+                                />
+                              </div>
+                              <div className="text-center my-2 text-gray-500">- or -</div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="import-data">Paste Game Data:</Label>
                               <Textarea 
                                 id="import-data" 
                                 value={importedData} 
@@ -228,16 +292,25 @@ export default function Utility() {
                               />
                             </div>
                           </div>
-                          <div className="flex justify-end gap-3">
-                            <Button 
-                              variant="outline" 
-                              onClick={() => setImportDialogOpen(false)}
-                            >
-                              Cancel
-                            </Button>
-                            <Button onClick={importSaveData}>
-                              Import Data
-                            </Button>
+                          <div className="flex justify-between gap-3">
+                            <div className="text-xs text-gray-500 flex items-center">
+                              <i className="fas fa-info-circle mr-1"></i> 
+                              Import will replace your current progress
+                            </div>
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                onClick={() => setImportDialogOpen(false)}
+                              >
+                                Cancel
+                              </Button>
+                              <Button 
+                                onClick={importSaveData}
+                                disabled={!importedData.trim()}
+                              >
+                                <i className="fas fa-file-import mr-2"></i> Import Data
+                              </Button>
+                            </div>
                           </div>
                         </DialogContent>
                       </Dialog>

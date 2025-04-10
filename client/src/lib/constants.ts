@@ -73,8 +73,8 @@ export const UPGRADES = {
     description: 'Increases passive Qi generation',
     baseCost: 375,
     costMultiplier: 2.3,
-    effectPerLevel: 50, // 50 Qi/s per level
-    effectDescription: (level: number) => `+${level * 50} Qi/second`,
+    effectPerLevel: 10, // 10 Qi/s per level - UPDATED
+    effectDescription: (level: number) => `+${level * 10} Qi/second`,
     maxLevel: Infinity // Infinite upgrades
   },
   spirit: {
@@ -82,8 +82,8 @@ export const UPGRADES = {
     description: 'Increases manual cultivation efficiency',
     baseCost: 400,
     costMultiplier: 2.4,
-    effectPerLevel: 75, // +75 Qi per click per level
-    effectDescription: (level: number) => `+${level * 75} Qi per click`,
+    effectPerLevel: 15, // +15 Qi per click per level - UPDATED
+    effectDescription: (level: number) => `+${level * 15} Qi per click`,
     maxLevel: Infinity // Infinite upgrades
   },
   breakthrough: {
@@ -95,6 +95,61 @@ export const UPGRADES = {
     effectDescription: (level: number) => `+${level * 5}% breakthrough chance`,
     maxLevel: Infinity, // Infinite upgrades
     requiredRealm: 'foundation'
+  },
+  essence: {
+    name: 'Essence Refinement',
+    description: 'Improves cultivation efficiency to generate more Qi',
+    baseCost: 600,
+    costMultiplier: 2.6,
+    effectPerLevel: 20, // 20% increase per level
+    effectDescription: (level: number) => `+${level * 20}% Qi generation efficiency`,
+    maxLevel: Infinity, // Infinite upgrades
+    requiredRealm: 'qi',
+    requiredStage: 5
+  },
+  perception: {
+    name: 'Spiritual Perception',
+    description: 'Enhances your ability to sense and absorb ambient spiritual energy',
+    baseCost: 800,
+    costMultiplier: 2.7,
+    effectPerLevel: 8, // 8 Qi/s per level
+    effectDescription: (level: number) => `+${level * 8} Qi/second from ambient energy`,
+    maxLevel: Infinity, // Infinite upgrades
+    requiredRealm: 'foundation',
+    requiredStage: 3
+  },
+  resonance: {
+    name: 'Dao Resonance',
+    description: 'Aligns your spiritual energy with the natural laws of the Dao',
+    baseCost: 1200,
+    costMultiplier: 2.8,
+    effectPerLevel: 0.1, // 10% increase per level
+    effectDescription: (level: number) => `+${level * 10}% faster cultivation speed`,
+    maxLevel: Infinity, // Infinite upgrades
+    requiredRealm: 'core',
+    requiredStage: 1
+  },
+  transformation: {
+    name: 'Body Transformation',
+    description: 'Transforms your physical body to better channel spiritual energy',
+    baseCost: 2000,
+    costMultiplier: 3.0,
+    effectPerLevel: 25, // +25 Qi per click
+    effectDescription: (level: number) => `+${level * 25} Qi per manual cultivation`,
+    maxLevel: Infinity, // Infinite upgrades
+    requiredRealm: 'spirit',
+    requiredStage: 1
+  },
+  transcendence: {
+    name: 'Mortal Transcendence',
+    description: 'Begin to transcend mortal limitations, massively increasing all cultivation aspects',
+    baseCost: 5000,
+    costMultiplier: 3.5,
+    effectPerLevel: 0.5, // 50% increase per level
+    effectDescription: (level: number) => `+${level * 50}% to all cultivation attributes`,
+    maxLevel: Infinity, // Infinite upgrades
+    requiredRealm: 'void',
+    requiredStage: 1
   }
 };
 
@@ -105,8 +160,8 @@ export const SKILLS = {
     description: 'Foundation technique that circulates Qi through your body\'s meridians.',
     baseCost: 150,
     costMultiplier: 2.0,
-    effectPerLevel: 30, // 30 Qi/s per level
-    effectDescription: (level: number) => `+${level * 30} Qi/second`,
+    effectPerLevel: 50, // 50 Qi/s per level - UPDATED
+    effectDescription: (level: number) => `+${level * 50} Qi/second`,
     maxLevel: 100,
     requiredRealm: 'qi',
     requiredStage: 1
@@ -194,6 +249,66 @@ export const SKILLS = {
     maxLevel: 100,
     requiredRealm: 'immortal',
     requiredStage: 1
+  },
+  'five-elements': {
+    name: 'Five Elements Harmony',
+    chineseName: '五行和合',
+    description: 'Harmonize the five elements within your body, creating perfect balance that enhances all aspects of cultivation.',
+    baseCost: 800,
+    costMultiplier: 2.3,
+    effectPerLevel: 100, // 100 Qi/s per level
+    effectDescription: (level: number) => `+${level * 100} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'foundation',
+    requiredStage: 2
+  },
+  'sword-intent': {
+    name: 'Sword Intent Manifestation',
+    chineseName: '剑意显化',
+    description: 'Cultivate your sword intent until it manifests physically, enhancing both combat prowess and cultivation speed.',
+    baseCost: 1500,
+    costMultiplier: 2.4,
+    effectPerLevel: 200, // 200 Qi/s per level
+    effectDescription: (level: number) => `+${level * 200} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'core',
+    requiredStage: 2
+  },
+  'primordial-breath': {
+    name: 'Primordial Breath Method',
+    chineseName: '先天吐纳术',
+    description: 'Ancient breathing technique that draws primordial energy directly from heaven and earth.',
+    baseCost: 3000,
+    costMultiplier: 2.6,
+    effectPerLevel: 350, // 350 Qi/s per level
+    effectDescription: (level: number) => `+${level * 350} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'spirit',
+    requiredStage: 3
+  },
+  'heavenly-tribulation': {
+    name: 'Heavenly Tribulation Sutra',
+    chineseName: '渡劫经',
+    description: 'Convert the destructive energy of heavenly tribulations into cultivation power.',
+    baseCost: 7500,
+    costMultiplier: 2.9,
+    effectPerLevel: 800, // 800 Qi/s per level
+    effectDescription: (level: number) => `+${level * 800} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'void',
+    requiredStage: 5
+  },
+  'eternal-youth': {
+    name: 'Eternal Youth Scripture',
+    chineseName: '长春不老经',
+    description: 'Legendary scripture that slows aging and draws on the cosmos to accelerate cultivation.',
+    baseCost: 15000,
+    costMultiplier: 3.2,
+    effectPerLevel: 2000, // 2000 Qi/s per level
+    effectDescription: (level: number) => `+${level * 2000} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'celestial',
+    requiredStage: 5
   }
 };
 
@@ -2406,7 +2521,7 @@ export const STARTING_QI_STONES = 10;
 
 // Game settings and mechanics
 export const DEFAULT_QI_PER_CLICK = 25;
-export const BASE_QI_RATE = 5;
+export const BASE_QI_RATE = 10;
 export const BASE_STORAGE = 5000;
 export const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 export const COMBAT_TICK_RATE = 1000; // 1 second
