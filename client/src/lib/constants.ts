@@ -41,6 +41,20 @@ export const REALMS = {
     color: 'bg-amber-500',
     textColor: 'text-amber-500',
     description: 'You have transcended mortal limitations. Your mere presence causes natural phenomena to respond, and immortality is within your grasp.'
+  },
+  immortal: {
+    name: 'Immortal Transcendence',
+    chineseName: '飞升',
+    color: 'bg-emerald-500',
+    textColor: 'text-emerald-500',
+    description: 'You have broken all mortal shackles and ascended to immortality. Your spirit can roam the cosmos freely, and you exist beyond the cycle of reincarnation.'
+  },
+  divine: {
+    name: 'Divine Apotheosis',
+    chineseName: '证道',
+    color: 'bg-yellow-300',
+    textColor: 'text-yellow-300',
+    description: 'You have attained godhood, transcending immortality itself. The cosmos bends to your will as you shape reality according to your understanding of the grand Dao.'
   }
 };
 
@@ -77,9 +91,9 @@ export const UPGRADES = {
     description: 'Improves breakthrough success rate',
     baseCost: 500,
     costMultiplier: 2.5,
-    effectPerLevel: 0.08, // 8% increase per level
-    effectDescription: (level: number) => `+${level * 8}% breakthrough chance`,
-    maxLevel: 15, // Increased max level
+    effectPerLevel: 0.05, // 5% increase per level (reduced to allow infinite levels)
+    effectDescription: (level: number) => `+${level * 5}% breakthrough chance`,
+    maxLevel: Infinity, // Infinite upgrades
     requiredRealm: 'foundation'
   }
 };
@@ -155,6 +169,30 @@ export const SKILLS = {
     effectDescription: (level: number) => `+${level * 500} Qi/second`,
     maxLevel: 100,
     requiredRealm: 'void',
+    requiredStage: 1
+  },
+  'immortal-ascension': {
+    name: 'Immortal Ascension Scripture',
+    chineseName: '飞仙经',
+    description: 'Ancient immortal scripture that transcends mortal cultivation methods, enabling the spirit to soar freely across the cosmos.',
+    baseCost: 10000,
+    costMultiplier: 3.0,
+    effectPerLevel: 1000, // 1000 Qi/s per level
+    effectDescription: (level: number) => `+${level * 1000} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'celestial',
+    requiredStage: 1
+  },
+  'divine-dao': {
+    name: 'Divine Dao Understanding',
+    chineseName: '悟道',
+    description: 'Comprehend the fundamental laws of the universe, enabling godlike manipulation of reality through pure thought.',
+    baseCost: 20000,
+    costMultiplier: 3.5,
+    effectPerLevel: 5000, // 5000 Qi/s per level
+    effectDescription: (level: number) => `+${level * 5000} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'immortal',
     requiredStage: 1
   }
 };

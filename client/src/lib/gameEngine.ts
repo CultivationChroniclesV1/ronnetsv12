@@ -455,10 +455,14 @@ export const useGameEngine = create<GameEngineState>()(
           
           // Save to local storage happens automatically via zustand/persist
           
-          // Save to server
+          // Save to server silently without notifications
           await apiRequest('POST', '/api/save', { gameState: gameWithUpdatedTimestamp });
           
-          if (state.showNotifications) {
+          // Only show notification for manual saves, not auto-saves
+          // Auto-save notification is suppressed by checking the call stack
+          const isAutoSave = new Error().stack?.includes('toggleAutoSave') || false;
+          
+          if (state.showNotifications && !isAutoSave && !SILENT_AUTO_SAVE) {
             toast({
               title: "Game Saved",
               description: "Your progress has been saved.",
@@ -467,7 +471,10 @@ export const useGameEngine = create<GameEngineState>()(
           }
         } catch (error) {
           console.error('Error saving game:', error);
-          if (get().showNotifications) {
+          // Only show error notifications for manual saves
+          const isAutoSave = new Error().stack?.includes('toggleAutoSave') || false;
+          
+          if (get().showNotifications && !isAutoSave && !SILENT_AUTO_SAVE) {
             toast({
               title: "Save Failed",
               description: "Failed to save your progress to the server.",
