@@ -39,6 +39,11 @@ export const gameStateSchema = z.object({
   characterName: z.string().optional(),
   sect: z.string().optional(),
   
+  // Settings flags
+  isAutoSaveEnabled: z.boolean().default(true),
+  isOfflineProgressEnabled: z.boolean().default(true),
+  showNotifications: z.boolean().default(true),
+  
   // Basic cultivation stats
   energy: z.number(),
   energyRate: z.number(),

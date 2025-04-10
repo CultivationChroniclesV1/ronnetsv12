@@ -40,6 +40,11 @@ export function getInitialGameState(): GameState {
     characterName: undefined,
     sect: undefined,
     
+    // Settings flags
+    isAutoSaveEnabled: true,
+    isOfflineProgressEnabled: true,
+    showNotifications: true,
+    
     // Basic cultivation stats
     energy: 0,
     energyRate: BASE_QI_RATE + 0.1, // Base + basic-qi level 1
