@@ -891,7 +891,35 @@ const CombatPage = () => {
             {/* Combat UI */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Player Stats */}
-              <Card className="bg-white shadow-md">
+              <Card className={`bg-white shadow-md relative ${attackTarget === "player" && "overflow-hidden"}`}>
+                {attackTarget === "player" && damageEffect && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-red-500 bg-opacity-30 z-10"
+                  />
+                )}
+                {attackAnimation === "enemy-attack" && attackTarget === "player" && (
+                  <motion.div 
+                    initial={{ x: 100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: -100, opacity: 0 }}
+                    className="absolute inset-0 flex items-center justify-center z-20"
+                  >
+                    <div className="text-4xl text-red-500 font-bold">💥</div>
+                  </motion.div>
+                )}
+                {herbAnimating && (
+                  <motion.div 
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -50, opacity: 0 }}
+                    className="absolute inset-0 flex items-center justify-center z-20"
+                  >
+                    <div className="text-4xl text-green-500 font-bold">🌿</div>
+                  </motion.div>
+                )}
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg flex justify-between items-center">
                     <span>{game.characterName}</span>
@@ -935,7 +963,7 @@ const CombatPage = () => {
                                   <div className="text-xs text-gray-600">Heals {herb.data.effects.health} HP</div>
                                 </div>
                                 <div className="text-xs bg-green-100 px-2 py-1 rounded">
-                                  {herb.count}
+                                  {herb.count || 0}
                                 </div>
                               </div>
                             </motion.div>
@@ -986,7 +1014,25 @@ const CombatPage = () => {
               
               {/* Enemy Stats */}
               {enemy && (
-                <Card className="bg-white shadow-md">
+                <Card className={`bg-white shadow-md relative ${attackTarget === "enemy" && "overflow-hidden"}`}>
+                  {attackTarget === "enemy" && damageEffect && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 bg-red-500 bg-opacity-30 z-10"
+                    />
+                  )}
+                  {attackAnimation && attackTarget === "enemy" && (
+                    <motion.div 
+                      initial={{ x: -100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: 100, opacity: 0 }}
+                      className="absolute inset-0 flex items-center justify-center z-20"
+                    >
+                      <div className="text-4xl text-primary font-bold">⚔️</div>
+                    </motion.div>
+                  )}
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg">{enemy.name}</CardTitle>
                   </CardHeader>
