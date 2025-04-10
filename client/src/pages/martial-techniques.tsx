@@ -92,15 +92,15 @@ const MARTIAL_TECHNIQUES: Record<string, MartialTechnique> = {
     cost: 15,
     cooldown: 5,
     effect: { type: 'poison', value: 5, duration: 10 },
-    type: "attack", attribute: "agility", attributeScaling: "agility",
+    type: "attack", 
+    attribute: "agility", 
+    attributeScaling: "agility",
     unlocked: false,
     requiredLevel: 3,
     upgradeCost: { gold: 100, spiritualStones: 2 },
     icon: "fa-snake",
-    tier: 1, maxLevel: 10,
-    type: "attack",
-    maxLevel: 10,
-    attributeScaling: "agility"
+    tier: 1, 
+    maxLevel: 10
   },
   "iron-body-technique": {
     id: "iron-body-technique",
@@ -109,17 +109,17 @@ const MARTIAL_TECHNIQUES: Record<string, MartialTechnique> = {
     level: 1,
     damage: 0, // No direct damage
     cost: 20,
-    cooldown: 15, type: "utility",
+    cooldown: 15,
+    type: "defense", 
     effect: { type: 'defense', value: 20, duration: 8 },
-    type: "defense", attribute: "endurance", attributeScaling: "endurance",
+    attribute: "endurance", 
+    attributeScaling: "endurance",
     unlocked: false,
     requiredLevel: 5,
     upgradeCost: { gold: 150, spiritualStones: 3 },
     icon: "fa-shield-alt",
-    tier: 1, maxLevel: 10,
-    type: "attack",
-    maxLevel: 10,
-    attributeScaling: "agility"
+    tier: 1, 
+    maxLevel: 10
   },
   "flowing-water-fist": {
     id: "flowing-water-fist",
@@ -129,15 +129,15 @@ const MARTIAL_TECHNIQUES: Record<string, MartialTechnique> = {
     damage: 20,
     cost: 12,
     cooldown: 4,
-    attribute: "agility", attributeScaling: "agility",
+    attribute: "agility", 
+    attributeScaling: "agility",
     unlocked: false,
     requiredLevel: 7,
     upgradeCost: { gold: 200, spiritualStones: 3 },
     icon: "fa-tint",
-    tier: 1, maxLevel: 10,
+    tier: 1, 
     type: "attack",
-    maxLevel: 10,
-    attributeScaling: "agility"
+    maxLevel: 10
   },
   "qi-reinforcement": {
     id: "qi-reinforcement",
@@ -146,17 +146,17 @@ const MARTIAL_TECHNIQUES: Record<string, MartialTechnique> = {
     level: 1,
     damage: 0,
     cost: 25,
-    cooldown: 20, type: "utility",
+    cooldown: 20,
+    type: "utility",
     effect: { type: 'health', value: 15, duration: 10 },
-    type: "utility", attribute: "endurance", attributeScaling: "endurance",
+    attribute: "endurance", 
+    attributeScaling: "endurance",
     unlocked: false,
     requiredLevel: 10,
     upgradeCost: { gold: 250, spiritualStones: 5 },
     icon: "fa-heartbeat",
-    tier: 1, maxLevel: 10,
-    type: "attack",
-    maxLevel: 10,
-    attributeScaling: "agility"
+    tier: 1, 
+    maxLevel: 10
   },
 
   // Tier 2 Techniques (Levels 11-20)
@@ -318,14 +318,17 @@ const MARTIAL_TECHNIQUES: Record<string, MartialTechnique> = {
     level: 1,
     damage: 0,
     cost: 80,
-    cooldown: 60, type: "utility", // 1 minute cooldown
+    cooldown: 60, // 1 minute cooldown
+    type: "utility",
     effect: { type: 'health', value: 40, duration: 0 }, // Instant heal
-    type: "utility", attribute: "endurance", attributeScaling: "endurance",
+    attribute: "endurance", 
+    attributeScaling: "endurance",
     unlocked: false,
     requiredLevel: 30,
     upgradeCost: { gold: 2000, spiritualStones: 40 },
     icon: "fa-heart",
-    tier: 3, maxLevel: 20,
+    tier: 3, 
+    maxLevel: 20,
     baseTechnique: "qi-reinforcement"
   },
 
@@ -455,14 +458,17 @@ const MARTIAL_TECHNIQUES: Record<string, MartialTechnique> = {
     level: 1,
     damage: 0,
     cost: 300,
-    cooldown: 180, type: "utility", // 3 minutes cooldown
+    cooldown: 180, // 3 minutes cooldown
+    type: "utility",
     effect: { type: 'health', value: 80, duration: 0 },
-    type: "utility", attribute: "endurance", attributeScaling: "endurance",
+    attribute: "endurance", 
+    attributeScaling: "endurance",
     unlocked: false,
     requiredLevel: 48,
     upgradeCost: { gold: 12000, spiritualStones: 240 },
     icon: "fa-dove",
-    tier: 5, maxLevel: 30,
+    tier: 5, 
+    maxLevel: 30,
     baseTechnique: "immortal-healing-mantra"
   },
   "demonic-sword-path-shadowless-art": {
