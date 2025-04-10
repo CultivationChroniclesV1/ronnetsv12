@@ -12,8 +12,31 @@ If you see this error in your Netlify deployment logs:
          ╵                        ~~~~~~~~~~~~~~~~~
 ```
 
-**Solution:**
-1. Install the missing dependency:
+**Solution 1 - Update netlify.toml:**
+1. Modify your netlify.toml file to include the serverless-http package in the build command:
+
+```toml
+[build]
+  command = "npm install serverless-http && node netlify/build-deploy-info.js && vite build && node netlify/build-db.js && esbuild netlify/functions/api.ts --platform=node --packages=external --bundle --format=esm --outfile=netlify/functions/api.mjs"
+  publish = "dist/public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  
+[functions.api]
+  external_node_modules = ["serverless-http"]
+```
+
+2. Commit the changes to your Git repository:
+   ```
+   git add netlify.toml
+   git commit -m "Update netlify.toml to handle serverless-http dependency"
+   git push
+   ```
+
+**Solution 2 - Add to package.json:**
+1. Make sure serverless-http is in your package.json dependencies:
    ```
    npm install serverless-http --save
    ```
@@ -24,6 +47,11 @@ If you see this error in your Netlify deployment logs:
    git commit -m "Add serverless-http dependency"
    git push
    ```
+
+**Solution 3 - Change Function Bundle Settings:**
+1. In the Netlify Dashboard, go to Site Settings > Functions
+2. Under "Function bundling", select "Netlify CLI bundler" instead of "esbuild"
+3. Redeploy your site
 
 3. Redeploy on Netlify or let your Git integration trigger a new build
 
