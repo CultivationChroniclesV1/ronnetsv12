@@ -5,6 +5,12 @@ import { setupVite, serveStatic, log } from "./vite";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static('dist/public'));
+
+// Handle SPA routing
+app.get('*', (req, res) => {
+  res.sendFile('dist/public/index.html', { root: '.' });
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
