@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameEngine } from '@/lib/gameEngine';
 import { HeaderStats } from '@/components/header-stats';
 import { CultivationStatus } from '@/components/cultivation-status';
@@ -7,9 +7,11 @@ import { UpgradesSection } from '@/components/upgrades-section';
 import { SkillsSection } from '@/components/skills-section';
 import { StatsSection } from '@/components/stats-section';
 import { SettingsModal } from '@/components/ui/settings-modal';
+import { LoadingAnimation } from '@/components/loading-animation'; 
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageTransition, PageContent } from '@/components/page-transition';
 
 export default function Game() {
   const { 
@@ -17,9 +19,11 @@ export default function Game() {
     initialize, 
     toggleSettings, 
     saveGame, 
-    isAutoSaveEnabled
+    isAutoSaveEnabled,
+    isInitialized
   } = useGameEngine();
   const [, setLocation] = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     // Initialize game engine when component mounts
@@ -29,6 +33,13 @@ export default function Game() {
     if (!game.characterCreated) {
       setLocation('/character');
     }
+    
+    // Simulate loading to show the animation
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
   }, [initialize, game.characterCreated, setLocation]);
   
   // Don't render game content if character not created
@@ -50,36 +61,54 @@ export default function Game() {
     );
   }
   
+  // Show loading animation during initialization
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-amber-50 to-amber-100 dark:from-slate-900 dark:to-slate-800">
+        <LoadingAnimation 
+          type="qi" 
+          size="lg" 
+          mood="dynamic"
+          text="Gathering Qi Energy..." 
+        />
+      </div>
+    );
+  }
+  
   // Calculate time since last save
   const lastSavedDate = new Date(game.lastSaved);
   const now = new Date();
   const minutesSinceLastSave = Math.floor((now.getTime() - lastSavedDate.getTime()) / 60000);
   
   return (
-    <div className="min-h-screen">
-      <HeaderStats />
-      
-      <div className="container mx-auto px-4 py-6">
-        <CultivationStatus />
-        <CultivationActions />
-        <UpgradesSection />
-        <SkillsSection />
-        <StatsSection />
+    <PageTransition>
+      <div className="min-h-screen">
+        <HeaderStats />
         
-        {/* Utility Button - Now floating in bottom right corner instead of full footer */}
-        <div className="fixed bottom-6 right-6">
-          <Button 
-            onClick={() => setLocation('/utility')}
-            variant="default" 
-            size="sm"
-            className="rounded-full h-12 w-12 flex items-center justify-center shadow-lg"
-          >
-            <i className="fas fa-cogs"></i>
-          </Button>
-        </div>
+        <PageContent>
+          <div className="container mx-auto px-4 py-6">
+            <CultivationStatus />
+            <CultivationActions />
+            <UpgradesSection />
+            <SkillsSection />
+            <StatsSection />
+            
+            {/* Utility Button - Now floating in bottom right corner instead of full footer */}
+            <div className="fixed bottom-6 right-6">
+              <Button 
+                onClick={() => setLocation('/utility')}
+                variant="default" 
+                size="sm"
+                className="rounded-full h-12 w-12 flex items-center justify-center shadow-lg"
+              >
+                <i className="fas fa-cogs"></i>
+              </Button>
+            </div>
+          </div>
+        </PageContent>
+        
+        <SettingsModal />
       </div>
-      
-      <SettingsModal />
-    </div>
+    </PageTransition>
   );
 }
