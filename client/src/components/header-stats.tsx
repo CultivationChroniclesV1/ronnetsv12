@@ -26,7 +26,7 @@ export function HeaderStats() {
               <span className="text-sm">{formatNumber(game.gold)}</span>
             </div>
             
-            {/* Spiritual Stones */}
+            {/* Qi Stones */}
             <div className="flex items-center">
               <i className="fas fa-gem text-blue-300 mr-1"></i>
               <span className="text-sm">{formatNumber(game.spiritualStones)}</span>

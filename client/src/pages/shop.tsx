@@ -416,7 +416,7 @@ export default function Shop() {
             <span className="ml-2 text-amber-600">{game.gold}</span>
           </div>
           <div>
-            <span className="font-semibold text-primary">Spiritual Stones:</span> 
+            <span className="font-semibold text-primary">Qi Stones:</span> 
             <span className="ml-2 text-blue-600">{game.spiritualStones}</span>
           </div>
           <div>
@@ -556,7 +556,7 @@ export default function Shop() {
                         <span>Price:</span>
                         <div className="space-x-2">
                           {weapon.price.gold > 0 && <span className="text-amber-600">{weapon.price.gold} Gold</span>}
-                          {weapon.price.spiritualStones > 0 && <span className="text-blue-600">{weapon.price.spiritualStones} Stones</span>}
+                          {weapon.price.spiritualStones > 0 && <span className="text-blue-600">{weapon.price.spiritualStones} Qi Stones</span>}
                           {weapon.price.qi > 0 && <span className="text-green-600">{weapon.price.qi} Qi</span>}
                         </div>
                       </div>
@@ -609,7 +609,7 @@ export default function Shop() {
                         <span>Price:</span>
                         <div className="space-x-2">
                           {item.price.gold > 0 && <span className="text-amber-600">{item.price.gold} Gold</span>}
-                          {item.price.spiritualStones > 0 && <span className="text-blue-600">{item.price.spiritualStones} Stones</span>}
+                          {item.price.spiritualStones > 0 && <span className="text-blue-600">{item.price.spiritualStones} Qi Stones</span>}
                           {item.price.qi > 0 && <span className="text-green-600">{item.price.qi} Qi</span>}
                         </div>
                       </div>

@@ -152,7 +152,7 @@ export default function CharacterInfo() {
                         <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
                           <div className="flex items-center mb-1">
                             <i className="fas fa-gem text-blue-500 mr-2"></i>
-                            <span className="font-medium">Spiritual Stones</span>
+                            <span className="font-medium">Qi Stones</span>
                           </div>
                           <p className="text-xl">{game.spiritualStones}</p>
                         </div>
