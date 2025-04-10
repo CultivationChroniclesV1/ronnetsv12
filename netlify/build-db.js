@@ -5,7 +5,7 @@
  * It runs during the build process to ensure the database is set up correctly
  */
 
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 console.log('=== Wuxia Cultivation Game Database Setup - Netlify Build ===');
 
