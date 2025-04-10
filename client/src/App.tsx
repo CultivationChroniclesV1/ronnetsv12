@@ -1,137 +1,112 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Game from "@/pages/game";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavigationBar } from "@/components/navigation-bar";
-import { BackgroundParticles } from "@/components/background-particles";
-import { LoadingAnimation } from "@/components/loading-animation";
-import { useLocation } from "wouter";
-import { getThemeForPath, getBackgroundClasses } from "@/lib/animations";
-import { useAchievement } from "@/hooks/use-achievement";
+import { AudioProvider } from "@/components/audio-provider";
+import { MusicAutoStarter } from "@/components/music-auto-starter";
+
+import { MoodProvider } from "@/components/mood-provider";
+import { MoodBackground } from "@/components/mood-background";
+import { MoodController } from "@/components/mood-controller";
+import { AmbientBackground } from "@/components/ambient-background";
+import { BreakthroughEffect } from "@/components/breakthrough-effect";
 
 // Lazy load other pages
 import { lazy, Suspense } from "react";
 // Use relative paths for lazy loading to avoid import issues
 const Character = lazy(() => import("./pages/character"));
-const CharacterInfo = lazy(() => import("./pages/character-info"));
 const Combat = lazy(() => import("./pages/combat"));
 const Map = lazy(() => import("./pages/map"));
 const Inventory = lazy(() => import("./pages/inventory"));
 const Shop = lazy(() => import("./pages/shop"));
 const SectQuests = lazy(() => import("./pages/sect-quests"));
-const SkillTree = lazy(() => import("./pages/skill-tree"));
-const MusicSettings = lazy(() => import("./pages/music-settings"));
-const Utility = lazy(() => import("./pages/utility"));
+const MartialTechniques = lazy(() => import("./pages/martial-techniques"));
+const Achievements = lazy(() => import("./pages/achievements"));
+const Settings = lazy(() => import("./pages/settings"));
+const AudioSettings = lazy(() => import("./pages/audio-settings"));
 
-// Loading component for lazy-loaded pages with wuxia theme
+// Import our zen-inspired loading animation
+import { LoadingAnimation } from "@/components/loading-animation";
+
+// Loading component for lazy-loaded pages
 const PageLoading = () => {
+  // Show different loading animations based on routes
   const [location] = useLocation();
-  const theme = getThemeForPath(location);
   
-  // Select the right loading animation based on the page
-  const getLoadingType = () => {
-    if (theme === 'combat') return 'sword';
-    if (theme === 'cultivation') return 'qi';
-    if (theme === 'skills') return 'scroll';
-    return 'lotus';
-  };
+  let variant: 'default' | 'breakthrough' | 'cultivation' | 'combat' | 'meditation' = 'default';
+  
+  if (location.includes('combat')) {
+    variant = 'combat';
+  } else if (location.includes('game')) {
+    variant = 'cultivation';
+  } else if (location.includes('techniques')) {
+    variant = 'meditation';
+  }
   
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <LoadingAnimation 
-          type={getLoadingType()} 
-          size="lg" 
-          text="Gathering Qi Energy..." 
-        />
-      </div>
-    </div>
+    <LoadingAnimation 
+      variant={variant}
+      message="Gathering Spiritual Energy"
+      subMessage="Please wait as we cultivate the next page..."
+    />
   );
 };
 
 function Router() {
+  // Use regular useState since we already imported React
+  const [isLoading, setIsLoading] = useState(false);
   const [location] = useLocation();
-  // Use a delayed page loading for a smoother experience
-  const [showLoading, setShowLoading] = useState(true);
-  // Track location changes to force loading screens between page transitions
   const [prevLocation, setPrevLocation] = useState(location);
   
-  // Show loading screen when location changes, then hide after delay
+  // Handle loading state for page transitions
   useEffect(() => {
     if (location !== prevLocation) {
-      setShowLoading(true);
-      setPrevLocation(location);
+      setIsLoading(true);
+      // Always show loading for at least 1 second
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        setPrevLocation(location);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
     }
-    
-    // Simulate a minimum load time of 1 second for a more satisfying loading experience
-    const timer = setTimeout(() => {
-      setShowLoading(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
   }, [location, prevLocation]);
+  
+  // If loading, show the loading animation
+  if (isLoading) {
+    return <PageLoading />;
+  }
   
   return (
     <Suspense fallback={<PageLoading />}>
-      {showLoading ? (
-        <PageLoading />
-      ) : (
+      <div className="page-transition-enter-active">
         <Switch>
-          <Route path="/">
-            <Home />
-          </Route>
-          <Route path="/game">
-            <Game />
-          </Route>
-          <Route path="/character">
-            <Character />
-          </Route>
-          <Route path="/character-info">
-            <CharacterInfo />
-          </Route>
-          <Route path="/combat">
-            <Combat />
-          </Route>
-          <Route path="/map">
-            <Map />
-          </Route>
-          <Route path="/inventory">
-            <Inventory />
-          </Route>
-          <Route path="/shop">
-            <Shop />
-          </Route>
-          <Route path="/sect-quests">
-            <SectQuests />
-          </Route>
-          <Route path="/skill-tree">
-            <SkillTree />
-          </Route>
-          <Route path="/music-settings">
-            <MusicSettings />
-          </Route>
-          <Route path="/utility">
-            <Utility />
-          </Route>
+          <Route path="/" component={Home} />
+          <Route path="/game" component={Game} />
+          <Route path="/character" component={Character} />
+          <Route path="/combat" component={Combat} />
+          <Route path="/map" component={Map} />
+          <Route path="/inventory" component={Inventory} />
+          <Route path="/shop" component={Shop} />
+          <Route path="/sect-quests" component={SectQuests} />
+          <Route path="/martial-techniques" component={MartialTechniques} />
+          <Route path="/achievements" component={Achievements} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/audio-settings" component={AudioSettings} />
           {/* Fallback to 404 */}
-          <Route>
-            <NotFound />
-          </Route>
+          <Route component={NotFound} />
         </Switch>
-      )}
+      </div>
     </Suspense>
   );
 }
 
 function App() {
-  // Comment out achievement hook until fully implemented
-  // const { AchievementDisplay } = useAchievement();
-  const [location] = useLocation();
-  
   // Add custom font link
   useEffect(() => {
     const link = document.createElement('link');
@@ -155,22 +130,24 @@ function App() {
     };
   }, []);
   
-  // Restore theme-related code now that router is fixed
-  const theme = getThemeForPath(location);
-  const bgClasses = getBackgroundClasses(theme);
-  
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={`flex flex-col min-h-screen ${bgClasses}`}>
-        <NavigationBar />
-        <main className="flex-grow relative">
-          {/* Background particles removed as requested */}
-          <Router />
-        </main>
-        {/* Display achievements when triggered */}
-        {/* AchievementDisplay will be enabled once fully implemented */}
-        <Toaster />
-      </div>
+      <AudioProvider>
+        <MoodProvider>
+          <div className="flex flex-col min-h-screen">
+            <NavigationBar />
+            <main className="flex-grow">
+              <Router />
+            </main>
+          </div>
+          <MusicAutoStarter />
+          <MoodBackground />
+          <MoodController />
+          <AmbientBackground />
+          <BreakthroughEffect />
+          <Toaster />
+        </MoodProvider>
+      </AudioProvider>
     </QueryClientProvider>
   );
 }

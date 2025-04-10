@@ -1,84 +1,61 @@
-import { useEffect, useState } from 'react';
-import { useToast } from "@/hooks/use-toast";
-
-const AUDIO_KEY = 'game-music-enabled';
+import { useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { useAudio } from '@/components/audio-provider';
+import { playMusicForPage } from '@/lib/audioManager';
+import { useGameEngine } from '@/lib/gameEngine';
 
 /**
- * This component handles auto-starting music on app load
- * It's a separate component to isolate this functionality
+ * This component handles automatic music playback based on location
+ * Music will play automatically for each page without requiring user interaction
  */
 export function MusicAutoStarter() {
-  const { toast } = useToast();
-  const [audioInitialized, setAudioInitialized] = useState(false);
+  const [location] = useLocation();
+  const { isMusicEnabled } = useAudio();
+  const { isInitialized } = useGameEngine();
 
-  // Audio player initialization
+  // Automatically play music based on current location
   useEffect(() => {
-    // By default, we'll try to play music unless explicitly disabled
-    const musicDisabled = localStorage.getItem(AUDIO_KEY) === 'false';
-    
-    if (musicDisabled) {
-      return; // User has explicitly disabled music
-    }
-    
-    // Set default to true for first-time users
-    if (localStorage.getItem(AUDIO_KEY) === null) {
-      localStorage.setItem(AUDIO_KEY, 'true');
-    }
-    
-    // Function to try playing audio
-    const playAudio = () => {
-      // Direct audio element approach - more reliable
-      const audio = document.createElement('audio');
-      audio.src = '/audio/bg.mp3';
-      audio.loop = true;
-      audio.volume = 0.5;
+    if (isInitialized && isMusicEnabled) {
+      // Play appropriate music for the current location
+      const routeKey = '/' + location.split('/')[1] || '/';
+      playMusicForPage(routeKey);
       
-      // Play the audio
-      audio.play()
-        .then(() => {
-          document.body.appendChild(audio); // Keep the element in the DOM
-          setAudioInitialized(true);
-          
-          // Show a toast notification
-          toast({
-            title: "Music Enabled",
-            description: "Background music is now playing. You can adjust volume in the settings.",
-          });
-        })
-        .catch(err => {
-          console.error("Failed to auto-play audio:", err);
-        });
-    };
-    
-    // Function to handle user interaction
-    const handleUserInteraction = () => {
-      if (!audioInitialized) {
-        playAudio();
+      // Create a hidden audio element to trigger browser audio context
+      const unlockAudio = () => {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
         
-        // Remove listeners after successful initialization
-        document.removeEventListener('click', handleUserInteraction);
-        document.removeEventListener('keydown', handleUserInteraction);
-        document.removeEventListener('touchstart', handleUserInteraction);
-      }
-    };
-    
-    // Add listeners for various user interactions
-    document.addEventListener('click', handleUserInteraction, { once: true });
-    document.addEventListener('keydown', handleUserInteraction, { once: true });
-    document.addEventListener('touchstart', handleUserInteraction, { once: true });
-    
-    // Also try to play immediately (for browsers that allow it)
-    if (!audioInitialized) {
-      playAudio();
+        // Create and play a silent audio element to unlock audio
+        const silentAudio = new Audio('/audio/music/silence-placeholder.mp3');
+        silentAudio.play().catch(() => {
+          console.log('Audio context could not be started automatically');
+        });
+        
+        // Remove event listeners after first interaction
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+      };
+      
+      // Add event listeners to unlock audio on user interaction
+      document.addEventListener('click', unlockAudio);
+      document.addEventListener('touchstart', unlockAudio);
+      document.addEventListener('keydown', unlockAudio);
+      
+      // Try to play immediately (for browsers that support it)
+      unlockAudio();
+      
+      return () => {
+        // Clean up event listeners
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+      };
     }
-    
-    // Cleanup
-    return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-      document.removeEventListener('touchstart', handleUserInteraction);
-    };
-  }, [audioInitialized, toast]);
+  }, [location, isInitialized, isMusicEnabled]);
 
-  return null; // This component doesn't render anything
+  // This component doesn't render anything visible
+  return null;
 }

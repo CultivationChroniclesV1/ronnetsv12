@@ -1,5 +1,5 @@
 import { useGameEngine } from '@/lib/gameEngine';
-import { UPGRADES, REALMS } from '@/lib/constants';
+import { UPGRADES } from '@/lib/constants';
 import { isUpgradeAvailable, getUpgradeCost } from '@/lib/gameState';
 import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGameEngine } from '@/lib/gameEngine';
 import { HeaderStats } from '@/components/header-stats';
 import { CultivationStatus } from '@/components/cultivation-status';
@@ -6,24 +6,17 @@ import { CultivationActions } from '@/components/cultivation-actions';
 import { UpgradesSection } from '@/components/upgrades-section';
 import { SkillsSection } from '@/components/skills-section';
 import { StatsSection } from '@/components/stats-section';
-import { SettingsModal } from '@/components/ui/settings-modal';
-import { LoadingAnimation } from '@/components/loading-animation'; 
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
-import { PageTransition, PageContent } from '@/components/page-transition';
 
 export default function Game() {
   const { 
     game, 
     initialize, 
-    toggleSettings, 
-    saveGame, 
-    isAutoSaveEnabled,
-    isInitialized
+    isAutoSaveEnabled
   } = useGameEngine();
   const [, setLocation] = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     // Initialize game engine when component mounts
@@ -33,13 +26,6 @@ export default function Game() {
     if (!game.characterCreated) {
       setLocation('/character');
     }
-    
-    // Simulate loading to show the animation
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    
-    return () => clearTimeout(timer);
   }, [initialize, game.characterCreated, setLocation]);
   
   // Don't render game content if character not created
@@ -61,54 +47,44 @@ export default function Game() {
     );
   }
   
-  // Show loading animation during initialization
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-amber-50 to-amber-100 dark:from-slate-900 dark:to-slate-800">
-        <LoadingAnimation 
-          type="qi" 
-          size="lg" 
-          mood="dynamic"
-          text="Gathering Qi Energy..." 
-        />
-      </div>
-    );
-  }
-  
   // Calculate time since last save
   const lastSavedDate = new Date(game.lastSaved);
   const now = new Date();
   const minutesSinceLastSave = Math.floor((now.getTime() - lastSavedDate.getTime()) / 60000);
   
   return (
-    <PageTransition>
-      <div className="min-h-screen">
-        <HeaderStats />
-        
-        <PageContent>
-          <div className="container mx-auto px-4 py-6">
-            <CultivationStatus />
-            <CultivationActions />
-            <UpgradesSection />
-            <SkillsSection />
-            <StatsSection />
-            
-            {/* Utility Button - Now floating in bottom right corner instead of full footer */}
-            <div className="fixed bottom-6 right-6">
-              <Button 
-                onClick={() => setLocation('/utility')}
-                variant="default" 
-                size="sm"
-                className="rounded-full h-12 w-12 flex items-center justify-center shadow-lg"
-              >
-                <i className="fas fa-cogs"></i>
-              </Button>
-            </div>
-          </div>
-        </PageContent>
-        
-        <SettingsModal />
+    <div className="min-h-screen pb-20">
+      <HeaderStats />
+      
+      <div className="container mx-auto px-4 py-6">
+        <CultivationStatus />
+        <CultivationActions />
+        <UpgradesSection />
+        <SkillsSection />
+        <StatsSection />
       </div>
-    </PageTransition>
+      
+      {/* Footer Info Only */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-primary text-white py-2 px-4 shadow-lg">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="text-xs">
+            <span>
+              Game {isAutoSaveEnabled ? 'auto-saved' : 'saved'} {minutesSinceLastSave} minute{minutesSinceLastSave !== 1 ? 's' : ''} ago
+            </span>
+          </div>
+          
+          <div className="flex space-x-2">
+            <Button 
+              onClick={() => setLocation('/settings')}
+              variant="outline" 
+              size="sm"
+              className="text-xs border-white text-white hover:bg-primary-dark h-8"
+            >
+              <i className="fas fa-cog mr-1"></i> Settings & Save
+            </Button>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }

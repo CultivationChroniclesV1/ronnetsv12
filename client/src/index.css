@@ -2,6 +2,154 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes petal-sway {
+  0% { transform-origin: center bottom; transform: rotate(var(--rotate)) translateY(-12px) rotate(-5deg); }
+  100% { transform-origin: center bottom; transform: rotate(var(--rotate)) translateY(-12px) rotate(5deg); }
+}
+
+@keyframes float-particle {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(10px, -10px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Background ambient elements */
+.floating-leaf {
+  position: absolute;
+  width: 30px;
+  height: 60px;
+  background: radial-gradient(ellipse at center, rgba(173, 216, 230, 0.1) 0%, rgba(0, 128, 0, 0.05) 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  pointer-events: none;
+  opacity: 0.4;
+  z-index: 0;
+  animation: leaf-float 15s linear infinite;
+}
+
+.floating-petal {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(ellipse at center, rgba(255, 192, 203, 0.1) 0%, rgba(255, 0, 0, 0.05) 100%);
+  border-radius: 50% 0 50% 0;
+  transform: rotate(45deg);
+  pointer-events: none;
+  opacity: 0.4;
+  z-index: 0;
+  animation: petal-float 20s linear infinite;
+}
+
+@keyframes leaf-float {
+  0% { transform: rotate(0deg) translateY(0) rotate(0); }
+  100% { transform: rotate(360deg) translateY(100vh) rotate(45deg); }
+}
+
+@keyframes petal-float {
+  0% { transform: rotate(45deg) translateY(0) translateX(0); }
+  25% { transform: rotate(90deg) translateY(25vh) translateX(25px); }
+  50% { transform: rotate(135deg) translateY(50vh) translateX(-15px); }
+  75% { transform: rotate(180deg) translateY(75vh) translateX(25px); }
+  100% { transform: rotate(225deg) translateY(100vh) translateX(0); }
+}
+
+/* Breakthrough animation */
+.breakthrough-effect {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.breakthrough-effect.active {
+  opacity: 1;
+}
+
+.breakthrough-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,215,0,0.6) 0%, rgba(255,215,0,0) 70%);
+  animation: breakthrough-pulse 2s ease-out forwards;
+}
+
+.breakthrough-rays {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  animation: breakthrough-rays 3s ease-out forwards;
+}
+
+.breakthrough-ray {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(to top, rgba(255,215,0,0.8), rgba(255,215,0,0));
+  transform-origin: bottom center;
+}
+
+@keyframes breakthrough-pulse {
+  0% { width: 0; height: 0; opacity: 0.8; }
+  70% { opacity: 0.6; }
+  100% { width: 300vh; height: 300vh; opacity: 0; }
+}
+
+@keyframes breakthrough-rays {
+  0% { transform: scale(0.1); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 300ms, transform 300ms;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -12,194 +160,17 @@
   }
 }
 
-/* Custom animations for the wuxia cultivation game */
-
-/* Page transitions */
-.page-transition-fade {
-  @apply transition-opacity duration-1000 ease-in-out;
-}
-
-.page-transition-fade-scale {
-  @apply transition-all duration-1000 ease-in-out transform;
-}
-
-.page-transition-slide-up {
-  @apply transition-all duration-1000 ease-in-out transform;
-}
-
-.page-transition-slide-right {
-  @apply transition-all duration-1000 ease-in-out transform;
-}
-
-.page-transition-slide-left {
-  @apply transition-all duration-1000 ease-in-out transform;
-}
-
-/* Achievement animations */
-.achievement-unlock {
-  @apply animate-bounce;
-}
-
-.achievement-level-up {
-  @apply animate-pulse;
-}
-
-.achievement-breakthrough {
-  animation: breakthrough 1.5s ease-out forwards;
-}
-
-.achievement-legendary {
-  animation: legendary 2s ease-out forwards;
-}
-
-/* Qi energy particle animations */
-.animate-qi-pulse {
-  animation: qi-pulse 2s ease-in-out infinite;
-}
-
-.animate-lotus-petal {
-  animation: lotus-petal 3s ease-in-out infinite;
-}
-
-.animate-sword-rotate {
-  animation: sword-rotate 2s linear infinite;
-}
-
-.animate-scroll-unroll {
-  animation: scroll-unroll 2s ease-out forwards;
-}
-
-.animate-scroll-line {
-  animation: scroll-line 1.5s ease-out forwards;
-}
-
-.animate-particle {
-  animation: particle 1.5s ease-out forwards;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* Custom animation keyframes */
-@keyframes breakthrough {
-  0% {
-    transform: scale(0.8);
-    box-shadow: 0 0 0 rgba(139, 92, 246, 0);
+@layer utilities {
+  .animation-delay-150 {
+    animation-delay: 150ms;
   }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.8);
+  .animation-delay-300 {
+    animation-delay: 300ms;
   }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  .animation-delay-450 {
+    animation-delay: 450ms;
   }
-}
-
-@keyframes legendary {
-  0% {
-    transform: scale(0.8);
-    box-shadow: 0 0 0 rgba(245, 158, 11, 0);
-  }
-  20% {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
-  }
-  40% {
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
-  }
-  60% {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(245, 158, 11, 0.7);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
-  }
-}
-
-@keyframes qi-pulse {
-  0% {
-    transform: scale(0) translateY(-120%);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1) translateY(-120%);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(0) translateY(-120%);
-    opacity: 0;
-  }
-}
-
-@keyframes lotus-petal {
-  0% {
-    transform: rotate(0deg) scaleY(0.6);
-  }
-  50% {
-    transform: rotate(0deg) scaleY(1);
-  }
-  100% {
-    transform: rotate(0deg) scaleY(0.6);
-  }
-}
-
-@keyframes sword-rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes scroll-unroll {
-  0% {
-    transform: scaleX(0.1);
-    opacity: 0.3;
-  }
-  100% {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-}
-
-@keyframes scroll-line {
-  0% {
-    width: 0;
-    opacity: 0;
-  }
-  100% {
-    width: 70%;
-    opacity: 0.8;
-  }
-}
-
-@keyframes particle {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(var(--x, 50px), var(--y, 50px));
-    opacity: 0;
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-  100% {
-    transform: translateY(0px);
+  .animation-delay-600 {
+    animation-delay: 600ms;
   }
 }

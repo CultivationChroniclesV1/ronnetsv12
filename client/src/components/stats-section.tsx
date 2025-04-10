@@ -1,28 +1,21 @@
 import { useGameEngine } from '@/lib/gameEngine';
-import { ACHIEVEMENTS } from '@/lib/constants';
 import { formatNumber, formatTime } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useLocation } from 'wouter';
 
 export function StatsSection() {
   const { game } = useGameEngine();
+  const [, setLocation] = useLocation();
   
   // Format the cultivation time
   const formattedTime = formatTime(game.timeCultivating);
   
-  // Build achievements list with earned status
-  const achievementsList = Object.entries(ACHIEVEMENTS).map(([id, achievement]) => {
-    const earned = game.achievements[id]?.earned || false;
-    return {
-      id,
-      name: achievement.name,
-      description: achievement.description,
-      icon: achievement.icon,
-      earned
-    };
-  });
+  // Count earned achievements
+  const earnedAchievements = Object.values(game.achievements).filter(a => a.earned).length;
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="bg-scroll rounded-lg p-4 shadow-md">
+      <div className="bg-scroll rounded-lg p-4 shadow-md animate-fade-in">
         <h2 className="font-serif text-xl mb-3 text-primary">
           <i className="fas fa-chart-line text-sm mr-2"></i> Cultivation Stats
         </h2>
@@ -57,29 +50,41 @@ export function StatsSection() {
         </table>
       </div>
       
-      <div className="bg-scroll rounded-lg p-4 shadow-md">
-        <h2 className="font-serif text-xl mb-3 text-primary">
-          <i className="fas fa-trophy text-sm mr-2"></i> Achievements
-        </h2>
-        
-        <div className="space-y-3">
-          {achievementsList.map(achievement => (
-            <div key={achievement.id} className="flex items-center p-2 border border-gray-200 rounded bg-white bg-opacity-70">
-              <div className={`w-10 h-10 rounded-full ${
-                achievement.earned ? 'bg-amber-500' : 'bg-gray-300'
-              } flex items-center justify-center mr-3 text-white`}>
-                <i className={`fas fa-${achievement.icon}`}></i>
+      <div className="bg-scroll rounded-lg p-4 shadow-md flex flex-col justify-between animate-slide-in-right">
+        <div>
+          <h2 className="font-serif text-xl mb-3 text-primary">
+            <i className="fas fa-trophy text-sm mr-2"></i> Achievements Overview
+          </h2>
+          
+          <div className="space-y-3 mb-4">
+            <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+              <h3 className="font-medium text-amber-700 mb-2">Achievement Progress</h3>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Earned:</span>
+                <span className="font-bold text-amber-700">{earnedAchievements}</span>
               </div>
-              <div className="flex-1">
-                <h5 className="font-semibold text-sm">{achievement.name}</h5>
-                <p className="text-xs text-gray-600">{achievement.description}</p>
-              </div>
-              <div className={achievement.earned ? 'text-green-600' : 'text-gray-400'}>
-                <i className={`fas fa-${achievement.earned ? 'check-circle' : 'circle'}`}></i>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                <div className="bg-amber-500 h-2.5 rounded-full animate-pulse-slow" style={{ width: '25%' }}></div>
               </div>
             </div>
-          ))}
+            
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h3 className="font-medium text-blue-700 mb-1">Recent Achievement</h3>
+              <p className="text-sm text-gray-600 mb-2">
+                View your latest cultivation milestones on the achievements page
+              </p>
+            </div>
+          </div>
         </div>
+        
+        <Button 
+          className="w-full bg-amber-500 hover:bg-amber-600 mt-4 animate-bounce-soft"
+          style={{ animationDuration: '3s' }}
+          onClick={() => setLocation('/achievements')}
+        >
+          <i className="fas fa-trophy mr-2"></i>
+          View All Achievements
+        </Button>
       </div>
     </div>
   );

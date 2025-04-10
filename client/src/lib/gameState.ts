@@ -1,4 +1,4 @@
-import { REALMS, UPGRADES, SKILLS, ACHIEVEMENTS, BASE_QI_RATE, DEFAULT_QI_PER_CLICK, BASE_STORAGE, STARTING_GOLD, STARTING_QI_STONES } from './constants';
+import { REALMS, UPGRADES, SKILLS, ACHIEVEMENTS, BASE_QI_RATE, DEFAULT_QI_PER_CLICK, BASE_STORAGE, STARTING_GOLD, STARTING_SPIRITUAL_STONES } from './constants';
 import type { GameState } from '@shared/schema';
 
 // Default initial game state
@@ -40,11 +40,6 @@ export function getInitialGameState(): GameState {
     characterName: undefined,
     sect: undefined,
     
-    // Settings flags
-    isAutoSaveEnabled: true,
-    isOfflineProgressEnabled: true,
-    showNotifications: true,
-    
     // Basic cultivation stats
     energy: 0,
     energyRate: BASE_QI_RATE + 0.1, // Base + basic-qi level 1
@@ -73,28 +68,12 @@ export function getInitialGameState(): GameState {
     critChance: 5,
     dodgeChance: 5,
     
-    // Martial arts techniques
-    martialArts: {
-      // Start with basic Azure Dragon Palm as a default skill
-      'palm-strike': {
-        id: 'palm-strike',
-        name: 'Azure Dragon Palm',
-        type: 'attack',
-        level: 1,
-        maxLevel: 10,
-        unlocked: true,
-        description: 'A basic yet powerful palm technique that channels Qi to strike opponents.',
-        damage: 15,
-        cost: 5,
-        cooldown: 2,
-        attributeScaling: 'strength',
-        lastUsed: 0
-      }
-    },
+    // Martial arts techniques - empty initially
+    martialArts: {},
     
     // Currencies
     gold: STARTING_GOLD,
-    spiritualStones: STARTING_QI_STONES, // Property name kept for backward compatibility
+    spiritualStones: STARTING_SPIRITUAL_STONES,
     
     // Inventory
     inventory: {

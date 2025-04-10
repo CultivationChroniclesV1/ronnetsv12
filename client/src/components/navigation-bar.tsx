@@ -4,7 +4,6 @@ import { useGameEngine } from '@/lib/gameEngine';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { REALMS, SECTS } from '@/lib/constants';
 
-
 export function NavigationBar() {
   const [location] = useLocation();
   const { game } = useGameEngine();
@@ -15,15 +14,14 @@ export function NavigationBar() {
         <div className="flex items-center space-x-1">
           <Link href="/">
             <div className="text-xl font-serif flex items-center cursor-pointer">
-              <span className="text-amber-200 mr-2">Cultivation</span>
-              <span className="hidden sm:inline">Chronicles</span>
+              <span className="font-['Ma_Shan_Zheng'] text-amber-200 mr-2">Cultivation Chronicles</span>
+              <span className="hidden sm:inline">Cultivation Chronicles</span>
             </div>
           </Link>
         </div>
         
         <div className="flex items-center space-x-2">
 
-          
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-4 items-center">
             <Link href="/">
@@ -36,22 +34,14 @@ export function NavigationBar() {
                 Cultivation
               </div>
             </Link>
-
-            {game.characterCreated && (
-              <Link href="/character-info">
-                <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/character-info' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
-                  Character Info
-                </div>
-              </Link>
-            )}
+            <Link href="/character">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/character' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                Character
+              </div>
+            </Link>
             <Link href="/combat">
               <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/combat' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Combat
-              </div>
-            </Link>
-            <Link href="/skill-tree">
-              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/skill-tree' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
-                <i className="fas fa-book-open mr-1"></i> Skills
               </div>
             </Link>
             <Link href="/map">
@@ -74,14 +64,19 @@ export function NavigationBar() {
                 <i className="fas fa-tasks mr-1"></i> Quests
               </div>
             </Link>
-            <Link href="/music-settings">
-              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/music-settings' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
-                <i className="fas fa-music mr-1"></i> Music
+            <Link href="/martial-techniques">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/martial-techniques' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-fist-raised mr-1"></i> Techniques
               </div>
             </Link>
-            <Link href="/utility">
-              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/utility' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
-                <i className="fas fa-cogs mr-1"></i> Utility
+            <Link href="/achievements">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/achievements' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-trophy mr-1"></i> Achievements
+              </div>
+            </Link>
+            <Link href="/settings">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/settings' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-cog mr-1"></i> Settings
               </div>
             </Link>
           </div>
@@ -98,19 +93,19 @@ export function NavigationBar() {
               <SheetHeader>
                 <SheetTitle>Creator Information</SheetTitle>
                 <SheetDescription>
-                  About the developer of Immortal Cultivation Path
+                  About the developer of Cultivation Chronicles
                 </SheetDescription>
               </SheetHeader>
               <div className="py-4">
                 <div className="mb-4 text-center">
                   <h3 className="text-xl font-bold mb-1">Ronald Pancho</h3>
-                  <p className="text-gray-600">Game Developer & Wuxia Enthusiast</p>
+                  <p className="text-gray-600">Game Developer & Incremental Enthusiast</p>
                 </div>
                 
                 <div className="mb-4">
                   <p className="mb-2">
-                    Immortal Cultivation Path is a passion project born from my love of wuxia novels,
-                    xianxia culture, and incremental games. I hope you enjoy the journey to immortality!
+                    Cultivation Chronicles is a passion project born from my love of novels,
+                    idle games, and incremental games. I hope you enjoy the journey to immortality!
                   </p>
                 </div>
                 
@@ -149,22 +144,14 @@ export function NavigationBar() {
                     <i className="fas fa-fire mr-2"></i> Cultivation
                   </div>
                 </Link>
-
-                {game.characterCreated && (
-                  <Link href="/character-info">
-                    <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/character-info' ? 'bg-primary/10 text-primary' : ''}`}>
-                      <i className="fas fa-id-card mr-2"></i> Character Info
-                    </div>
-                  </Link>
-                )}
+                <Link href="/character">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/character' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-user mr-2"></i> Character
+                  </div>
+                </Link>
                 <Link href="/combat">
                   <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/combat' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-fist-raised mr-2"></i> Combat
-                  </div>
-                </Link>
-                <Link href="/skill-tree">
-                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/skill-tree' ? 'bg-primary/10 text-primary' : ''}`}>
-                    <i className="fas fa-book-open mr-2"></i> Skills
                   </div>
                 </Link>
                 <Link href="/map">
@@ -187,16 +174,24 @@ export function NavigationBar() {
                     <i className="fas fa-tasks mr-2"></i> Quests
                   </div>
                 </Link>
-                <Link href="/music-settings">
-                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/music-settings' ? 'bg-primary/10 text-primary' : ''}`}>
-                    <i className="fas fa-music mr-2"></i> Music
+                <Link href="/martial-techniques">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/martial-techniques' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-fist-raised mr-2"></i> Techniques
                   </div>
                 </Link>
-                <Link href="/utility">
-                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/utility' ? 'bg-primary/10 text-primary' : ''}`}>
-                    <i className="fas fa-cogs mr-2"></i> Utility
+                <Link href="/achievements">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/achievements' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-trophy mr-2"></i> Achievements
                   </div>
                 </Link>
+                <Link href="/settings">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/settings' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-cog mr-2"></i> Settings
+                  </div>
+                </Link>
+                
+                {/* No character info here as requested */}
+                <div className="border-t border-gray-200 my-2 pt-2"></div>
               </div>
             </SheetContent>
           </Sheet>

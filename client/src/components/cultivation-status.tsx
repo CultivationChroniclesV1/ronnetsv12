@@ -61,8 +61,8 @@ export function CultivationStatus() {
         <div className="flex-1">
           <div className="flex justify-between items-center">
             <div className="text-sm">
-              <span className="font-['Ma_Shan_Zheng'] mr-1">{realmData.chineseName}</span>
-              <span className="font-semibold">Level {game.cultivationLevel}</span>
+              <span className="font-semibold">{game.characterName}</span>
+              <span className="ml-1">- Rank {game.cultivationLevel}</span>
             </div>
             <div className="text-xs text-gray-600">
               {formatNumber(game.cultivationProgress)}/{formatNumber(game.maxCultivationProgress)}

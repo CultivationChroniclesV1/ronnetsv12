@@ -24,10 +24,8 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-scroll text-center p-4">
       <div className="animate-float mb-6">
-        <h1 className="font-serif text-4xl md:text-6xl font-bold mb-2 text-primary">
-          <span className="font-['Ma_Shan_Zheng'] text-amber-500 mr-2">修仙录</span>
-          <span className="bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
-            Cultivation Chronicles
+        <h1 className="font-serif text-4xl md:text-6xl font-bold mb-2 text-primary animate-fade-in">
+          <span className="bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent animate-slide-in-right">Cultivation Chronicles
           </span>
         </h1>
         <p className="text-lg mb-8 italic text-gray-700">
@@ -45,18 +43,27 @@ export default function Home() {
         </p>
         
         <div className="flex flex-col md:flex-row justify-center gap-4 mb-4">
-          <div className="flex-1 border border-blue-200 rounded-md p-3 bg-blue-50">
-            <h3 className="font-serif text-blue-600 mb-2">Cultivate Qi</h3>
+          <div className="flex-1 border border-blue-200 rounded-md p-3 bg-blue-50 hover:shadow-md transition-all hover:scale-105 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <h3 className="font-serif text-blue-600 mb-2 flex items-center">
+              <span className="inline-block w-5 h-5 mr-2 rounded-full bg-blue-500 animate-pulse-slow"></span>
+              Cultivate Qi
+            </h3>
             <p className="text-sm text-gray-600">Accumulate the mystical energy that flows through all things</p>
           </div>
           
-          <div className="flex-1 border border-purple-200 rounded-md p-3 bg-purple-50">
-            <h3 className="font-serif text-purple-600 mb-2">Master Techniques</h3>
+          <div className="flex-1 border border-purple-200 rounded-md p-3 bg-purple-50 hover:shadow-md transition-all hover:scale-105 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <h3 className="font-serif text-purple-600 mb-2 flex items-center">
+              <span className="inline-block w-5 h-5 mr-2 rounded-full bg-purple-500 animate-pulse-slow"></span>
+              Master Techniques
+            </h3>
             <p className="text-sm text-gray-600">Learn ancient methods to accelerate your cultivation</p>
           </div>
           
-          <div className="flex-1 border border-amber-200 rounded-md p-3 bg-amber-50">
-            <h3 className="font-serif text-amber-600 mb-2">Breakthrough Realms</h3>
+          <div className="flex-1 border border-amber-200 rounded-md p-3 bg-amber-50 hover:shadow-md transition-all hover:scale-105 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            <h3 className="font-serif text-amber-600 mb-2 flex items-center">
+              <span className="inline-block w-5 h-5 mr-2 rounded-full bg-amber-500 animate-pulse-slow"></span>
+              Breakthrough Realms
+            </h3>
             <p className="text-sm text-gray-600">Advance to higher stages of spiritual enlightenment</p>
           </div>
         </div>
@@ -73,11 +80,13 @@ export default function Home() {
       
       <Button 
         size="lg" 
-        className="font-serif bg-primary hover:bg-primary/90 text-white px-8 py-6 h-auto"
+        className="font-serif bg-primary hover:bg-primary/90 text-white px-8 py-6 h-auto animate-bounce-soft hover:shadow-lg"
         onClick={startJourney}
       >
-        <span className="text-xl">
+        <span className="text-xl flex items-center">
+          <span className="mr-2 animate-pulse-slow">{game.characterCreated ? '✨' : '🔥'}</span>
           {game.characterCreated ? 'Continue Cultivation' : 'Create Character'}
+          <span className="ml-2 animate-pulse-slow">{game.characterCreated ? '✨' : '🔥'}</span>
         </span>
       </Button>
     </div>

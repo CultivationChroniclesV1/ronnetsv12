@@ -1,60 +1,46 @@
 // Game constants
 export const REALMS = {
   qi: {
-    name: 'Qi Condensation',
+    name: 'QI CONDENSATION',
     chineseName: '气凝',
     color: 'bg-blue-500',
     textColor: 'text-blue-500',
     description: 'As the Qi circulates through your meridians, you feel a gentle warmth spreading through your body. Your spiritual senses are slowly awakening to the world around you.'
   },
   foundation: {
-    name: 'Foundation Establishment',
+    name: 'FOUNDATION ESTABLISHMENT',
     chineseName: '筑基',
     color: 'bg-purple-500',
     textColor: 'text-purple-500',
     description: 'Your Qi has begun to solidify, forming a stable core within your dantian. The world around you appears more vibrant as your perception expands.'
   },
   core: {
-    name: 'Core Formation',
+    name: 'CORE FORMATION',
     chineseName: '结丹',
     color: 'bg-pink-500',
     textColor: 'text-pink-500',
     description: 'Your spiritual core takes shape, pulsing with power. Lesser cultivators can sense your presence from a distance.'
   },
   spirit: {
-    name: 'Spirit Severing',
+    name: 'SPIRIT SEVERING',
     chineseName: '元婴',
     color: 'bg-red-500',
     textColor: 'text-red-500',
     description: 'You have transcended the physical world, capable of separating your spirit from your mortal form. The heavens and earth respond to your will.'
   },
   void: {
-    name: 'Void Integration',
+    name: 'VOID INTEGRATION',
     chineseName: '化神',
     color: 'bg-blue-700',
     textColor: 'text-blue-700',
     description: 'The barriers between you and the void blur as your consciousness expands beyond the material plane. You exist in harmony with the universe itself.'
   },
   celestial: {
-    name: 'Celestial Ascension',
+    name: 'CELESTIAL ASCENSION',
     chineseName: '大乘',
     color: 'bg-amber-500',
     textColor: 'text-amber-500',
     description: 'You have transcended mortal limitations. Your mere presence causes natural phenomena to respond, and immortality is within your grasp.'
-  },
-  immortal: {
-    name: 'Immortal Transcendence',
-    chineseName: '飞升',
-    color: 'bg-emerald-500',
-    textColor: 'text-emerald-500',
-    description: 'You have broken all mortal shackles and ascended to immortality. Your spirit can roam the cosmos freely, and you exist beyond the cycle of reincarnation.'
-  },
-  divine: {
-    name: 'Divine Apotheosis',
-    chineseName: '证道',
-    color: 'bg-yellow-300',
-    textColor: 'text-yellow-300',
-    description: 'You have attained godhood, transcending immortality itself. The cosmos bends to your will as you shape reality according to your understanding of the grand Dao.'
   }
 };
 
@@ -62,94 +48,39 @@ export const UPGRADES = {
   meridian: {
     name: 'Meridian Expansion',
     description: 'Increases Qi storage capacity',
-    baseCost: 250,
-    costMultiplier: 2.2,
-    effectPerLevel: 2.0, // 200% increase per level
-    effectDescription: (level: number) => `+${level * 200}% Qi capacity`,
-    maxLevel: Infinity // Infinite upgrades
+    baseCost: 200,
+    costMultiplier: 1.5,
+    effectPerLevel: 1.1, // 10% increase per level
+    effectDescription: (level: number) => `+${level * 1.1}% Qi capacity`,
+    maxLevel: 100000
   },
   circulation: {
     name: 'Qi Circulation',
     description: 'Increases passive Qi generation',
-    baseCost: 375,
-    costMultiplier: 2.3,
-    effectPerLevel: 10, // 10 Qi/s per level - UPDATED
+    baseCost: 95,
+    costMultiplier: 2,
+    effectPerLevel: 10, // 0.1 Qi/s per level
     effectDescription: (level: number) => `+${level * 10} Qi/second`,
-    maxLevel: Infinity // Infinite upgrades
+    maxLevel: 100000
   },
   spirit: {
     name: 'Spirit Sense',
     description: 'Increases manual cultivation efficiency',
-    baseCost: 400,
-    costMultiplier: 2.4,
-    effectPerLevel: 15, // +15 Qi per click per level - UPDATED
-    effectDescription: (level: number) => `+${level * 15} Qi per click`,
-    maxLevel: Infinity // Infinite upgrades
+    baseCost: 100,
+    costMultiplier: 1.7,
+    effectPerLevel: 10, // +2 Qi per click per level
+    effectDescription: (level: number) => `+${level * 10} Qi per click`,
+    maxLevel: 100000
   },
   breakthrough: {
     name: 'Breakthrough Insight',
     description: 'Improves breakthrough success rate',
-    baseCost: 500,
-    costMultiplier: 2.5,
-    effectPerLevel: 0.05, // 5% increase per level (reduced to allow infinite levels)
-    effectDescription: (level: number) => `+${level * 5}% breakthrough chance`,
-    maxLevel: Infinity, // Infinite upgrades
-    requiredRealm: 'foundation'
-  },
-  essence: {
-    name: 'Essence Refinement',
-    description: 'Improves cultivation efficiency to generate more Qi',
-    baseCost: 600,
-    costMultiplier: 2.6,
-    effectPerLevel: 20, // 20% increase per level
-    effectDescription: (level: number) => `+${level * 20}% Qi generation efficiency`,
-    maxLevel: Infinity, // Infinite upgrades
-    requiredRealm: 'qi',
-    requiredStage: 5
-  },
-  perception: {
-    name: 'Spiritual Perception',
-    description: 'Enhances your ability to sense and absorb ambient spiritual energy',
-    baseCost: 800,
-    costMultiplier: 2.7,
-    effectPerLevel: 8, // 8 Qi/s per level
-    effectDescription: (level: number) => `+${level * 8} Qi/second from ambient energy`,
-    maxLevel: Infinity, // Infinite upgrades
-    requiredRealm: 'foundation',
-    requiredStage: 3
-  },
-  resonance: {
-    name: 'Dao Resonance',
-    description: 'Aligns your spiritual energy with the natural laws of the Dao',
-    baseCost: 1200,
-    costMultiplier: 2.8,
-    effectPerLevel: 0.1, // 10% increase per level
-    effectDescription: (level: number) => `+${level * 10}% faster cultivation speed`,
-    maxLevel: Infinity, // Infinite upgrades
-    requiredRealm: 'core',
-    requiredStage: 1
-  },
-  transformation: {
-    name: 'Body Transformation',
-    description: 'Transforms your physical body to better channel spiritual energy',
-    baseCost: 2000,
-    costMultiplier: 3.0,
-    effectPerLevel: 25, // +25 Qi per click
-    effectDescription: (level: number) => `+${level * 25} Qi per manual cultivation`,
-    maxLevel: Infinity, // Infinite upgrades
-    requiredRealm: 'spirit',
-    requiredStage: 1
-  },
-  transcendence: {
-    name: 'Mortal Transcendence',
-    description: 'Begin to transcend mortal limitations, massively increasing all cultivation aspects',
     baseCost: 5000,
-    costMultiplier: 3.5,
-    effectPerLevel: 0.5, // 50% increase per level
-    effectDescription: (level: number) => `+${level * 50}% to all cultivation attributes`,
-    maxLevel: Infinity, // Infinite upgrades
-    requiredRealm: 'void',
-    requiredStage: 1
+    costMultiplier: 2,
+    effectPerLevel: 0.05, // 5% increase per level
+    effectDescription: (level: number) => `+${level * 5}% breakthrough chance`,
+    maxLevel: 20,
+    requiredRealm: 'foundation'
   }
 };
 
@@ -158,11 +89,11 @@ export const SKILLS = {
     name: 'Basic Qi Cultivation',
     chineseName: '气功',
     description: 'Foundation technique that circulates Qi through your body\'s meridians.',
-    baseCost: 150,
-    costMultiplier: 2.0,
-    effectPerLevel: 50, // 50 Qi/s per level - UPDATED
-    effectDescription: (level: number) => `+${level * 50} Qi/second`,
-    maxLevel: 100,
+    baseCost: 300,
+    costMultiplier: 2,
+    effectPerLevel: 25, // 0.1 Qi/s per level
+    effectDescription: (level: number) => `+${level * 25} Qi/second`,
+    maxLevel: 100000,
     requiredRealm: 'qi',
     requiredStage: 1
   },
@@ -170,11 +101,11 @@ export const SKILLS = {
     name: 'Fireheart Scripture',
     chineseName: '火心诀',
     description: 'Harness the power of inner fire to accelerate Qi generation.',
-    baseCost: 400,
-    costMultiplier: 2.2,
-    effectPerLevel: 75, // 75 Qi/s per level
-    effectDescription: (level: number) => `+${level * 75} Qi/second`,
-    maxLevel: 100,
+    baseCost: 500,
+    costMultiplier: 2.3,
+    effectPerLevel: 40, // 0.3 Qi/s per level
+    effectDescription: (level: number) => `+${level * 40} Qi/second`,
+    maxLevel: 100000,
     requiredRealm: 'foundation',
     requiredStage: 1
   },
@@ -182,137 +113,18 @@ export const SKILLS = {
     name: 'Mystic Ice Method',
     chineseName: '玄冰诀',
     description: 'Condense spiritual energy into mystic ice, enhancing breakthrough chance.',
-    baseCost: 600,
-    costMultiplier: 2.3,
-    effectPerLevel: 0.15, // 15% per level
-    effectDescription: (level: number) => `+${level * 15}% breakthrough chance`,
-    maxLevel: 20,
+    baseCost: 800,
+    costMultiplier: 2.5,
+    effectPerLevel: 0.09, // 5% per level
+    effectDescription: (level: number) => `+${level * 9}% breakthrough chance`,
+    maxLevel: 10,
     requiredRealm: 'qi',
     requiredStage: 7
-  },
-  'celestial-orbit': {
-    name: 'Celestial Orbit Technique',
-    chineseName: '周天功',
-    description: 'Advanced technique that creates a perfect cycle of Qi through your meridians.',
-    baseCost: 1000,
-    costMultiplier: 2.4,
-    effectPerLevel: 150, // 150 Qi/s per level
-    effectDescription: (level: number) => `+${level * 150} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'core',
-    requiredStage: 1
-  },
-  'golden-body': {
-    name: 'Golden Body Refinement',
-    chineseName: '金身诀',
-    description: 'Transform your physical body with Qi, greatly increasing your cultivation speed.',
-    baseCost: 2000,
-    costMultiplier: 2.5,
-    effectPerLevel: 250, // 250 Qi/s per level
-    effectDescription: (level: number) => `+${level * 250} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'spirit',
-    requiredStage: 1
-  },
-  'void-harmony': {
-    name: 'Void Harmony Scripture',
-    chineseName: '虚空和合经',
-    description: 'Harmonize with the void to accelerate cultivation to unprecedented levels.',
-    baseCost: 5000,
-    costMultiplier: 2.7,
-    effectPerLevel: 500, // 500 Qi/s per level
-    effectDescription: (level: number) => `+${level * 500} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'void',
-    requiredStage: 1
-  },
-  'immortal-ascension': {
-    name: 'Immortal Ascension Scripture',
-    chineseName: '飞仙经',
-    description: 'Ancient immortal scripture that transcends mortal cultivation methods, enabling the spirit to soar freely across the cosmos.',
-    baseCost: 10000,
-    costMultiplier: 3.0,
-    effectPerLevel: 1000, // 1000 Qi/s per level
-    effectDescription: (level: number) => `+${level * 1000} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'celestial',
-    requiredStage: 1
-  },
-  'divine-dao': {
-    name: 'Divine Dao Understanding',
-    chineseName: '悟道',
-    description: 'Comprehend the fundamental laws of the universe, enabling godlike manipulation of reality through pure thought.',
-    baseCost: 20000,
-    costMultiplier: 3.5,
-    effectPerLevel: 5000, // 5000 Qi/s per level
-    effectDescription: (level: number) => `+${level * 5000} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'immortal',
-    requiredStage: 1
-  },
-  'five-elements': {
-    name: 'Five Elements Harmony',
-    chineseName: '五行和合',
-    description: 'Harmonize the five elements within your body, creating perfect balance that enhances all aspects of cultivation.',
-    baseCost: 800,
-    costMultiplier: 2.3,
-    effectPerLevel: 100, // 100 Qi/s per level
-    effectDescription: (level: number) => `+${level * 100} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'foundation',
-    requiredStage: 2
-  },
-  'sword-intent': {
-    name: 'Sword Intent Manifestation',
-    chineseName: '剑意显化',
-    description: 'Cultivate your sword intent until it manifests physically, enhancing both combat prowess and cultivation speed.',
-    baseCost: 1500,
-    costMultiplier: 2.4,
-    effectPerLevel: 200, // 200 Qi/s per level
-    effectDescription: (level: number) => `+${level * 200} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'core',
-    requiredStage: 2
-  },
-  'primordial-breath': {
-    name: 'Primordial Breath Method',
-    chineseName: '先天吐纳术',
-    description: 'Ancient breathing technique that draws primordial energy directly from heaven and earth.',
-    baseCost: 3000,
-    costMultiplier: 2.6,
-    effectPerLevel: 350, // 350 Qi/s per level
-    effectDescription: (level: number) => `+${level * 350} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'spirit',
-    requiredStage: 3
-  },
-  'heavenly-tribulation': {
-    name: 'Heavenly Tribulation Sutra',
-    chineseName: '渡劫经',
-    description: 'Convert the destructive energy of heavenly tribulations into cultivation power.',
-    baseCost: 7500,
-    costMultiplier: 2.9,
-    effectPerLevel: 800, // 800 Qi/s per level
-    effectDescription: (level: number) => `+${level * 800} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'void',
-    requiredStage: 5
-  },
-  'eternal-youth': {
-    name: 'Eternal Youth Scripture',
-    chineseName: '长春不老经',
-    description: 'Legendary scripture that slows aging and draws on the cosmos to accelerate cultivation.',
-    baseCost: 15000,
-    costMultiplier: 3.2,
-    effectPerLevel: 2000, // 2000 Qi/s per level
-    effectDescription: (level: number) => `+${level * 2000} Qi/second`,
-    maxLevel: 100,
-    requiredRealm: 'celestial',
-    requiredStage: 5
   }
 };
 
 export const ACHIEVEMENTS = {
+  // Beginner Achievements
   firstSteps: {
     name: 'First Steps',
     description: 'Begin your cultivation journey',
@@ -321,9 +133,9 @@ export const ACHIEVEMENTS = {
   },
   qiFlow: {
     name: 'Qi Flow',
-    description: 'Reach 100 Qi for the first time',
+    description: 'Reach 10000000000 Qi for the first time',
     icon: 'fire',
-    requirement: (state: any) => state.highestQi >= 100
+    requirement: (state: any) => state.highestQi >= 10000000000
   },
   foundationSeeker: {
     name: 'Foundation Seeker',
@@ -346,91 +158,186 @@ export const ACHIEVEMENTS = {
   },
   qiReservoir: {
     name: 'Qi Reservoir',
-    description: 'Accumulate 1,000 Qi at once',
+    description: 'Accumulate 1,0000 Qi at once',
     icon: 'water',
-    requirement: (state: any) => state.highestQi >= 1000
+    requirement: (state: any) => state.highestQi >= 10000
+  },
+  
+  // Intermediate Achievements
+  coreFormation: {
+    name: 'Core Formation',
+    description: 'Reach Core Formation realm',
+    icon: 'atom',
+    requirement: (state: any) => state.realm === 'core'
+  },
+  millionaireQi: {
+    name: 'Millionaire Qi',
+    description: 'Reach 1,000,000,000 Qi at once',
+    icon: 'database',
+    requirement: (state: any) => state.highestQi >= 1000000000
+  },
+  spiritualStoneMagnate: {
+    name: 'Qi Stone Magnate',
+    description: 'Accumulate over 1,0000 Qi stones',
+    icon: 'gem',
+    requirement: (state: any) => state.qiStones >= 10000
+  },
+  masterBreakthrough: {
+    name: 'Master of Breakthroughs',
+    description: 'Successfully breakthrough 100 times',
+    icon: 'arrow-up',
+    requirement: (state: any) => state.successfulBreakthroughs >= 100
+  },
+  tenThousandMeditations: {
+    name: 'Ten Thousand Meditations',
+    description: 'Meditate 1000 times',
+    icon: 'praying-hands',
+    requirement: (state: any) => state.timesMeditated >= 1000
+  },
+  
+  // Combat Achievements
+  firstBlood: {
+    name: 'First Blood',
+    description: 'Defeat your first enemy in combat',
+    icon: 'skull',
+    requirement: (state: any) => state.enemiesDefeated >= 1
+  },
+  combatMaster: {
+    name: 'Combat Master',
+    description: 'Defeat 100 enemies in combat',
+    icon: 'swords',
+    requirement: (state: any) => state.enemiesDefeated >= 100
+  },
+  demonSlayer: {
+    name: 'Demon Slayer',
+    description: 'Defeat a demon-type enemy',
+    icon: 'ghost',
+    requirement: (state: any) => state.demonDefeated
+  },
+  
+  // Advanced Achievements
+  nascantDivinity: {
+    name: 'Nascent Divinity',
+    description: 'Reach Nascent Soul realm',
+    icon: 'sun',
+    requirement: (state: any) => state.realm === 'nascent'
+  },
+  immortalAscension: {
+    name: 'Immortal Ascension',
+    description: 'Reach any stage of Immortal realm',
+    icon: 'star',
+    requirement: (state: any) => state.realm === 'immortal'
+  },
+  billionaireQi: {
+    name: 'Billionaire Qi',
+    description: 'Reach 1,000,000,000,000 Qi at once',
+    icon: 'meteor',
+    requirement: (state: any) => state.highestQi >= 1000000000000
+  },
+  hermit: {
+    name: 'Secluded Hermit',
+    description: 'Cultivate continuously for 24 hours',
+    icon: 'clock',
+    requirement: (state: any) => state.timeCultivating >= 86400
+  },
+  
+  // Hidden Achievements
+  hiddenPerseverance: {
+    name: 'Perseverance Through Adversity',
+    description: 'Fail breakthrough 5 times but continue cultivation',
+    icon: 'dove',
+    requirement: (state: any) => state.failedBreakthroughs >= 5
+  },
+  hiddenCollector: {
+    name: 'Collector of Treasures',
+    description: 'Acquire 25 different equipment items',
+    icon: 'treasure-chest',
+    requirement: (state: any) => 
+      Object.keys(state.equipment || {}).length >= 25
   }
 };
 
 // Sects and their unique benefits
 export const SECTS = {
-  'celestial': {
-    name: 'Celestial Phoenix Sect',
-    chineseName: '天凤宗',
-    description: 'An ancient sect whose disciples cultivate the legendary Phoenix Scripture, pursuing the immortal path of purification and rebirth.',
-    icon: 'fire-alt',
-    color: 'bg-amber-500',
-    textColor: 'text-amber-500',
+  'righteous': {
+    name: 'Virtuous Sword Sect',
+    chineseName: '正气剑派',
+    description: 'A renowned righteous sect that produces heroic disciples and emphasizes discipline, honor, and sword cultivation.',
+    icon: 'khanda',
+    color: 'bg-blue-500',
+    textColor: 'text-blue-500',
     benefits: {
-      description: 'Increases breakthrough success rate by 15%',
+      description: 'Increases breakthrough success rate by 30%',
       effect: (state: any) => ({
         ...state,
-        // 15% higher breakthrough chance
-        breakthroughBonus: 0.15
+        // 30% higher breakthrough chance
+        breakthroughBonus: 0.3
       })
     }
   },
   'demonic': {
     name: 'Blood Shadow Cult',
     chineseName: '血影魔宗',
-    description: 'A feared demonic cult that pursues power through any means necessary, including forbidden techniques and soul sacrifice.',
+    description: 'A feared demonic cult that pursues power through any means necessary, including forbidden techniques.',
     icon: 'skull',
     color: 'bg-red-600',
     textColor: 'text-red-600',
     benefits: {
-      description: 'Doubles your passive Qi generation speed',
+      description: 'Speed up your base Qi generation',
       effect: (state: any) => ({
         ...state,
         // Double base Qi rate
-        qiMultiplier: 2
+        qiMultiplier: 5
       })
     }
   },
   'scholarly': {
     name: 'Azure Clouds Academy',
     chineseName: '青云书院',
-    description: 'An ancient academy focusing on scholarly cultivation techniques and the refinement of spiritual knowledge through meditation.',
+    description: 'An ancient academy focusing on scholarly pursuits and the refinement of spiritual knowledge.',
     icon: 'book',
     color: 'bg-cyan-500',
     textColor: 'text-cyan-500',
     benefits: {
-      description: 'Increases manual cultivation efficiency by 20%',
+      description: 'Reduces all technique upgrade costs by 25%',
       effect: (state: any) => ({
         ...state,
-        // 20% more qi per click
-        manualCultivationBonus: 0.2
+        // 15% cost reduction for techniques
+        skillCostReduction: 0.25
       })
     }
   },
-  'immortal': {
-    name: 'Heavenly Sword Immortal Sect',
-    chineseName: '天剑仙门',
-    description: 'A prestigious sect whose disciples wield mystical flying swords and cultivate immortal techniques passed down from ancient times.',
-    icon: 'khanda',
-    color: 'bg-blue-500',
-    textColor: 'text-blue-500',
+  'medical': {
+    name: 'Divine Healing Pavilion',
+    chineseName: '神医阁',
+    description: 'A sect dedicated to the healing arts and medicinal cultivation, with unparalleled skill in herb crafting.',
+    icon: 'first-aid',
+    color: 'bg-green-500',
+    textColor: 'text-green-500',
     benefits: {
-      description: 'Reduces qi consumption during combat by 25%',
+      description: 'Increases health regeneration by 40% and herb quality',
       effect: (state: any) => ({
         ...state,
-        // 25% less qi used in combat
-        combatQiEfficiency: 0.25
+        // 20% regeneration bonus
+        healthRegenBonus: 0.4,
+        // Better herb quality
+        herbQualityBonus: 1
       })
     }
   },
   'hidden': {
     name: 'Misty Valley Hermits',
     chineseName: '幽谷隐士',
-    description: 'A reclusive group of cultivators who have withdrawn from worldly affairs to pursue the ultimate dao through natural harmony.',
+    description: 'A reclusive group of cultivators who have withdrawn from worldly affairs to pursue the ultimate dao.',
     icon: 'mountain',
     color: 'bg-purple-500',
     textColor: 'text-purple-500',
     benefits: {
-      description: 'Increases qi storage capacity by 30%',
+      description: 'Increases cultivation speed by 25% when offline',
       effect: (state: any) => ({
         ...state,
-        // 30% more qi storage
-        qiCapacityBonus: 0.3
+        // 15% offline progress bonus
+        offlineProgressBonus: 0.25
       })
     }
   }
@@ -452,29 +359,7 @@ export const MARTIAL_ARTS = {
     requiredLevel: 1,
     maxLevel: 10,
     requiredRealm: 'qi',
-    requiredStage: 1,
-    unlocked: true, // Make this a default skill for all players
-    level: 1
-  },
-  
-  // Advanced techniques
-  'demonic-palm': {
-    name: 'Demonic Palm Technique',
-    chineseName: '魔掌功',
-    description: 'A sinister palm technique that drains life energy from opponents and transfers it to the user.',
-    damage: 25,
-    cost: 15,
-    cooldown: 4,
-    type: 'attack',
-    attributeScaling: 'spirit',
-    icon: 'hand-sparkles',
-    requiredLevel: 5,
-    maxLevel: 10,
-    requiredRealm: 'qi',
-    requiredStage: 5,
-    unlocked: false, // Must be unlocked through progression
-    level: 1,
-    unlockCost: 50 // Spiritual stones required to unlock
+    requiredStage: 1
   },
   'iron-body': {
     name: 'Iron Body Technique',
@@ -605,13 +490,13 @@ export const LOCATIONS = {
     ],
     enemies: [],
     rewards: {
-      spiritualStones: [5, 15],
+      qiStones: [5, 15],
       gold: [10, 30],
       experience: [5, 20]
     }
   },
 
-  // Beginner Locations (Level 5-15)
+  // Level 5-10 Locations
   'forest': {
     name: 'Ancient Spirit Forest',
     description: 'A mystical forest filled with spiritual energy and low-level beasts.',
@@ -620,7 +505,7 @@ export const LOCATIONS = {
     activities: ['explore', 'gather-herbs', 'hunt', 'meditate'],
     enemies: ['beast', 'forest-wolf', 'wild-boar', 'shadow-wolf', 'spirit-fox', 'spirit-monkey'],
     rewards: {
-      spiritualStones: [10, 25],
+      qiStones: [10, 25],
       gold: [15, 35],
       experience: [10, 30]
     }
@@ -628,25 +513,25 @@ export const LOCATIONS = {
   'bamboo-grove': {
     name: 'Emerald Bamboo Grove',
     description: 'A tranquil bamboo forest where the bamboo absorbs spiritual energy, attracting unique beasts.',
-    requiredLevel: 10,
+    requiredLevel: 6,
     realm: 'qi',
     activities: ['explore', 'gather-bamboo', 'hunt', 'cultivate-tranquility'],
     enemies: ['fox-spirit', 'poisonous-snake', 'wild-tiger', 'bamboo-snake'],
     rewards: {
-      spiritualStones: [15, 35],
-      gold: [20, 45],
-      experience: [15, 40]
+      qiStones: [12, 28],
+      gold: [18, 40],
+      experience: [12, 35]
     }
   },
   'caverns': {
     name: 'Echo Spirit Caverns',
     description: 'A complex cave system that echoes with spiritual resonance, home to many cave-dwelling creatures.',
-    requiredLevel: 15,
+    requiredLevel: 8,
     realm: 'qi',
     activities: ['explore', 'mine-crystals', 'hunt', 'sound-cultivation'],
     enemies: ['cave-bat', 'giant-centipede'],
     rewards: {
-      spiritualStones: [20, 40],
+      qiStones: [15, 30],
       gold: [20, 45],
       experience: [15, 40]
     }
@@ -654,27 +539,27 @@ export const LOCATIONS = {
   'poison-marsh': {
     name: 'Venom Mist Marsh',
     description: 'A dangerous marsh filled with poisonous mists and venomous creatures.',
-    requiredLevel: 18,
+    requiredLevel: 9,
     realm: 'qi',
     activities: ['explore', 'gather-poison', 'hunt', 'poison-resistance-training'],
     enemies: ['venomous-toad', 'marsh-crocodile', 'swamp-toad'],
     rewards: {
-      spiritualStones: [25, 45],
-      gold: [30, 60],
-      experience: [25, 55]
+      qiStones: [18, 35],
+      gold: [25, 50],
+      experience: [18, 45]
     }
   },
   'mist-forest': {
     name: 'Spirit Mist Forest',
     description: 'A mysterious forest perpetually shrouded in spiritual mists that enhance perception cultivation.',
-    requiredLevel: 12,
+    requiredLevel: 7,
     realm: 'qi',
     activities: ['explore', 'gather-mist-essence', 'hunt', 'perception-cultivation'],
     enemies: ['vine-horror', 'spirit-deer'],
     rewards: {
-      spiritualStones: [18, 38],
-      gold: [25, 50],
-      experience: [20, 45]
+      qiStones: [14, 30],
+      gold: [20, 42],
+      experience: [14, 38]
     }
   },
   'city': {
@@ -686,7 +571,7 @@ export const LOCATIONS = {
                 'martial-tournament', 'treasure-exchange', 'sect-diplomacy'],
     enemies: [],
     rewards: {
-      spiritualStones: [20, 40],
+      qiStones: [20, 40],
       gold: [30, 60],
       experience: [15, 35]
     }
@@ -701,7 +586,7 @@ export const LOCATIONS = {
     activities: ['explore', 'mine-jade', 'hunt', 'jade-essence-absorption'],
     enemies: ['jade-serpent', 'jade-scorpion'],
     rewards: {
-      spiritualStones: [25, 50],
+      qiStones: [25, 50],
       gold: [35, 70],
       experience: [25, 55]
     }
@@ -714,7 +599,7 @@ export const LOCATIONS = {
     activities: ['explore', 'gather-thunder-essence', 'hunt', 'lightning-tempering'],
     enemies: ['thunder-bird', 'thunder-bird-fledgling', 'thunder-beast', 'thunder-serpent', 'thunder-tiger'],
     rewards: {
-      spiritualStones: [30, 60],
+      qiStones: [30, 60],
       gold: [40, 80],
       experience: [30, 65]
     }
@@ -727,7 +612,7 @@ export const LOCATIONS = {
     activities: ['explore', 'harvest-living-stone', 'hunt', 'earth-energy-cultivation'],
     enemies: ['rock-tortoise', 'stone-golem'],
     rewards: {
-      spiritualStones: [28, 55],
+      qiStones: [28, 55],
       gold: [38, 75],
       experience: [28, 60]
     }
@@ -740,7 +625,7 @@ export const LOCATIONS = {
     activities: ['explore', 'mine-spiritual-stones', 'face-trial', 'secluded-cultivation', 'cliff-hanging-practice'],
     enemies: ['spirit-ape', 'mountain-goat', 'earth-bear'],
     rewards: {
-      spiritualStones: [35, 70],
+      qiStones: [35, 70],
       gold: [45, 90],
       experience: [35, 75]
     }
@@ -753,7 +638,7 @@ export const LOCATIONS = {
     activities: ['explore', 'gather-battle-remnants', 'hunt', 'battle-spirit-tempering'],
     enemies: ['ghost-warrior', 'bone-vulture'],
     rewards: {
-      spiritualStones: [38, 75],
+      qiStones: [38, 75],
       gold: [50, 100],
       experience: [38, 80]
     }
@@ -766,7 +651,7 @@ export const LOCATIONS = {
     activities: ['explore', 'collect-blood-essence', 'hunt', 'blood-refining-cultivation'],
     enemies: ['blood-bat', 'blood-crow'],
     rewards: {
-      spiritualStones: [40, 80],
+      qiStones: [40, 80],
       gold: [55, 110],
       experience: [40, 85]
     }
@@ -779,7 +664,7 @@ export const LOCATIONS = {
     activities: ['explore', 'capture-flame-essence', 'hunt', 'heat-resistance-training'],
     enemies: ['flame-scorpion', 'flame-lizard', 'flame-fox'],
     rewards: {
-      spiritualStones: [45, 90],
+      qiStones: [45, 90],
       gold: [60, 120],
       experience: [45, 95]
     }
@@ -792,7 +677,7 @@ export const LOCATIONS = {
     activities: ['explore', 'harvest-eternal-ice', 'hunt', 'cold-resistance-training'],
     enemies: ['ice-sprite', 'snow-leopard', 'frost-dragon'],
     rewards: {
-      spiritualStones: [48, 95],
+      qiStones: [48, 95],
       gold: [65, 130],
       experience: [48, 100]
     }
@@ -805,7 +690,7 @@ export const LOCATIONS = {
     activities: ['explore', 'mine-spirit-iron', 'hunt', 'metal-attribute-cultivation'],
     enemies: ['armored-beast', 'iron-tortoise'],
     rewards: {
-      spiritualStones: [35, 70],
+      qiStones: [35, 70],
       gold: [45, 90],
       experience: [35, 75]
     }
@@ -818,7 +703,7 @@ export const LOCATIONS = {
     activities: ['explore', 'search-for-treasures', 'fight-guardians', 'study-formations', 'decipher-inscriptions'],
     enemies: ['guardian', 'living-statue'],
     rewards: {
-      spiritualStones: [60, 120],
+      qiStones: [60, 120],
       gold: [80, 160],
       experience: [60, 130]
     }
@@ -833,7 +718,7 @@ export const LOCATIONS = {
     activities: ['explore', 'gather-river-essence', 'hunt', 'water-dao-meditation'],
     enemies: ['river-snake', 'water-dragon', 'elder-dragon'],
     rewards: {
-      spiritualStones: [55, 110],
+      qiStones: [55, 110],
       gold: [75, 150],
       experience: [55, 115]
     }
@@ -846,7 +731,7 @@ export const LOCATIONS = {
     activities: ['explore', 'collect-scripture-leaves', 'hunt', 'scripture-comprehension'],
     enemies: ['golden-ape'],
     rewards: {
-      spiritualStones: [58, 115],
+      qiStones: [58, 115],
       gold: [80, 160],
       experience: [58, 120]
     }
@@ -859,7 +744,7 @@ export const LOCATIONS = {
     activities: ['explore', 'gather-phoenix-ash', 'hunt', 'flame-dao-meditation'],
     enemies: ['phoenix-descendant', 'blood-phoenix'],
     rewards: {
-      spiritualStones: [60, 120],
+      qiStones: [60, 120],
       gold: [85, 170],
       experience: [60, 125]
     }
@@ -872,7 +757,7 @@ export const LOCATIONS = {
     activities: ['explore', 'collect-wind-crystals', 'hunt', 'wind-dao-meditation'],
     enemies: ['ancient-tiger'],
     rewards: {
-      spiritualStones: [65, 130],
+      qiStones: [65, 130],
       gold: [90, 180],
       experience: [65, 135]
     }
@@ -885,7 +770,7 @@ export const LOCATIONS = {
     activities: ['explore', 'mine-spirit-crystals', 'hunt', 'crystal-resonance-cultivation'],
     enemies: ['crystal-beetle', 'crystal-wolf', 'crystal-mantis'],
     rewards: {
-      spiritualStones: [50, 100],
+      qiStones: [50, 100],
       gold: [70, 140],
       experience: [50, 105]
     }
@@ -898,7 +783,7 @@ export const LOCATIONS = {
     activities: ['explore', 'study-forbidden-energy', 'hunt', 'forbidden-dao-resistance'],
     enemies: ['demonic-cultivator'],
     rewards: {
-      spiritualStones: [70, 140],
+      qiStones: [70, 140],
       gold: [95, 190],
       experience: [70, 145]
     }
@@ -911,7 +796,7 @@ export const LOCATIONS = {
     activities: ['explore', 'harvest-shadow-essence', 'hunt', 'darkness-dao-cultivation'],
     enemies: ['shadow-panther'],
     rewards: {
-      spiritualStones: [60, 120],
+      qiStones: [60, 120],
       gold: [85, 170],
       experience: [60, 125]
     }
@@ -924,7 +809,7 @@ export const LOCATIONS = {
     activities: ['explore', 'gather-cloud-essence', 'hunt', 'heaven-dao-meditation'],
     enemies: ['wind-falcon', 'celestial-crane'],
     rewards: {
-      spiritualStones: [75, 150],
+      qiStones: [75, 150],
       gold: [100, 200],
       experience: [75, 155]
     }
@@ -939,7 +824,7 @@ export const LOCATIONS = {
     activities: ['explore', 'study-imperial-artifacts', 'hunt', 'imperial-dao-comprehension'],
     enemies: ['ancient-sovereign'],
     rewards: {
-      spiritualStones: [100, 200],
+      qiStones: [100, 200],
       gold: [150, 300],
       experience: [100, 210]
     }
@@ -952,7 +837,7 @@ export const LOCATIONS = {
     activities: ['explore', 'collect-immortal-remnants', 'hunt', 'immortality-dao-study'],
     enemies: ['immortal-remnant'],
     rewards: {
-      spiritualStones: [120, 240],
+      qiStones: [120, 240],
       gold: [180, 360],
       experience: [120, 250]
     }
@@ -965,7 +850,7 @@ export const LOCATIONS = {
     activities: ['explore', 'gather-qilin-essence', 'hunt', 'supreme-lightning-cultivation'],
     enemies: ['lightning-qilin'],
     rewards: {
-      spiritualStones: [110, 220],
+      qiStones: [110, 220],
       gold: [165, 330],
       experience: [110, 230]
     }
@@ -978,7 +863,7 @@ export const LOCATIONS = {
     activities: ['explore', 'collect-void-fragments', 'hunt', 'space-dao-cultivation'],
     enemies: ['void-serpent'],
     rewards: {
-      spiritualStones: [115, 230],
+      qiStones: [115, 230],
       gold: [175, 350],
       experience: [115, 240]
     }
@@ -991,7 +876,7 @@ export const LOCATIONS = {
     activities: ['explore', 'collect-divine-water', 'hunt', 'divine-law-meditation'],
     enemies: ['divine-tortoise'],
     rewards: {
-      spiritualStones: [130, 260],
+      qiStones: [130, 260],
       gold: [195, 390],
       experience: [130, 270]
     }
@@ -1004,76 +889,76 @@ export const LOCATIONS = {
     activities: ['explore', 'mine-divine-earth', 'hunt', 'foundation-law-comprehension'],
     enemies: ['mountain-spirit', 'earth-behemoth'],
     rewards: {
-      spiritualStones: [150, 300],
+      qiStones: [150, 300],
       gold: [225, 450],
       experience: [150, 310]
     }
   },
 
-  // Ultra high-level locations (Level 50-100)
+  // Ultra high-level locations (Level 45+)
   'dragon-volcano': {
     name: 'Dragon King\'s Volcano',
     description: 'An active volcano where dragon kings occasionally rest, infusing the area with royal dragon energy.',
-    requiredLevel: 55,
+    requiredLevel: 45,
     realm: 'divine',
     activities: ['explore', 'collect-dragon-fire', 'hunt', 'dragon-dao-comprehension'],
     enemies: ['fire-dragon-king'],
     rewards: {
-      spiritualStones: [250, 500],
-      gold: [350, 700],
-      experience: [250, 510]
+      qiStones: [200, 400],
+      gold: [300, 600],
+      experience: [200, 410]
     }
   },
   'illusion-forest': {
     name: 'Nine Illusions Ancient Forest',
     description: 'A forest where reality constantly shifts under the influence of ancient fox spirits.',
-    requiredLevel: 50,
+    requiredLevel: 42,
     realm: 'divine',
     activities: ['explore', 'gather-illusion-essence', 'hunt', 'illusion-dao-understanding'],
     enemies: ['nine-tailed-fox', 'phantom-fox'],
     rewards: {
-      spiritualStones: [220, 440],
-      gold: [320, 640],
-      experience: [220, 450]
+      qiStones: [180, 360],
+      gold: [270, 540],
+      experience: [180, 370]
     }
   },
   'blood-palace': {
     name: 'Blood Emperor\'s Palace',
     description: 'The terrifying palace of a legendary blood cultivator, saturated with blood essence and forbidden power.',
-    requiredLevel: 65,
+    requiredLevel: 48,
     realm: 'divine',
     activities: ['explore', 'harvest-blood-crystals', 'hunt', 'blood-dao-refinement'],
     enemies: ['blood-emperor'],
     rewards: {
-      spiritualStones: [300, 600],
-      gold: [450, 900],
-      experience: [300, 620]
+      qiStones: [250, 500],
+      gold: [375, 750],
+      experience: [250, 510]
     }
   },
   'dragon-throne': {
     name: 'Heavenly Dragon\'s Throne',
     description: 'The former throne of a heavenly dragon that defied celestial law, now abandoned but still filled with authority.',
-    requiredLevel: 75,
+    requiredLevel: 60,
     realm: 'divine',
     activities: ['explore', 'absorb-authority-essence', 'hunt', 'authority-dao-contemplation'],
     enemies: ['heaven-defying-dragon'],
     rewards: {
-      spiritualStones: [450, 900],
-      gold: [700, 1400],
-      experience: [450, 920]
+      qiStones: [400, 800],
+      gold: [600, 1200],
+      experience: [400, 820]
     }
   },
   'chaos-origin': {
     name: 'Primordial Chaos Origin',
     description: 'A forbidden realm where remnants of primordial chaos still exist from before the world\'s formation.',
-    requiredLevel: 100,
+    requiredLevel: 70,
     realm: 'tribulation',
     activities: ['explore', 'gather-chaos-essence', 'hunt', 'chaos-dao-comprehension'],
     enemies: ['primordial-beast'],
     rewards: {
-      spiritualStones: [800, 1600],
-      gold: [1200, 2400],
-      experience: [800, 1600]
+      qiStones: [600, 1200],
+      gold: [900, 1800],
+      experience: [600, 1230]
     }
   }
 };
@@ -1084,7 +969,7 @@ export const ENEMIES = {
   'beast': {
     name: 'Spirit Beast',
     description: 'A wild beast that has absorbed spiritual energy from its environment.',
-    health: 50,
+    health: 550, // Increased base health for better combat balance
     attack: 5,
     defense: 2,
     level: 1,
@@ -1092,13 +977,14 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 10,
-      spiritualStones: 1
+      qiStones: 1,
+      gold: 5
     }
   },
   'wolf': {
     name: 'Spiritual Wolf',
     description: 'A swift predator with sharp senses and instincts.',
-    health: 45,
+    health: 580, // Increased from 45 for better combat balance
     attack: 7,
     defense: 1,
     level: 2,
@@ -1106,13 +992,14 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 12,
-      spiritualStones: 1
+      qiStones: 1,
+      gold: 7
     }
   },
   'fox': {
     name: 'Nine-Tailed Fox',
     description: 'A cunning creature with innate spiritual abilities.',
-    health: 40,
+    health: 600, // Increased from 40 for better combat balance,
     attack: 6,
     defense: 3,
     level: 3,
@@ -1120,13 +1007,14 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 15,
-      spiritualStones: 2
+      qiStones: 2,
+      gold: 10
     }
   },
   'bear': {
     name: 'Spirit Bear',
     description: 'A massive beast with incredible strength and endurance.',
-    health: 70,
+    health: 600, // Increased from 70 for better combat balance,
     attack: 8,
     defense: 4,
     level: 4,
@@ -1134,13 +1022,14 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 18,
-      spiritualStones: 2
+      qiStones: 2,
+      gold: 12
     }
   },
   'snake': {
     name: 'Mystic Serpent',
     description: 'A poisonous snake with venomous spiritual energy.',
-    health: 35,
+    health: 600, // Increased from 35 for better combat balance,
     attack: 9,
     defense: 2,
     level: 5,
@@ -1148,13 +1037,14 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 20,
-      spiritualStones: 2
+      qiStones: 2,
+      gold: 15
     }
   },
   'tiger': {
     name: 'Azure Tiger',
     description: 'A majestic predator with lightning-fast reflexes.',
-    health: 60,
+    health: 600, // Increased from 60 for better combat balance,
     attack: 10,
     defense: 4,
     level: 6,
@@ -1162,13 +1052,13 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 25,
-      spiritualStones: 3
+      qiStones: 3
     }
   },
   'eagle': {
     name: 'Spirit Eagle',
     description: 'A keen-eyed raptor with control over wind elements.',
-    health: 45,
+    health: 600, // Increased from 45 for better combat balance,
     attack: 12,
     defense: 3,
     level: 7,
@@ -1176,13 +1066,13 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 28,
-      spiritualStones: 3
+      qiStones: 3
     }
   },
   'boar': {
     name: 'Iron-Hide Boar',
     description: 'A ferocious boar with extremely tough skin.',
-    health: 80,
+    health: 600, // Increased from 80 for better combat balance,
     attack: 8,
     defense: 6,
     level: 8,
@@ -1190,13 +1080,13 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 30,
-      spiritualStones: 3
+      qiStones: 3
     }
   },
   'monkey': {
     name: 'Nimble Monkey',
     description: 'A clever primate that has learned basic spiritual techniques.',
-    health: 40,
+    health: 600, // Increased from 40 for better combat balance,
     attack: 7,
     defense: 5,
     level: 9,
@@ -1204,13 +1094,13 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 32,
-      spiritualStones: 4
+      qiStones: 4
     }
   },
   'deer': {
     name: 'Golden Deer',
     description: 'A rare deer that can manipulate healing energies.',
-    health: 55,
+    health: 600, // Increased from 55 for better combat balance,
     attack: 6,
     defense: 7,
     level: 10,
@@ -1218,7 +1108,7 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 35,
-      spiritualStones: 4
+      qiStones: 4
     }
   },
   
@@ -1226,7 +1116,7 @@ export const ENEMIES = {
   'bandit': {
     name: 'Rogue Cultivator',
     description: 'A cultivator who has strayed from the righteous path.',
-    health: 60,
+    health: 600, // Increased from 60 for better combat balance,
     attack: 8,
     defense: 4,
     level: 5,
@@ -1234,7 +1124,7 @@ export const ENEMIES = {
     location: 'city',
     rewards: {
       experience: 10,
-      spiritualStones: 5,
+      qiStones: 5,
       gold: 3,
       loot: ['beast-core', 'hide']
     }
@@ -1242,7 +1132,7 @@ export const ENEMIES = {
   'rogue-cultivator': {
     name: 'Rogue Cultivator',
     description: 'A cultivator who has strayed from the righteous path and now preys on others.',
-    health: 80,
+    health: 600, // Increased from 80 for better combat balance,
     attack: 8,
     defense: 4,
     level: 3,
@@ -1250,7 +1140,7 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 15,
-      spiritualStones: 10,
+      qiStones: 10,
       gold: 8,
       loot: ['low-grade-pill', 'technique-scroll']
     }
@@ -1258,7 +1148,7 @@ export const ENEMIES = {
   'fox-spirit': {
     name: 'Fox Spirit',
     description: 'A fox that has cultivated for decades and gained human form and illusion abilities.',
-    health: 65,
+    health: 600, // Increased from 65 for better combat balance,
     attack: 12,
     defense: 3,
     level: 5,
@@ -1266,7 +1156,7 @@ export const ENEMIES = {
     location: 'bamboo-grove',
     rewards: {
       experience: 18,
-      spiritualStones: 12,
+      qiStones: 12,
       gold: 15,
       loot: ['fox-pelt', 'illusion-pearl']
     }
@@ -1274,7 +1164,7 @@ export const ENEMIES = {
   'jade-serpent': {
     name: 'Jade Serpent',
     description: 'A serpent with scales like jade that has absorbed mineral essence for centuries.',
-    health: 60,
+    health: 600, // Increased from 60 for better combat balance,
     attack: 15,
     defense: 8,
     level: 6,
@@ -1282,7 +1172,7 @@ export const ENEMIES = {
     location: 'jade-valley',
     rewards: {
       experience: 20,
-      spiritualStones: 15,
+      qiStones: 15,
       gold: 18,
       loot: ['jade-scale', 'serpent-venom']
     }
@@ -1290,7 +1180,7 @@ export const ENEMIES = {
   'shadow-wolf': {
     name: 'Shadow Wolf',
     description: 'A wolf that can merge with shadows and strike from darkness.',
-    health: 70,
+    health: 600, // Increased from 70 for better combat balance,
     attack: 14,
     defense: 5,
     level: 7,
@@ -1298,7 +1188,7 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 22,
-      spiritualStones: 14,
+      qiStones: 14,
       gold: 12,
       loot: ['shadow-pelt', 'wolf-fang']
     }
@@ -1306,7 +1196,7 @@ export const ENEMIES = {
   'spirit-ape': {
     name: 'Azure Mountain Ape',
     description: 'An intelligent ape with tremendous strength that roams sacred mountains.',
-    health: 95,
+    health: 600, // Increased from 95 for better combat balance,
     attack: 18,
     defense: 7,
     level: 8,
@@ -1314,7 +1204,7 @@ export const ENEMIES = {
     location: 'mountain',
     rewards: {
       experience: 25,
-      spiritualStones: 16,
+      qiStones: 16,
       gold: 20,
       loot: ['ape-fur', 'spiritual-fruit']
     }
@@ -1322,7 +1212,7 @@ export const ENEMIES = {
   'thunder-bird': {
     name: 'Thunder Peak Hawk',
     description: 'A hawk that nests on peaks where lightning strikes, absorbing thunder essence.',
-    health: 65,
+    health: 600, // Increased from 65 for better combat balance,
     attack: 20,
     defense: 4,
     level: 8,
@@ -1330,7 +1220,7 @@ export const ENEMIES = {
     location: 'thunder-peak',
     rewards: {
       experience: 25,
-      spiritualStones: 18,
+      qiStones: 18,
       gold: 22,
       loot: ['thunder-feather', 'hawk-talon']
     }
@@ -1338,7 +1228,7 @@ export const ENEMIES = {
   'tomb-guardian': {
     name: 'Ancestral Tomb Guardian',
     description: 'A lower guardian spirit bound to protect family tombs and ancestral grounds.',
-    health: 100,
+    health: 100 * 3, // Tripled for better combat balance,
     attack: 13,
     defense: 15,
     level: 9,
@@ -1346,7 +1236,7 @@ export const ENEMIES = {
     location: 'ancestral-grounds',
     rewards: {
       experience: 28,
-      spiritualStones: 20,
+      qiStones: 20,
       gold: 25,
       loot: ['guardian-essence', 'tomb-talisman']
     }
@@ -1354,7 +1244,7 @@ export const ENEMIES = {
   'venomous-toad': {
     name: 'Five-Colored Venomous Toad',
     description: 'A toad with five-colored markings that spits corrosive venom.',
-    health: 80,
+    health: 600, // Increased from 80 for better combat balance,
     attack: 16,
     defense: 8,
     level: 7,
@@ -1362,7 +1252,7 @@ export const ENEMIES = {
     location: 'poison-marsh',
     rewards: {
       experience: 24,
-      spiritualStones: 15,
+      qiStones: 15,
       gold: 15,
       loot: ['toad-venom', 'poison-sac']
     }
@@ -1370,7 +1260,7 @@ export const ENEMIES = {
   'vine-horror': {
     name: 'Strangling Vine Horror',
     description: 'Sentient vines that have absorbed blood and qi from countless prey.',
-    health: 70,
+    health: 600, // Increased from 70 for better combat balance,
     attack: 15,
     defense: 6,
     level: 6,
@@ -1378,7 +1268,7 @@ export const ENEMIES = {
     location: 'mist-forest',
     rewards: {
       experience: 20,
-      spiritualStones: 13,
+      qiStones: 13,
       gold: 14,
       loot: ['spirit-vine', 'blood-flower']
     }
@@ -1388,7 +1278,7 @@ export const ENEMIES = {
   'guardian': {
     name: 'Ancient Guardian',
     description: 'A construct created by ancient cultivators to protect their treasures.',
-    health: 200,
+    health: 600, // Increased from 200 for better combat balance,
     attack: 25,
     defense: 15,
     level: 12,
@@ -1396,7 +1286,7 @@ export const ENEMIES = {
     location: 'ruins',
     rewards: {
       experience: 40,
-      spiritualStones: 30,
+      qiStones: 30,
       gold: 35,
       loot: ['artifact-fragment', 'ancient-manual']
     }
@@ -1404,7 +1294,7 @@ export const ENEMIES = {
   'demon': {
     name: 'Lesser Demon',
     description: 'A malevolent entity born from the negative energy of the world.',
-    health: 150,
+    health: 150 * 3, // Tripled for better combat balance,
     attack: 30,
     defense: 10,
     level: 15,
@@ -1412,7 +1302,7 @@ export const ENEMIES = {
     location: 'demon-valley',
     rewards: {
       experience: 50,
-      spiritualStones: 25,
+      qiStones: 25,
       gold: 40,
       loot: ['demon-core', 'forbidden-scroll']
     }
@@ -1420,7 +1310,7 @@ export const ENEMIES = {
   'armored-beast': {
     name: 'Iron-Backed Beast',
     description: 'A massive creature with plates of natural armor as hard as refined iron.',
-    health: 220,
+    health: 220 * 3, // Tripled for better combat balance,
     attack: 22,
     defense: 25,
     level: 14,
@@ -1428,7 +1318,7 @@ export const ENEMIES = {
     location: 'iron-plateau',
     rewards: {
       experience: 45,
-      spiritualStones: 23,
+      qiStones: 23,
       gold: 30,
       loot: ['iron-scale', 'beast-horn']
     }
@@ -1436,7 +1326,7 @@ export const ENEMIES = {
   'blood-bat': {
     name: 'Blood-Drinking Bat',
     description: 'A giant bat that has evolved to drain both blood and qi from its victims.',
-    health: 120,
+    health: 120 * 3, // Tripled for better combat balance,
     attack: 35,
     defense: 8,
     level: 13,
@@ -1444,7 +1334,7 @@ export const ENEMIES = {
     location: 'crimson-cave',
     rewards: {
       experience: 42,
-      spiritualStones: 20,
+      qiStones: 20,
       gold: 28,
       loot: ['blood-essence', 'bat-wing']
     }
@@ -1452,7 +1342,7 @@ export const ENEMIES = {
   'stone-golem': {
     name: 'Living Stone Golem',
     description: 'A massive humanoid formed from living stone that has gained sentience over centuries.',
-    health: 280,
+    health: 280 * 3, // Tripled for better combat balance,
     attack: 28,
     defense: 30,
     level: 16,
@@ -1460,7 +1350,7 @@ export const ENEMIES = {
     location: 'stone-forest',
     rewards: {
       experience: 55,
-      spiritualStones: 30,
+      qiStones: 30,
       gold: 45,
       loot: ['living-stone', 'earth-crystal']
     }
@@ -1468,7 +1358,7 @@ export const ENEMIES = {
   'flame-scorpion': {
     name: 'Nine-Tailed Flame Scorpion',
     description: 'A scorpion with nine tails that each contain different types of flame poison.',
-    health: 160,
+    health: 160 * 3, // Tripled for better combat balance,
     attack: 40,
     defense: 15,
     level: 17,
@@ -1476,7 +1366,7 @@ export const ENEMIES = {
     location: 'flame-desert',
     rewards: {
       experience: 58,
-      spiritualStones: 32,
+      qiStones: 32,
       gold: 48,
       loot: ['flame-stinger', 'scorpion-shell']
     }
@@ -1484,7 +1374,7 @@ export const ENEMIES = {
   'ghost-warrior': {
     name: 'Vengeful Ghost Warrior',
     description: 'The spirit of a warrior who died in battle and cannot rest.',
-    health: 140,
+    health: 140 * 3, // Tripled for better combat balance,
     attack: 38,
     defense: 12,
     level: 15,
@@ -1492,7 +1382,7 @@ export const ENEMIES = {
     location: 'ancient-battlefield',
     rewards: {
       experience: 48,
-      spiritualStones: 28,
+      qiStones: 28,
       gold: 38,
       loot: ['ghost-essence', 'ancient-weapon']
     }
@@ -1500,7 +1390,7 @@ export const ENEMIES = {
   'ice-sprite': {
     name: 'Thousand-Year Ice Sprite',
     description: 'A beautiful but deadly spirit formed from the essence of eternal ice.',
-    health: 130,
+    health: 130 * 3, // Tripled for better combat balance,
     attack: 32,
     defense: 18,
     level: 14,
@@ -1508,7 +1398,7 @@ export const ENEMIES = {
     location: 'frozen-peak',
     rewards: {
       experience: 46,
-      spiritualStones: 26,
+      qiStones: 26,
       gold: 36,
       loot: ['eternal-ice', 'frost-crystal']
     }
@@ -1516,7 +1406,7 @@ export const ENEMIES = {
   'giant-centipede': {
     name: 'Hundred-Legged Earth Tunneler',
     description: 'A massive centipede that can burrow through solid rock and ambush prey.',
-    health: 175,
+    health: 175 * 3, // Tripled for better combat balance,
     attack: 30,
     defense: 20,
     level: 16,
@@ -1524,7 +1414,7 @@ export const ENEMIES = {
     location: 'caverns',
     rewards: {
       experience: 52,
-      spiritualStones: 29,
+      qiStones: 29,
       gold: 42,
       loot: ['centipede-fang', 'tunnel-dust']
     }
@@ -1532,7 +1422,7 @@ export const ENEMIES = {
   'thunder-beast': {
     name: 'Violet Thunder Beast',
     description: 'A beast born in a lightning storm with the power to generate electricity.',
-    health: 165,
+    health: 165 * 3, // Tripled for better combat balance,
     attack: 42,
     defense: 12,
     level: 18,
@@ -1540,7 +1430,7 @@ export const ENEMIES = {
     location: 'thunder-peak',
     rewards: {
       experience: 60,
-      spiritualStones: 35,
+      qiStones: 35,
       gold: 50,
       loot: ['thunder-core', 'beast-pelt']
     }
@@ -1558,7 +1448,7 @@ export const ENEMIES = {
     location: 'great-river',
     rewards: {
       experience: 80,
-      spiritualStones: 50,
+      qiStones: 50,
       gold: 70,
       loot: ['dragon-scale', 'river-pearl']
     }
@@ -1574,7 +1464,7 @@ export const ENEMIES = {
     location: 'phoenix-nest',
     rewards: {
       experience: 85,
-      spiritualStones: 55,
+      qiStones: 55,
       gold: 75,
       loot: ['phoenix-feather', 'rebirth-ash']
     }
@@ -1590,7 +1480,7 @@ export const ENEMIES = {
     location: 'tiger-mountain',
     rewards: {
       experience: 90,
-      spiritualStones: 60,
+      qiStones: 60,
       gold: 80,
       loot: ['tiger-fang', 'wind-crystal']
     }
@@ -1606,7 +1496,7 @@ export const ENEMIES = {
     location: 'golden-forest',
     rewards: {
       experience: 82,
-      spiritualStones: 52,
+      qiStones: 52,
       gold: 72,
       loot: ['golden-fur', 'wisdom-fruit']
     }
@@ -1614,7 +1504,7 @@ export const ENEMIES = {
   'demonic-cultivator': {
     name: 'Fallen Core Disciple',
     description: 'A once-promising cultivator who has fallen to demonic cultivation for power.',
-    health: 290,
+    health: 290 * 3, // Tripled for better combat balance,
     attack: 60,
     defense: 25,
     level: 26,
@@ -1622,7 +1512,7 @@ export const ENEMIES = {
     location: 'forbidden-grounds',
     rewards: {
       experience: 95,
-      spiritualStones: 65,
+      qiStones: 65,
       gold: 85,
       loot: ['dark-core', 'forbidden-technique']
     }
@@ -1640,7 +1530,7 @@ export const ENEMIES = {
     location: 'imperial-tomb',
     rewards: {
       experience: 150,
-      spiritualStones: 100,
+      qiStones: 100,
       gold: 200,
       loot: ['sovereign-seal', 'imperial-jade']
     }
@@ -1656,7 +1546,7 @@ export const ENEMIES = {
     location: 'immortal-ruins',
     rewards: {
       experience: 180,
-      spiritualStones: 120,
+      qiStones: 120,
       gold: 250,
       loot: ['immortal-essence', 'heavenly-script']
     }
@@ -1675,7 +1565,7 @@ export const ENEMIES = {
     isBoss: true,
     rewards: {
       experience: 300,
-      spiritualStones: 200,
+      qiStones: 200,
       gold: 500,
       loot: ['dragon-king-scale', 'fire-dragon-pearl', 'royal-dragon-blood']
     }
@@ -1692,7 +1582,7 @@ export const ENEMIES = {
     isBoss: true,
     rewards: {
       experience: 280,
-      spiritualStones: 180,
+      qiStones: 180,
       gold: 450,
       loot: ['nine-tail-fur', 'fox-spirit-core', 'illusion-gem']
     }
@@ -1709,7 +1599,7 @@ export const ENEMIES = {
     isBoss: true,
     rewards: {
       experience: 350,
-      spiritualStones: 250,
+      qiStones: 250,
       gold: 600,
       loot: ['blood-emperor-heart', 'crimson-jade', 'emperor-technique']
     }
@@ -1726,7 +1616,7 @@ export const ENEMIES = {
     isBoss: true,
     rewards: {
       experience: 400,
-      spiritualStones: 300,
+      qiStones: 300,
       gold: 700,
       loot: ['mountain-heart', 'earth-law-fragment', 'spirit-stone-vein']
     }
@@ -1737,7 +1627,7 @@ export const ENEMIES = {
   'forest-wolf': {
     name: 'Spirit Forest Wolf',
     description: 'A common wolf that has absorbed minimal spiritual energy from its environment.',
-    health: 40,
+    health: 600, // Increased from 40 for better combat balance,
     attack: 6,
     defense: 2,
     level: 2,
@@ -1745,7 +1635,7 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 8,
-      spiritualStones: 4,
+      qiStones: 4,
       gold: 5,
       loot: ['wolf-pelt', 'beast-bone']
     }
@@ -1753,7 +1643,7 @@ export const ENEMIES = {
   'wild-boar': {
     name: 'Iron-Tusked Boar',
     description: 'A wild boar with unnaturally hard tusks that can pierce stone.',
-    health: 55,
+    health: 600, // Increased from 55 for better combat balance,
     attack: 9,
     defense: 5,
     level: 3,
@@ -1761,7 +1651,7 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 12,
-      spiritualStones: 6,
+      qiStones: 6,
       gold: 9,
       loot: ['boar-tusk', 'tough-hide']
     }
@@ -1769,7 +1659,7 @@ export const ENEMIES = {
   'poisonous-snake': {
     name: 'Three-Pattern Viper',
     description: 'A venomous snake with three distinct patterns that denote different poison types.',
-    health: 35,
+    health: 600, // Increased from 35 for better combat balance,
     attack: 12,
     defense: 1,
     level: 4,
@@ -1777,7 +1667,7 @@ export const ENEMIES = {
     location: 'bamboo-grove',
     rewards: {
       experience: 14,
-      spiritualStones: 7,
+      qiStones: 7,
       gold: 10,
       loot: ['snake-venom', 'snake-skin']
     }
@@ -1785,7 +1675,7 @@ export const ENEMIES = {
   'rock-tortoise': {
     name: 'Stone-Shelled Tortoise',
     description: 'A tortoise with a shell as hard as mountain stone that has lived for centuries.',
-    health: 100,
+    health: 100 * 3, // Tripled for better combat balance,
     attack: 4,
     defense: 15,
     level: 5,
@@ -1793,7 +1683,7 @@ export const ENEMIES = {
     location: 'stone-forest',
     rewards: {
       experience: 16,
-      spiritualStones: 8,
+      qiStones: 8,
       gold: 12,
       loot: ['stone-shell', 'longevity-essence']
     }
@@ -1801,7 +1691,7 @@ export const ENEMIES = {
   'spirit-fox': {
     name: 'One-Tailed Spirit Fox',
     description: 'A young fox that has just begun its path of cultivation and can perform simple tricks.',
-    health: 45,
+    health: 600, // Increased from 45 for better combat balance,
     attack: 8,
     defense: 3,
     level: 4,
@@ -1809,7 +1699,7 @@ export const ENEMIES = {
     location: 'forest',
     rewards: {
       experience: 13,
-      spiritualStones: 7,
+      qiStones: 7,
       gold: 9,
       loot: ['fox-tail', 'illusion-dust']
     }
@@ -1817,7 +1707,7 @@ export const ENEMIES = {
   'mountain-goat': {
     name: 'Azure Horn Mountain Goat',
     description: 'A goat with azure horns that has adapted to climbing steep spiritual mountains.',
-    health: 60,
+    health: 600, // Increased from 60 for better combat balance,
     attack: 7,
     defense: 6,
     level: 5,
@@ -1825,7 +1715,7 @@ export const ENEMIES = {
     location: 'mountain',
     rewards: {
       experience: 15,
-      spiritualStones: 8,
+      qiStones: 8,
       gold: 11,
       loot: ['azure-horn', 'goat-hide']
     }
@@ -1833,7 +1723,7 @@ export const ENEMIES = {
   'cave-bat': {
     name: 'Echo Cave Bat',
     description: 'A bat with the ability to emit disorienting sonic waves that confuse prey.',
-    health: 30,
+    health: 600, // Increased from 30 for better combat balance,
     attack: 10,
     defense: 2,
     level: 4,
@@ -1841,7 +1731,7 @@ export const ENEMIES = {
     location: 'caverns',
     rewards: {
       experience: 12,
-      spiritualStones: 6,
+      qiStones: 6,
       gold: 8,
       loot: ['bat-wing', 'echo-crystal']
     }
@@ -1849,7 +1739,7 @@ export const ENEMIES = {
   'marsh-crocodile': {
     name: 'Iron-Jaw Marsh Crocodile',
     description: 'A crocodile with jaws strong enough to crush stone, lurking in spiritual marshes.',
-    health: 75,
+    health: 600, // Increased from 75 for better combat balance,
     attack: 15,
     defense: 10,
     level: 7,
@@ -1857,7 +1747,7 @@ export const ENEMIES = {
     location: 'poison-marsh',
     rewards: {
       experience: 22,
-      spiritualStones: 11,
+      qiStones: 11,
       gold: 18,
       loot: ['crocodile-tooth', 'tough-scale']
     }
@@ -1865,7 +1755,7 @@ export const ENEMIES = {
   'spirit-monkey': {
     name: 'Nimble Spirit Monkey',
     description: 'A small, incredibly agile monkey that has absorbed spirit energy from fruits.',
-    health: 40,
+    health: 600, // Increased from 40 for better combat balance,
     attack: 6,
     defense: 4,
     level: 3,
@@ -1873,7 +1763,7 @@ export const ENEMIES = {
     location: 'mist-forest',
     rewards: {
       experience: 10,
-      spiritualStones: 5,
+      qiStones: 5,
       gold: 7,
       loot: ['spirit-fruit', 'monkey-fur']
     }
@@ -1881,7 +1771,7 @@ export const ENEMIES = {
   'thunder-bird-fledgling': {
     name: 'Thunder Bird Fledgling',
     description: 'A young thunder bird that can generate small electrical discharges but lacks control.',
-    health: 45,
+    health: 600, // Increased from 45 for better combat balance,
     attack: 12,
     defense: 3,
     level: 6,
@@ -1889,7 +1779,7 @@ export const ENEMIES = {
     location: 'thunder-peak',
     rewards: {
       experience: 18,
-      spiritualStones: 9,
+      qiStones: 9,
       gold: 15,
       loot: ['small-thunder-feather', 'static-essence']
     }
@@ -1897,7 +1787,7 @@ export const ENEMIES = {
   'swamp-toad': {
     name: 'Poison Swamp Toad',
     description: 'A toad that secretes mild toxins and has adapted to life in spiritual swamps.',
-    health: 50,
+    health: 600, // Increased from 50 for better combat balance,
     attack: 8,
     defense: 6,
     level: 5,
@@ -1905,7 +1795,7 @@ export const ENEMIES = {
     location: 'poison-marsh',
     rewards: {
       experience: 14,
-      spiritualStones: 7,
+      qiStones: 7,
       gold: 10,
       loot: ['toad-toxin', 'swamp-pearl']
     }
@@ -1913,7 +1803,7 @@ export const ENEMIES = {
   'wild-tiger': {
     name: 'Striped Forest Tiger',
     description: 'A tiger that has begun absorbing spiritual energy, making it stronger than normal tigers.',
-    health: 70,
+    health: 600, // Increased from 70 for better combat balance,
     attack: 14,
     defense: 7,
     level: 6,
@@ -1921,7 +1811,7 @@ export const ENEMIES = {
     location: 'bamboo-grove',
     rewards: {
       experience: 20,
-      spiritualStones: 10,
+      qiStones: 10,
       gold: 16,
       loot: ['tiger-claw', 'striped-pelt']
     }
@@ -1929,7 +1819,7 @@ export const ENEMIES = {
   'river-snake': {
     name: 'Azure River Serpent',
     description: 'A water serpent that has adapted to rivers rich in water-attribute spiritual energy.',
-    health: 55,
+    health: 600, // Increased from 55 for better combat balance,
     attack: 10,
     defense: 5,
     level: 5,
@@ -1937,7 +1827,7 @@ export const ENEMIES = {
     location: 'great-river',
     rewards: {
       experience: 15,
-      spiritualStones: 8,
+      qiStones: 8,
       gold: 12,
       loot: ['water-scale', 'serpent-fang']
     }
@@ -1945,7 +1835,7 @@ export const ENEMIES = {
   'crystal-beetle': {
     name: 'Earth Crystal Beetle',
     description: 'A beetle that feeds on spiritual crystals and has developed a crystalline carapace.',
-    health: 60,
+    health: 600, // Increased from 60 for better combat balance,
     attack: 7,
     defense: 12,
     level: 6,
@@ -1953,7 +1843,7 @@ export const ENEMIES = {
     location: 'crystal-mines',
     rewards: {
       experience: 18,
-      spiritualStones: 12,
+      qiStones: 12,
       gold: 14,
       loot: ['crystal-fragment', 'beetle-shell']
     }
@@ -1961,7 +1851,7 @@ export const ENEMIES = {
   'bamboo-snake': {
     name: 'Emerald Bamboo Viper',
     description: 'A green snake that blends perfectly with bamboo and strikes with surprising speed.',
-    health: 40,
+    health: 600, // Increased from 40 for better combat balance,
     attack: 14,
     defense: 2,
     level: 5,
@@ -1969,7 +1859,7 @@ export const ENEMIES = {
     location: 'bamboo-grove',
     rewards: {
       experience: 16,
-      spiritualStones: 8,
+      qiStones: 8,
       gold: 13,
       loot: ['emerald-scale', 'viper-venom']
     }
@@ -1979,7 +1869,7 @@ export const ENEMIES = {
   'wind-falcon': {
     name: 'Azure Wind Falcon',
     description: 'A falcon that has mastered wind energy for incredibly fast and precise attacks.',
-    health: 150,
+    health: 150 * 3, // Tripled for better combat balance,
     attack: 35,
     defense: 15,
     level: 12,
@@ -1987,7 +1877,7 @@ export const ENEMIES = {
     location: 'cloud-peaks',
     rewards: {
       experience: 40,
-      spiritualStones: 25,
+      qiStones: 25,
       gold: 35,
       loot: ['wind-feather', 'falcon-talon']
     }
@@ -1995,7 +1885,7 @@ export const ENEMIES = {
   'earth-bear': {
     name: 'Mountain Heart Bear',
     description: 'A massive bear with control over earth energy and incredible strength.',
-    health: 250,
+    health: 250 * 3, // Tripled for better combat balance,
     attack: 30,
     defense: 20,
     level: 14,
@@ -2003,7 +1893,7 @@ export const ENEMIES = {
     location: 'mountain',
     rewards: {
       experience: 45,
-      spiritualStones: 28,
+      qiStones: 28,
       gold: 38,
       loot: ['bear-claw', 'earth-crystal']
     }
@@ -2011,7 +1901,7 @@ export const ENEMIES = {
   'snow-leopard': {
     name: 'Frost Peak Leopard',
     description: 'A leopard adapted to snow peaks with control over ice energy.',
-    health: 180,
+    health: 180 * 3, // Tripled for better combat balance,
     attack: 32,
     defense: 16,
     level: 15,
@@ -2019,7 +1909,7 @@ export const ENEMIES = {
     location: 'frozen-peak',
     rewards: {
       experience: 48,
-      spiritualStones: 30,
+      qiStones: 30,
       gold: 40,
       loot: ['frost-pelt', 'cold-core']
     }
@@ -2027,7 +1917,7 @@ export const ENEMIES = {
   'flame-lizard': {
     name: 'Magma Scale Lizard',
     description: 'A lizard that dwells near volcanic vents and can manipulate fire.',
-    health: 160,
+    health: 160 * 3, // Tripled for better combat balance,
     attack: 36,
     defense: 14,
     level: 13,
@@ -2035,7 +1925,7 @@ export const ENEMIES = {
     location: 'flame-desert',
     rewards: {
       experience: 43,
-      spiritualStones: 27,
+      qiStones: 27,
       gold: 36,
       loot: ['flame-scale', 'magma-crystal']
     }
@@ -2043,7 +1933,7 @@ export const ENEMIES = {
   'spirit-deer': {
     name: 'Nine-Point Spirit Deer',
     description: 'A rare deer with nine-pointed antlers that can sense energy fluctuations and danger.',
-    health: 140,
+    health: 140 * 3, // Tripled for better combat balance,
     attack: 22,
     defense: 18,
     level: 12,
@@ -2051,7 +1941,7 @@ export const ENEMIES = {
     location: 'mist-forest',
     rewards: {
       experience: 38,
-      spiritualStones: 32,
+      qiStones: 32,
       gold: 42,
       loot: ['spirit-antler', 'perception-pearl']
     }
@@ -2067,7 +1957,7 @@ export const ENEMIES = {
     location: 'iron-plateau',
     rewards: {
       experience: 50,
-      spiritualStones: 35,
+      qiStones: 35,
       gold: 45,
       loot: ['longevity-essence', 'iron-shell']
     }
@@ -2075,7 +1965,7 @@ export const ENEMIES = {
   'thunder-serpent': {
     name: 'Purple Thunder Serpent',
     description: 'A serpent that channels lightning through its body for devastating strikes.',
-    health: 170,
+    health: 170 * 3, // Tripled for better combat balance,
     attack: 38,
     defense: 12,
     level: 15,
@@ -2083,7 +1973,7 @@ export const ENEMIES = {
     location: 'thunder-peak',
     rewards: {
       experience: 47,
-      spiritualStones: 32,
+      qiStones: 32,
       gold: 43,
       loot: ['thunder-scale', 'lightning-essence']
     }
@@ -2091,7 +1981,7 @@ export const ENEMIES = {
   'phantom-fox': {
     name: 'Three-Tailed Phantom Fox',
     description: 'A fox with three tails that has mastered illusions and can temporarily become intangible.',
-    health: 160,
+    health: 160 * 3, // Tripled for better combat balance,
     attack: 30,
     defense: 15,
     level: 14,
@@ -2099,7 +1989,7 @@ export const ENEMIES = {
     location: 'illusion-forest',
     rewards: {
       experience: 45,
-      spiritualStones: 30,
+      qiStones: 30,
       gold: 40,
       loot: ['phantom-tail', 'illusion-core']
     }
@@ -2107,7 +1997,7 @@ export const ENEMIES = {
   'jade-scorpion': {
     name: 'Jade Sting Scorpion',
     description: 'A scorpion with a stinger made of spiritual jade that contains potent venom.',
-    health: 140,
+    health: 140 * 3, // Tripled for better combat balance,
     attack: 42,
     defense: 10,
     level: 15,
@@ -2115,7 +2005,7 @@ export const ENEMIES = {
     location: 'jade-valley',
     rewards: {
       experience: 46,
-      spiritualStones: 29,
+      qiStones: 29,
       gold: 38,
       loot: ['jade-stinger', 'venom-crystal']
     }
@@ -2123,7 +2013,7 @@ export const ENEMIES = {
   'crystal-wolf': {
     name: 'Crystal Fang Wolf',
     description: 'A wolf with crystalline fangs that can shear through metal and stone.',
-    health: 165,
+    health: 165 * 3, // Tripled for better combat balance,
     attack: 34,
     defense: 16,
     level: 13,
@@ -2131,7 +2021,7 @@ export const ENEMIES = {
     location: 'crystal-mines',
     rewards: {
       experience: 42,
-      spiritualStones: 28,
+      qiStones: 28,
       gold: 37,
       loot: ['crystal-fang', 'wolf-pelt']
     }
@@ -2139,7 +2029,7 @@ export const ENEMIES = {
   'bone-vulture': {
     name: 'Ancient Bone Vulture',
     description: 'A vulture that feeds on death essence and can manipulate bones.',
-    health: 145,
+    health: 145 * 3, // Tripled for better combat balance,
     attack: 32,
     defense: 14,
     level: 14,
@@ -2147,7 +2037,7 @@ export const ENEMIES = {
     location: 'ancient-battlefield',
     rewards: {
       experience: 44,
-      spiritualStones: 26,
+      qiStones: 26,
       gold: 36,
       loot: ['bone-feather', 'death-essence']
     }
@@ -2155,7 +2045,7 @@ export const ENEMIES = {
   'marsh-dragon': {
     name: 'Swamp Drake',
     description: 'A lesser dragon that inhabits toxic marshes and commands poison energy.',
-    health: 190,
+    health: 190 * 3, // Tripled for better combat balance,
     attack: 38,
     defense: 18,
     level: 16,
@@ -2163,7 +2053,7 @@ export const ENEMIES = {
     location: 'poison-marsh',
     rewards: {
       experience: 52,
-      spiritualStones: 34,
+      qiStones: 34,
       gold: 44,
       loot: ['drake-scale', 'poison-sac']
     }
@@ -2171,7 +2061,7 @@ export const ENEMIES = {
   'living-statue': {
     name: 'Animated Stone Guardian',
     description: 'A stone statue brought to life by ancient formation techniques.',
-    health: 230,
+    health: 230 * 3, // Tripled for better combat balance,
     attack: 25,
     defense: 30,
     level: 15,
@@ -2179,7 +2069,7 @@ export const ENEMIES = {
     location: 'ruins',
     rewards: {
       experience: 48,
-      spiritualStones: 32,
+      qiStones: 32,
       gold: 42,
       loot: ['formation-fragment', 'animated-stone']
     }
@@ -2187,7 +2077,7 @@ export const ENEMIES = {
   'blood-crow': {
     name: 'Crimson Blood Crow',
     description: 'A crow that has absorbed blood essence and can manipulate blood energy.',
-    health: 130,
+    health: 130 * 3, // Tripled for better combat balance,
     attack: 36,
     defense: 12,
     level: 13,
@@ -2195,7 +2085,7 @@ export const ENEMIES = {
     location: 'crimson-cave',
     rewards: {
       experience: 42,
-      spiritualStones: 25,
+      qiStones: 25,
       gold: 35,
       loot: ['blood-feather', 'crimson-essence']
     }
@@ -2203,7 +2093,7 @@ export const ENEMIES = {
   'ghost-face': {
     name: 'Hundred-Face Ghost',
     description: 'A spirit that can wear the faces of those it has consumed for different abilities.',
-    health: 150,
+    health: 150 * 3, // Tripled for better combat balance,
     attack: 34,
     defense: 14,
     level: 14,
@@ -2211,7 +2101,7 @@ export const ENEMIES = {
     location: 'ghost-forest',
     rewards: {
       experience: 45,
-      spiritualStones: 28,
+      qiStones: 28,
       gold: 38,
       loot: ['spirit-mask', 'ghost-essence']
     }
@@ -2229,7 +2119,7 @@ export const ENEMIES = {
     location: 'great-river',
     rewards: {
       experience: 75,
-      spiritualStones: 45,
+      qiStones: 45,
       gold: 65,
       loot: ['water-dragon-scale', 'river-heart']
     }
@@ -2237,7 +2127,7 @@ export const ENEMIES = {
   'thunder-eagle': {
     name: 'Grand Thunder Eagle',
     description: 'A massive eagle wreathed in lightning that can summon thunderstorms.',
-    health: 280,
+    health: 280 * 3, // Tripled for better combat balance,
     attack: 55,
     defense: 20,
     level: 22,
@@ -2245,7 +2135,7 @@ export const ENEMIES = {
     location: 'thunder-peak',
     rewards: {
       experience: 78,
-      spiritualStones: 48,
+      qiStones: 48,
       gold: 68,
       loot: ['storm-feather', 'thunder-crystal']
     }
@@ -2253,7 +2143,7 @@ export const ENEMIES = {
   'flame-fox': {
     name: 'Five-Tailed Flame Fox',
     description: 'A fox with five tails that each control a different aspect of fire.',
-    health: 270,
+    health: 270 * 3, // Tripled for better combat balance,
     attack: 50,
     defense: 25,
     level: 23,
@@ -2261,7 +2151,7 @@ export const ENEMIES = {
     location: 'flame-desert',
     rewards: {
       experience: 82,
-      spiritualStones: 50,
+      qiStones: 50,
       gold: 70,
       loot: ['flame-tail', 'fox-core']
     }
@@ -2277,7 +2167,7 @@ export const ENEMIES = {
     location: 'jade-valley',
     rewards: {
       experience: 85,
-      spiritualStones: 53,
+      qiStones: 53,
       gold: 75,
       loot: ['jade-mane', 'lion-fang']
     }
@@ -2293,7 +2183,7 @@ export const ENEMIES = {
     location: 'frozen-peak',
     rewards: {
       experience: 88,
-      spiritualStones: 55,
+      qiStones: 55,
       gold: 78,
       loot: ['frost-scale', 'ice-heart']
     }
@@ -2309,7 +2199,7 @@ export const ENEMIES = {
     location: 'thunder-peak',
     rewards: {
       experience: 92,
-      spiritualStones: 58,
+      qiStones: 58,
       gold: 82,
       loot: ['lightning-pelt', 'thunder-fang']
     }
@@ -2325,7 +2215,7 @@ export const ENEMIES = {
     location: 'stone-forest',
     rewards: {
       experience: 95,
-      spiritualStones: 60,
+      qiStones: 60,
       gold: 85,
       loot: ['stone-scale', 'mountain-core']
     }
@@ -2333,7 +2223,7 @@ export const ENEMIES = {
   'shadow-panther': {
     name: 'Void Shadow Panther',
     description: 'A panther that can merge with shadows and strike from darkness with incredible precision.',
-    health: 290,
+    health: 290 * 3, // Tripled for better combat balance,
     attack: 60,
     defense: 22,
     level: 24,
@@ -2341,7 +2231,7 @@ export const ENEMIES = {
     location: 'shadow-valley',
     rewards: {
       experience: 86,
-      spiritualStones: 54,
+      qiStones: 54,
       gold: 76,
       loot: ['shadow-pelt', 'void-crystal']
     }
@@ -2349,7 +2239,7 @@ export const ENEMIES = {
   'blood-phoenix': {
     name: 'Crimson Rebirth Bird',
     description: 'A bird with traces of phoenix blood that can regenerate from wounds using blood essence.',
-    health: 270,
+    health: 270 * 3, // Tripled for better combat balance,
     attack: 54,
     defense: 25,
     level: 25,
@@ -2357,7 +2247,7 @@ export const ENEMIES = {
     location: 'crimson-cave',
     rewards: {
       experience: 88,
-      spiritualStones: 56,
+      qiStones: 56,
       gold: 78,
       loot: ['crimson-feather', 'rebirth-blood']
     }
@@ -2365,7 +2255,7 @@ export const ENEMIES = {
   'crystal-mantis': {
     name: 'Crystal Blade Mantis',
     description: 'A mantis with forelimbs of pure crystal that can cut through almost anything.',
-    health: 250,
+    health: 250 * 3, // Tripled for better combat balance,
     attack: 65,
     defense: 20,
     level: 23,
@@ -2373,7 +2263,7 @@ export const ENEMIES = {
     location: 'crystal-mines',
     rewards: {
       experience: 80,
-      spiritualStones: 50,
+      qiStones: 50,
       gold: 70,
       loot: ['crystal-blade', 'mantis-essence']
     }
@@ -2391,7 +2281,7 @@ export const ENEMIES = {
     location: 'qilin-plateau',
     rewards: {
       experience: 150,
-      spiritualStones: 100,
+      qiStones: 100,
       gold: 200,
       loot: ['qilin-horn', 'supreme-lightning']
     }
@@ -2407,7 +2297,7 @@ export const ENEMIES = {
     location: 'void-rift',
     rewards: {
       experience: 160,
-      spiritualStones: 110,
+      qiStones: 110,
       gold: 220,
       loot: ['void-scale', 'space-crystal']
     }
@@ -2423,7 +2313,7 @@ export const ENEMIES = {
     location: 'cloud-peaks',
     rewards: {
       experience: 140,
-      spiritualStones: 95,
+      qiStones: 95,
       gold: 190,
       loot: ['celestial-feather', 'wisdom-pearl']
     }
@@ -2439,7 +2329,7 @@ export const ENEMIES = {
     location: 'sacred-mountain',
     rewards: {
       experience: 170,
-      spiritualStones: 115,
+      qiStones: 115,
       gold: 230,
       loot: ['behemoth-horn', 'mountain-essence']
     }
@@ -2455,7 +2345,7 @@ export const ENEMIES = {
     location: 'divine-lake',
     rewards: {
       experience: 175,
-      spiritualStones: 120,
+      qiStones: 120,
       gold: 240,
       loot: ['divine-shell', 'longevity-pearl']
     }
@@ -2474,7 +2364,7 @@ export const ENEMIES = {
     isBoss: true,
     rewards: {
       experience: 800,
-      spiritualStones: 500,
+      qiStones: 500,
       gold: 1000,
       loot: ['golden-dragon-scale', 'authority-core', 'heavenly-dragon-blood']
     }
@@ -2491,7 +2381,7 @@ export const ENEMIES = {
     isBoss: true,
     rewards: {
       experience: 800,
-      spiritualStones: 500,
+      qiStones: 500,
       gold: 1000,
       loot: ['nine-colored-feather', 'rebirth-flame', 'phoenix-marrow']
     }
@@ -2508,7 +2398,7 @@ export const ENEMIES = {
     isBoss: true,
     rewards: {
       experience: 1000,
-      spiritualStones: 800,
+      qiStones: 800,
       gold: 1500,
       loot: ['chaos-core', 'primordial-essence', 'creation-scripture']
     }
@@ -2517,12 +2407,12 @@ export const ENEMIES = {
 
 // Currency settings
 export const STARTING_GOLD = 100;
-export const STARTING_QI_STONES = 10;
+export const STARTING_SPIRITUAL_STONES = 10;
 
 // Game settings and mechanics
-export const DEFAULT_QI_PER_CLICK = 25;
-export const BASE_QI_RATE = 10;
-export const BASE_STORAGE = 5000;
+export const DEFAULT_QI_PER_CLICK = 5;
+export const BASE_QI_RATE = 0.2;
+export const BASE_STORAGE = 1000;
 export const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 export const COMBAT_TICK_RATE = 1000; // 1 second
 
@@ -2611,7 +2501,7 @@ export const EQUIPMENT_RARITY = {
 
 export const CURRENCY_TYPES = {
   GOLD: 'gold',
-  QI_STONES: 'spiritualStones', // Keep the same property name in the game state for backward compatibility
+  SPIRITUAL_STONES: 'spiritualStones',
   CONTRIBUTION_POINTS: 'contributionPoints',
   REPUTATION: 'reputation',
 };
@@ -2677,7 +2567,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 8000,
-      [CURRENCY_TYPES.QI_STONES]: 100,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 100,
     },
     rarity: 'EPIC',
   },
@@ -2699,7 +2589,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 20000,
-      [CURRENCY_TYPES.QI_STONES]: 500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
     },
     rarity: 'LEGENDARY',
   },
@@ -2722,7 +2612,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 100000,
-      [CURRENCY_TYPES.QI_STONES]: 2000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 2000,
     },
     rarity: 'MYTHIC',
   },
@@ -2766,7 +2656,7 @@ export const WEAPONS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 12000,
-      [CURRENCY_TYPES.QI_STONES]: 200,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 200,
     },
     rarity: 'EPIC',
   },
@@ -2811,7 +2701,7 @@ export const WEAPONS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 5000,
-      [CURRENCY_TYPES.QI_STONES]: 50,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 50,
     },
     rarity: 'RARE',
   },
@@ -2833,7 +2723,7 @@ export const WEAPONS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 30000,
-      [CURRENCY_TYPES.QI_STONES]: 800,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 800,
     },
     rarity: 'LEGENDARY',
   },
@@ -2880,7 +2770,7 @@ export const WEAPONS = {
     requiredStage: 4,
     price: {
       [CURRENCY_TYPES.GOLD]: 4500,
-      [CURRENCY_TYPES.QI_STONES]: 40,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 40,
     },
     rarity: 'RARE',
   },
@@ -2903,7 +2793,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 15000,
-      [CURRENCY_TYPES.QI_STONES]: 300,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 300,
     },
     rarity: 'EPIC',
   },
@@ -2949,7 +2839,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 10000,
-      [CURRENCY_TYPES.QI_STONES]: 180,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 180,
     },
     rarity: 'EPIC',
   },
@@ -2995,7 +2885,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 18000,
-      [CURRENCY_TYPES.QI_STONES]: 450,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 450,
     },
     rarity: 'LEGENDARY',
   },
@@ -3041,7 +2931,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 3800,
-      [CURRENCY_TYPES.QI_STONES]: 35,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
     },
     rarity: 'RARE',
   },
@@ -3064,7 +2954,7 @@ export const WEAPONS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 14000,
-      [CURRENCY_TYPES.QI_STONES]: 250,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 250,
     },
     rarity: 'EPIC',
   },
@@ -3112,7 +3002,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 25000,
-      [CURRENCY_TYPES.QI_STONES]: 600,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 600,
     },
     rarity: 'LEGENDARY',
   },
@@ -3142,7 +3032,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 1000000,
-      [CURRENCY_TYPES.QI_STONES]: 10000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 10000,
     },
     rarity: 'ARTIFACT',
   },
@@ -3169,7 +3059,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 1000000,
-      [CURRENCY_TYPES.QI_STONES]: 10000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 10000,
     },
     rarity: 'ARTIFACT',
   },
@@ -3241,7 +3131,7 @@ export const ARMORS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 5000,
-      [CURRENCY_TYPES.QI_STONES]: 50,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 50,
     },
     rarity: 'RARE',
   },
@@ -3266,7 +3156,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 25000,
-      [CURRENCY_TYPES.QI_STONES]: 500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
     },
     rarity: 'LEGENDARY',
   },
@@ -3312,7 +3202,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 2200,
-      [CURRENCY_TYPES.QI_STONES]: 20,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 20,
     },
     rarity: 'RARE',
   },
@@ -3335,7 +3225,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 9000,
-      [CURRENCY_TYPES.QI_STONES]: 150,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 150,
     },
     rarity: 'EPIC',
   },
@@ -3383,7 +3273,7 @@ export const ARMORS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 3500,
-      [CURRENCY_TYPES.QI_STONES]: 35,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
     },
     rarity: 'RARE',
   },
@@ -3408,7 +3298,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 18000,
-      [CURRENCY_TYPES.QI_STONES]: 400,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 400,
     },
     rarity: 'LEGENDARY',
   },
@@ -3456,7 +3346,7 @@ export const ARMORS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 6000,
-      [CURRENCY_TYPES.QI_STONES]: 60,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 60,
     },
     rarity: 'RARE',
   },
@@ -3482,7 +3372,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 50000,
-      [CURRENCY_TYPES.QI_STONES]: 1000,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 1000,
     },
     rarity: 'MYTHIC',
   },
@@ -3528,7 +3418,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 1800,
-      [CURRENCY_TYPES.QI_STONES]: 15,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 15,
     },
     rarity: 'RARE',
   },
@@ -3551,7 +3441,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 7500,
-      [CURRENCY_TYPES.QI_STONES]: 120,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 120,
     },
     rarity: 'EPIC',
   },
@@ -3597,7 +3487,7 @@ export const ARMORS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 2800,
-      [CURRENCY_TYPES.QI_STONES]: 25,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 25,
     },
     rarity: 'RARE',
   },
@@ -3642,7 +3532,7 @@ export const ARMORS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 5500,
-      [CURRENCY_TYPES.QI_STONES]: 55,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 55,
     },
     rarity: 'RARE',
   },
@@ -3666,7 +3556,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 1600,
-      [CURRENCY_TYPES.QI_STONES]: 15,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 15,
     },
     rarity: 'RARE',
   },
@@ -3690,7 +3580,7 @@ export const ARMORS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 11000,
-      [CURRENCY_TYPES.QI_STONES]: 200,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 200,
     },
     rarity: 'EPIC',
   },
@@ -3734,7 +3624,7 @@ export const ARMORS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 3500,
-      [CURRENCY_TYPES.QI_STONES]: 35,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
     },
     rarity: 'RARE',
   },
@@ -3757,7 +3647,7 @@ export const ARMORS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 12000,
-      [CURRENCY_TYPES.QI_STONES]: 250,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 250,
     },
     rarity: 'EPIC',
   },
@@ -3781,7 +3671,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 25000,
-      [CURRENCY_TYPES.QI_STONES]: 500,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
     },
     rarity: 'LEGENDARY',
   },
@@ -3804,7 +3694,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 60000,
-      [CURRENCY_TYPES.QI_STONES]: 1200,
+      [CURRENCY_TYPES.SPIRITUAL_STONES]: 1200,
     },
     rarity: 'MYTHIC',
   },
@@ -3822,7 +3712,7 @@ export const RESOURCE_TYPES = {
   SPIRIT_HERB: 'spiritHerb',
   PILL: 'pill',
   ELIXIR: 'elixir',
-  QI_STONE: 'spiritualStone', // Keep internal name for backward compatibility
+  SPIRITUAL_STONE: 'spiritualStone',
   
   // Crafting materials
   ORE: 'ore',
@@ -3866,56 +3756,12 @@ export const RESOURCES = {
     locations: ['mountain', 'cloud-peaks'],
   },
   
-  // Healing herbs for combat
-  'healing-grass': {
-    id: 'healing-grass',
-    name: 'Healing Grass',
-    description: 'A common herb with mild healing properties that can close minor wounds.',
-    type: RESOURCE_TYPES.SPIRIT_HERB,
-    rarity: 'COMMON',
-    value: 15,
-    effects: {
-      health: 25, // Restores 25 health when consumed
-    },
-    locations: ['forest', 'sect', 'mountain'],
-    dropRate: 0.3, // 30% chance to drop from low-level enemies
-  },
-  'blood-lotus': {
-    id: 'blood-lotus',
-    name: 'Blood Lotus',
-    description: 'A rare crimson lotus that accelerates blood circulation and healing.',
-    type: RESOURCE_TYPES.SPIRIT_HERB,
-    rarity: 'UNCOMMON',
-    value: 60,
-    effects: {
-      health: 75, // Restores 75 health when consumed
-      defense: 5, // Temporary 5 point defense boost
-    },
-    locations: ['forest', 'jade-valley', 'stone-forest'],
-    dropRate: 0.15, // 15% chance to drop from mid-level enemies
-  },
-  'celestial-peach': {
-    id: 'celestial-peach',
-    name: 'Celestial Peach',
-    description: 'A legendary fruit said to be grown in immortal gardens, with powerful rejuvenating effects.',
-    type: RESOURCE_TYPES.SPIRIT_HERB,
-    rarity: 'RARE',
-    value: 200,
-    effects: {
-      health: 150, // Restores 150 health when consumed
-      maxHealth: 20, // Temporary boost to max health
-      strength: 10, // Temporary boost to strength
-    },
-    locations: ['ruins', 'sacred-mountain'],
-    dropRate: 0.05, // 5% chance to drop from high-level enemies
-  },
-  
   // Spirit stones for cultivation
   'low-grade-stone': {
     id: 'low-grade-stone',
-    name: 'Low-Grade Qi Stone',
-    description: 'A basic qi stone containing a small amount of pure energy.',
-    type: RESOURCE_TYPES.QI_STONE,
+    name: 'Low-Grade Spiritual Stone',
+    description: 'A basic spiritual stone containing a small amount of pure energy.',
+    type: RESOURCE_TYPES.SPIRITUAL_STONE,
     rarity: 'COMMON',
     value: 100,
     effects: {
@@ -3926,9 +3772,9 @@ export const RESOURCES = {
   },
   'mid-grade-stone': {
     id: 'mid-grade-stone',
-    name: 'Mid-Grade Qi Stone',
-    description: 'A qi stone with significant energy, commonly used by Foundation Establishment cultivators.',
-    type: RESOURCE_TYPES.QI_STONE,
+    name: 'Mid-Grade Spiritual Stone',
+    description: 'A spiritual stone with significant energy, commonly used by Foundation Establishment cultivators.',
+    type: RESOURCE_TYPES.SPIRITUAL_STONE,
     rarity: 'UNCOMMON',
     value: 1000,
     effects: {
@@ -3939,9 +3785,9 @@ export const RESOURCES = {
   },
   'high-grade-stone': {
     id: 'high-grade-stone',
-    name: 'High-Grade Qi Stone',
-    description: 'A premium qi stone with concentrated energy, highly valued by Core Formation cultivators.',
-    type: RESOURCE_TYPES.QI_STONE,
+    name: 'High-Grade Spiritual Stone',
+    description: 'A premium spiritual stone with concentrated energy, highly valued by Core Formation cultivators.',
+    type: RESOURCE_TYPES.SPIRITUAL_STONE,
     rarity: 'RARE',
     value: 10000,
     effects: {
@@ -4006,4 +3852,3 @@ export const RESOURCES = {
   },
 };
 export const SILENT_AUTO_SAVE = true; // Auto save without showing messages
-export const GAME_NAME = 'Cultivation Chronicles';

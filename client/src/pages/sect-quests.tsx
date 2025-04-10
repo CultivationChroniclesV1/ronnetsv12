@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { useGameEngine } from "@/lib/gameEngine";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import React, { useState, useEffect } from 'react';
+import { useGameEngine } from '@/lib/gameEngine';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { toast } from '@/hooks/use-toast';
+import { ENEMIES, LOCATIONS } from '@/lib/constants';
 
+// Interface for quests
 interface Quest {
   id: string;
   name: string;
@@ -24,591 +24,389 @@ interface Quest {
   };
   deadline?: string;
   completed: boolean;
-  requiredLevel?: number;
   location?: string;
   enemyType?: string;
+  guide?: string;
 }
 
-// These helper functions are defined at the bottom of the file
+// Function to generate quests with detailed guidance
+const generateQuests = (cultivationRank: number): Quest[] => {
+  const questTypes = ['sect', 'main', 'side', 'daily', 'weekly'];
+  
+  // We'll focus on specific types of quests with clear objectives
+  const availableEnemies = Object.keys(ENEMIES);
+  const availableLocations = Object.keys(LOCATIONS);
+  
+  // Filter locations based on player's rank to prevent quests for locked areas
+  const accessibleLocations = availableLocations.filter(loc => {
+    const locationData = LOCATIONS[loc as keyof typeof LOCATIONS];
+    return !locationData.requiredLevel || cultivationRank >= locationData.requiredLevel;
+  });
+  
+  if (accessibleLocations.length === 0) {
+    // Ensure we always have at least one location (usually sect grounds)
+    accessibleLocations.push('sect');
+  }
+  
+  const quests: Quest[] = [];
+  
+  for (let i = 0; i < 5; i++) {
+    const questType = questTypes[Math.floor(Math.random() * questTypes.length)];
+    // We'll only create kill, gather and training quests for better tracking
+    const objectiveTypes = ['kill', 'gather', 'train'];
+    const objectiveType = objectiveTypes[Math.floor(Math.random() * objectiveTypes.length)];
+    
+    let target = 0;
+    let questName = '';
+    let questDesc = '';
+    let objectiveDesc = '';
+    let rewardGold = 0;
+    let rewardStones = 0;
+    let rewardExp = 0;
+    let location = '';
+    let enemyType = '';
+    let guide = '';
+    
+    // Generate a unique timestamp for each quest
+    const uniqueTimestamp = Date.now() + i;
+    
+    switch (objectiveType) {
+      case 'kill':
+        // Pick a random accessible location first
+        location = accessibleLocations[Math.floor(Math.random() * accessibleLocations.length)];
+        const locationName = LOCATIONS[location as keyof typeof LOCATIONS].name;
+        
+        // Pick an enemy type appropriate for this location
+        // In a real implementation, you'd have a mapping of locations to enemy types
+        enemyType = availableEnemies[Math.floor(Math.random() * availableEnemies.length)];
+        const enemyName = ENEMIES[enemyType as keyof typeof ENEMIES].name;
+        
+        target = 5 + Math.floor(Math.random() * 5); // Reduced variance for better balance
+        questName = `Hunt ${enemyName}s in ${locationName}`;
+        questDesc = `The sect requires you to eliminate ${target} ${enemyName}s that have been causing trouble in ${locationName}.`;
+        objectiveDesc = `Defeat ${target} ${enemyName}s in ${locationName}`;
+        rewardGold = 50 * cultivationRank;
+        rewardStones = Math.floor(cultivationRank / 5) + 1;
+        rewardExp = 20 * cultivationRank;
+        
+        // Specific guidance with location and enemy type
+        guide = `Go to the Combat page and select the ${locationName} hunting ground. Specifically hunt for ${enemyName}s in this area. Each successful defeat of this enemy type in this location will count toward your quest progress.`;
+        break;
+        
+      case 'gather':
+        location = accessibleLocations[Math.floor(Math.random() * accessibleLocations.length)];
+        const gatherLocationName = LOCATIONS[location as keyof typeof LOCATIONS].name;
+        
+        // Always set to 1 for gather quests as requested (gather once, then claim)
+        target = 1;
+        questName = `Gather Resources from ${gatherLocationName}`;
+        questDesc = `The sect needs specific resources that can only be found in ${gatherLocationName} for crafting spiritual tools.`;
+        objectiveDesc = `Gather resources from ${gatherLocationName}`;
+        rewardGold = 40 * cultivationRank;
+        rewardStones = Math.floor(cultivationRank / 6) + 1;
+        rewardExp = 15 * cultivationRank;
+        
+        // Location-specific gathering instructions with clear "gather once, then claim" pattern
+        guide = `Go to the Map page and select ${gatherLocationName}. Click the "Gather Resources" button once and wait for the gathering process to complete. After gathering once, return here to claim your reward. Higher cultivation ranks yield better quality resources.`;
+        break;
+        
+      case 'train':
+        target = 5 + Math.floor(Math.random() * 3); // Reduced variance
+        questName = 'Sect Training Mission';
+        questDesc = `The sect master has assigned you to complete ${target} training sessions to refine your cultivation technique and demonstrate your diligence.`;
+        objectiveDesc = `Complete ${target} training sessions`;
+        rewardGold = 30 * cultivationRank;
+        rewardStones = Math.floor(cultivationRank / 7) + 1;
+        rewardExp = 25 * cultivationRank;
+        
+        // Detailed training instructions
+        guide = `Go to the main cultivation page and click the "Cultivate" button ${target} times to perform manual cultivation. Each successful session will count toward your goal. For faster results, ensure you have unlocked more efficient cultivation techniques through the upgrades section.`;
+        break;
+    }
+    
+    quests.push({
+      id: `quest-${i}-${uniqueTimestamp}`, // Using uniqueTimestamp to ensure ID uniqueness
+      name: questName,
+      description: questDesc,
+      objective: objectiveDesc,
+      type: questType as any,
+      progress: 0, // Start with 0 progress
+      target: target,
+      rewards: {
+        gold: rewardGold,
+        spiritualStones: rewardStones,
+        experience: rewardExp,
+        items: []
+      },
+      completed: false,
+      location: location || undefined,
+      enemyType: enemyType || undefined,
+      guide: guide
+    });
+  }
+  
+  return quests;
+};
 
 export default function SectQuests() {
   const { game, updateGameState } = useGameEngine();
-  const [location, setLocation] = useLocation();
-  const [quests, setQuests] = useState<Quest[]>([]);
-  const [completedQuests, setCompletedQuests] = useState<Quest[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("available");
-  const [refreshTime, setRefreshTime] = useState<number | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
-  const refreshTimer = useRef<NodeJS.Timeout | null>(null);
-  const countdownTimer = useRef<NodeJS.Timeout | null>(null);
+  const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
   
-  // Check if character is created and setup auto-refresh
   useEffect(() => {
-    if (!game.characterCreated) {
-      setLocation("/character");
-    } else {
-      // Generate quests based on player level if none exist
-      if (quests.length === 0) {
-        generateQuests();
-        startQuestRefreshTimer();
-      }
-    }
-    
-    return () => {
-      // Cleanup timers on unmount
-      if (refreshTimer.current) {
-        clearTimeout(refreshTimer.current);
-      }
-      if (countdownTimer.current) {
-        clearInterval(countdownTimer.current);
-      }
-    };
-  }, [game.characterCreated, setLocation, quests.length]);
-  
-  // Update the countdown timer every second
-  useEffect(() => {
-    if (refreshTime) {
-      // Set initial time remaining
-      setTimeRemaining(Math.max(0, Math.ceil((refreshTime - Date.now()) / 1000)));
+    // Load quests from game state or generate new ones if none exist
+    if (game.exploration.activeQuests.length === 0) {
+      const newQuests = generateQuests(game.cultivationLevel);
+      setActiveQuests(newQuests);
       
-      // Start a timer to update the countdown
-      countdownTimer.current = setInterval(() => {
-        const remaining = Math.max(0, Math.ceil((refreshTime - Date.now()) / 1000));
-        setTimeRemaining(remaining);
+      // Save the generated quests to the game state
+      updateGameState(state => ({
+        ...state,
+        exploration: {
+          ...state.exploration,
+          activeQuests: newQuests as any
+        }
+      }));
+    } else {
+      // Get existing quests but ensure they all have guides
+      const existingQuests = [...game.exploration.activeQuests] as Quest[];
+      let needsUpdate = false;
+      
+      // Check for and add missing guides to existing quests
+      const updatedQuests = existingQuests.map(quest => {
+        // If quest already has a guide, return it as is
+        if (quest.guide) return quest;
         
-        // Clear interval once timer reaches 0
-        if (remaining <= 0 && countdownTimer.current) {
-          clearInterval(countdownTimer.current);
-        }
-      }, 1000);
-    } else {
-      // Clear the countdown timer if no refresh time
-      if (countdownTimer.current) {
-        clearInterval(countdownTimer.current);
-      }
-    }
-    
-    return () => {
-      if (countdownTimer.current) {
-        clearInterval(countdownTimer.current);
-      }
-    };
-  }, [refreshTime]);
-  
-  // Start a timer to refresh quests automatically
-  const startQuestRefreshTimer = () => {
-    if (refreshTimer.current) {
-      clearTimeout(refreshTimer.current);
-    }
-    
-    // Set refresh time to 3 minutes (180 seconds) from now
-    const nextRefreshTime = Date.now() + 180000;
-    setRefreshTime(nextRefreshTime);
-    
-    refreshTimer.current = setTimeout(() => {
-      toast({
-        title: "New Quests Available",
-        description: "The sect has issued new tasks for you to complete.",
-        variant: "default"
-      });
-      generateQuests();
-      setRefreshTime(null);
-    }, 180000); // 3 minutes
-  };
-  
-  // Generate a set of quests based on player level
-  const generateQuests = () => {
-    const playerLevel = game.cultivationLevel;
-    const newQuests: Quest[] = [];
-    
-    // Add cultivation quests with Wuxia-themed names
-    newQuests.push({
-      id: `cultivation-${Date.now()}`,
-      name: "Profound Dao Heart Tempering",
-      description: "Meditate on the fundamental principles of cultivation to strengthen your Dao Heart",
-      objective: "Accumulate Qi energy through meditation",
-      type: "sect",
-      progress: 0,
-      target: playerLevel * 150, // More challenging
-      rewards: {
-        gold: playerLevel * 30,
-        spiritualStones: Math.ceil(playerLevel * 0.8),
-        experience: playerLevel * 25,
-        items: []
-      },
-      completed: false,
-      requiredLevel: 1
-    });
-    
-    // Add combat quests with Wuxia-themed names
-    const enemyTypes = [
-      { type: 'beast', name: 'Spirit Beast' },
-      { type: 'wolf', name: 'Frost Wind Wolf' },
-      { type: 'bear', name: 'Blood Mist Bear' },
-      { type: 'snake', name: 'Nine-Pattern Serpent' },
-      { type: 'tiger', name: 'White Mountain Tiger' },
-      { type: 'eagle', name: 'Golden Wing Eagle' },
-      { type: 'rogue-cultivator', name: 'Rogue Cultivator' }
-    ];
-    
-    const randomEnemy = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-    
-    newQuests.push({
-      id: `combat-${Date.now()}`,
-      name: `Subdue the ${randomEnemy.name}`,
-      description: `Elder Feng has requested disciples to exterminate ${randomEnemy.name}s that are threatening nearby spiritual herb gardens. Their corrupted energy is polluting the natural environment.`,
-      objective: `Defeat ${randomEnemy.name}s in combat`,
-      type: "sect",
-      progress: 0,
-      target: Math.max(3, Math.floor(playerLevel * 0.5)), // Make it easier to complete
-      rewards: {
-        gold: playerLevel * 45,
-        spiritualStones: Math.ceil(playerLevel * 0.6) + 2,
-        experience: playerLevel * 35,
-        items: []
-      },
-      completed: false,
-      requiredLevel: 1,
-      enemyType: randomEnemy.type
-    });
-    
-    // Add breakthrough quest for higher levels
-    if (playerLevel >= 5) {
-      newQuests.push({
-        id: `breakthrough-${Date.now()}`,
-        name: "Heaven Defying Breakthrough",
-        description: "Achieve a realm breakthrough by purifying your core and harmonizing your meridians with spiritual energy from the heavens",
-        objective: "Perform a successful realm breakthrough ritual",
-        type: "sect",
-        progress: 0,
-        target: 1,
-        rewards: {
-          gold: playerLevel * 80,
-          spiritualStones: playerLevel * 2,
-          experience: playerLevel * 50,
-          items: []
-        },
-        completed: false,
-        requiredLevel: 5
-      });
-    }
-    
-    // Add resource gathering quest with Wuxia-themed name
-    const locationsWithNames = [
-      { id: 'forest', name: 'Verdant Spirit Forest' },
-      { id: 'mountain', name: 'Azure Dragon Mountains' },
-      { id: 'ruins', name: 'Immortal Emperor Ruins' }
-    ];
-    
-    const randomLocation = locationsWithNames[Math.floor(Math.random() * locationsWithNames.length)];
-    
-    // Select a random resource type based on location
-    const resourceTypes = [
-      'Spirit Herbs', 'Heavenly Ores', 'Lightning Essence', 
-      'Soul Crystals', 'Dragon Veins', 'Phoenix Feathers'
-    ];
-    
-    const randomResource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
-    
-    newQuests.push({
-      id: `gather-${Date.now()}`,
-      name: `Harvest of ${randomResource}`,
-      description: `The sect's Grand Elder needs precious ${randomResource} from ${randomLocation.name} for an upcoming alchemy ritual. These materials only appear during specific spiritual convergences and must be gathered with care.`,
-      objective: `Gather ${randomResource} from ${randomLocation.name}`,
-      type: "sect",
-      progress: 0,
-      target: 1, // Always one gather to complete the quest
-      rewards: {
-        gold: playerLevel * 40,
-        spiritualStones: Math.ceil(playerLevel * 0.7),
-        experience: playerLevel * 30,
-        items: []
-      },
-      completed: false,
-      requiredLevel: 1,
-      location: randomLocation.id
-    });
-    
-    // Add up to 3 additional random quests based on player level
-    for (let i = 0; i < Math.min(3, playerLevel); i++) {
-      const questTypes = [
-        {
-          name: "Herb Collection",
-          description: "Collect rare herbs for the sect's alchemy division",
-          objective: "Gather special herbs",
-          rewards: {
-            gold: playerLevel * 15 + Math.floor(Math.random() * 20),
-            spiritualStones: Math.max(1, Math.floor(playerLevel / 5)),
-            experience: playerLevel * 12,
-            items: []
+        // Otherwise, generate appropriate guide based on quest type
+        let guide = '';
+        needsUpdate = true;
+        
+        if (quest.objective.toLowerCase().includes('defeat') || quest.objective.toLowerCase().includes('hunt')) {
+          guide = `Go to the Combat page and select an appropriate hunting ground for the enemy type. Defeat them in combat and your progress will update automatically after each victory.`;
+          
+          // More specific guides based on enemy type if available
+          if (quest.enemyType) {
+            if (['beast', 'wolf', 'fox'].includes(quest.enemyType)) {
+              guide = `Go to the Combat page and select the Spirit Forest hunting ground. This area has the highest concentration of these creatures. Defeat them in combat and your progress will update automatically.`;
+            } else if (['bandit', 'rogue-cultivator'].includes(quest.enemyType)) {
+              guide = `Go to the Combat page and select the City Outskirts hunting ground. This is where these enemies are most commonly found. Defeat them and your progress will automatically update after each victory.`;
+            }
           }
-        },
-        {
-          name: "Sect Defense",
-          description: "Help defend the sect grounds from intruders",
-          objective: "Patrol the sect grounds",
-          rewards: {
-            gold: playerLevel * 20 + Math.floor(Math.random() * 15),
-            spiritualStones: Math.max(1, Math.floor(playerLevel / 4)),
-            experience: playerLevel * 18,
-            items: []
-          }
-        },
-        {
-          name: "Knowledge Seeking",
-          description: "Study ancient texts in the sect library",
-          objective: "Study cultivation techniques",
-          rewards: {
-            gold: playerLevel * 10 + Math.floor(Math.random() * 10),
-            spiritualStones: Math.max(1, Math.floor(playerLevel / 3)),
-            experience: playerLevel * 25,
-            items: []
+        } 
+        else if (quest.objective.toLowerCase().includes('gather')) {
+          guide = `Go to the Map page and select the appropriate location. Click the "Gather Resources" button and wait for the gathering process to complete. Each successful gathering session will count toward your quest target.`;
+          
+          if (quest.location) {
+            const locationName = LOCATIONS[quest.location as keyof typeof LOCATIONS]?.name || quest.location;
+            guide = `Go to the Map page and select ${locationName}. Click the "Gather Resources" button and wait for the gathering process to complete. Each successful gathering session will count toward your quest target.`;
           }
         }
-      ];
+        else if (quest.objective.toLowerCase().includes('training') || quest.objective.toLowerCase().includes('train')) {
+          guide = `Go to the main cultivation page and click the "Cultivate" button multiple times to perform manual cultivation. Each successful session will count toward your goal. For faster results, ensure you have unlocked more efficient cultivation techniques through the upgrades section.`;
+        }
+        else if (quest.objective.toLowerCase().includes('explore')) {
+          let locationText = 'the appropriate location';
+          if (quest.location) {
+            const locationName = LOCATIONS[quest.location as keyof typeof LOCATIONS]?.name || quest.location;
+            locationText = locationName;
+          }
+          guide = `Go to the Map page and select ${locationText}. Click on the "Explore" button and wait for the exploration to complete. Full exploration will count as completing this quest.`;
+        }
+        else if (quest.objective.toLowerCase().includes('breakthrough')) {
+          guide = `Go to the main cultivation page. Fill your cultivation bar to maximum by using the "Cultivate" button repeatedly. Once your energy is at maximum, click the "Attempt Breakthrough" button. Success chance increases with higher stats and proper equipment. This quest completes when you advance to the next cultivation level.`;
+        }
+        
+        return {
+          ...quest,
+          guide
+        };
+      });
       
-      const randomQuest = questTypes[Math.floor(Math.random() * questTypes.length)];
-      
-      newQuests.push({
-        id: `additional-${i}-${Date.now()}`,
-        name: randomQuest.name,
-        description: randomQuest.description,
-        objective: randomQuest.objective,
-        type: "sect",
-        progress: 0,
-        target: Math.max(1, Math.floor(playerLevel / 3)),
-        rewards: randomQuest.rewards,
-        completed: false,
-        requiredLevel: 1
-      });
+      // Only update game state if guides were actually added to prevent infinite update loop
+      if (needsUpdate) {
+        updateGameState(state => ({
+          ...state,
+          exploration: {
+            ...state.exploration,
+            activeQuests: updatedQuests as any
+          }
+        }));
+      } else {
+        // Just update the local state without triggering a game state update
+        setActiveQuests(existingQuests);
+      }
     }
-    
-    // Filter to only show quests appropriate for player level
-    const filteredQuests = newQuests.filter(quest => 
-      quest.requiredLevel === undefined || quest.requiredLevel <= playerLevel
-    );
-    
-    // Limit to 6 quests maximum to avoid clutter
-    const finalQuests = filteredQuests.slice(0, 6);
-    
-    // Use the functional update form
-    setQuests(() => finalQuests);
-  };
+  // Remove game.exploration.activeQuests from dependency array to prevent infinite updates
+  }, [game.cultivationLevel, updateGameState]);
   
-  // Progress a quest
-  const progressQuest = (quest: Quest) => {
-    if (quest.completed) return;
-    
-    const newProgress = Math.min(quest.progress + 1, quest.target);
-    const updatedQuest = { ...quest, progress: newProgress };
-    
-    if (newProgress >= quest.target) {
-      updatedQuest.completed = true;
-      toast({
-        title: "Quest Completed!",
-        description: `You have completed "${quest.name}"`,
-        variant: "default"
-      });
-    } else {
-      toast({
-        title: "Quest Progress",
-        description: `${newProgress}/${quest.target} ${quest.objective}`,
-        variant: "default"
-      });
-    }
-    
-    // Use the callback form of setState to avoid dependency on current state
-    setQuests(prevQuests => prevQuests.map(q => q.id === quest.id ? updatedQuest : q));
-  };
-  
-  // Complete a quest and claim rewards
   const completeQuest = (quest: Quest) => {
-    if (!quest.completed) return;
+    if (quest.progress < quest.target) {
+      toast({
+        title: "Quest Incomplete",
+        description: "You have not met the objective requirements yet.",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    // Update game state with rewards
-    updateGameState(state => ({
-      ...state,
-      gold: state.gold + quest.rewards.gold,
-      spiritualStones: state.spiritualStones + quest.rewards.spiritualStones,
-      cultivationProgress: state.cultivationProgress + quest.rewards.experience
-    }));
+    // Update the game state to complete the quest and give rewards
+    updateGameState(state => {
+      // Generate a new quest to replace the completed one
+      const newQuest = generateQuests(state.cultivationLevel)[0];
+      
+      // Add quest ID to completed quests
+      const completedQuests = [...state.exploration.completedQuests, quest.id];
+      
+      // Apply rewards
+      return {
+        ...state,
+        gold: state.gold + quest.rewards.gold,
+        spiritualStones: state.spiritualStones + quest.rewards.spiritualStones,
+        cultivationProgress: Math.min(
+          state.cultivationProgress + quest.rewards.experience,
+          state.maxCultivationProgress
+        ),
+        // Replace the completed quest with a new one
+        exploration: {
+          ...state.exploration,
+          activeQuests: [
+            ...state.exploration.activeQuests.filter((q: any) => q.id !== quest.id),
+            newQuest
+          ],
+          completedQuests
+        }
+      };
+    });
     
     toast({
-      title: "Rewards Claimed",
-      description: `You gained ${quest.rewards.gold} gold, ${quest.rewards.spiritualStones} Qi stones, and ${quest.rewards.experience} cultivation experience.`,
+      title: "Quest Completed",
+      description: `You have completed "${quest.name}" and received your rewards.`,
       variant: "default"
     });
     
-    // Remove the completed quest using the functional update pattern
-    setQuests(prevQuests => {
-      const updatedQuests = prevQuests.filter(q => q.id !== quest.id);
-      
-      // If few quests remain after this update, generate more in a timeout
-      // This prevents state updates during render
-      if (updatedQuests.length <= 5) {
-        setTimeout(() => generateQuests(), 0);
-      }
-      
-      return updatedQuests;
-    });
+    // Update the local state to reflect changes
+    setActiveQuests(prev => [
+      ...prev.filter(q => q.id !== quest.id),
+      generateQuests(game.cultivationLevel)[0]
+    ]);
   };
   
-  // Generate a replacement quest when one is completed
-  const generateReplacementQuest = () => {
-    const playerLevel = game.cultivationLevel;
-    const questTypes = [
-      { 
-        name: "Divine Scripture Comprehension",
-        description: "Gain enlightenment by studying the sect's most sacred cultivation techniques",
-        objective: "Comprehend the profound mysteries in ancient texts",
-        target: Math.max(3, Math.floor(playerLevel * 0.6))
-      },
-      { 
-        name: "Demonic Beast Suppression",
-        description: "The sect needs powerful disciples to subdue demonic beasts threatening nearby territories",
-        objective: "Hunt and defeat corrupted beasts in the wilderness",
-        target: Math.max(4, Math.floor(playerLevel * 0.7))
-      },
-      { 
-        name: "Spirit Treasure Collection",
-        description: "Gather rare spiritual treasures to strengthen the sect's foundation",
-        objective: "Collect spiritual treasures throughout the realm",
-        target: Math.max(3, Math.floor(playerLevel * 0.5))
-      },
-      { 
-        name: "Array Formation Defense",
-        description: "Assist in maintaining the sect's defensive formations against rival sects",
-        objective: "Channel spiritual energy into protective arrays",
-        target: Math.max(5, Math.floor(playerLevel * 0.6))
-      },
-      { 
-        name: "Mystic Artifact Refinement",
-        description: "Help the sect's artifact refinement division forge spiritual weapons",
-        objective: "Contribute to the refinement of spiritual artifacts",
-        target: Math.max(4, Math.floor(playerLevel * 0.6))
-      },
-      { 
-        name: "Heavenly Dao Insight",
-        description: "Meditate on the principles of the Heavenly Dao to gain profound insights",
-        objective: "Achieve breakthroughs in your understanding of cultivation",
-        target: Math.max(3, Math.floor(playerLevel * 0.8))
-      }
-    ];
-    
-    const randomQuest = questTypes[Math.floor(Math.random() * questTypes.length)];
-    const newQuest: Quest = {
-      id: `quest-${Date.now()}`,
-      name: randomQuest.name,
-      description: randomQuest.description,
-      objective: randomQuest.objective,
-      type: "sect",
-      progress: 0,
-      target: randomQuest.target,
-      rewards: {
-        gold: playerLevel * 35 + Math.floor(Math.random() * 30),
-        spiritualStones: Math.max(2, Math.floor(playerLevel * 0.6)),
-        experience: playerLevel * 25 + Math.floor(Math.random() * 15),
-        items: []
-      },
-      completed: false,
-      requiredLevel: Math.max(1, playerLevel - 2)
-    };
-    
-    // Use functional update pattern
-    setQuests(prevQuests => [...prevQuests, newQuest]);
-    
-    // Start the auto-refresh timer again when a quest is completed
-    startQuestRefreshTimer();
+  const getQuestTypeColor = (type: string) => {
+    switch (type) {
+      case 'sect': return 'bg-blue-100 text-blue-800';
+      case 'main': return 'bg-purple-100 text-purple-800';
+      case 'side': return 'bg-green-100 text-green-800';
+      case 'daily': return 'bg-amber-100 text-amber-800';
+      case 'weekly': return 'bg-indigo-100 text-indigo-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
-
-  return (
-    <div className="min-h-screen bg-scroll py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6 text-center">
-          <h1 className="text-3xl font-serif text-primary mb-2">
-            <i className="fas fa-tasks mr-2"></i>
-            Sect Quests
-          </h1>
-          <p className="text-gray-700">Complete tasks to earn rewards and gain favor with your sect</p>
-        </div>
-
-        {!game.characterCreated ? (
-          <Card className="bg-white bg-opacity-90 shadow-lg text-center p-6">
-            <p>Please create your character first.</p>
-            <Button className="mt-4" onClick={() => setLocation("/character")}>
-              Create Character
-            </Button>
-          </Card>
-        ) : (
-          <>
-            <div className="mb-4 flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-medium">Available Quests</h2>
-                <p className="text-sm text-gray-600">Showing {quests.length} quests</p>
-                {refreshTime && (
-                  <p className="text-xs text-amber-600 mt-1">
-                    <i className="fas fa-clock mr-1"></i>
-                    New quests in: {Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}
-                  </p>
-                )}
-              </div>
-              <Button onClick={generateQuests}>
-                <i className="fas fa-sync-alt mr-2"></i> Refresh Quests
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {quests.length === 0 ? (
-                <Card className="bg-white shadow-md text-center p-6">
-                  <p>No quests available. Generate new quests to get started.</p>
-                </Card>
-              ) : (
-                quests.map(quest => (
-                  <Card key={quest.id} className={`bg-white shadow-md transition-all ${quest.completed ? "border-green-300 border-2" : ""}`}>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg flex items-center">
-                          {quest.name}
-                          {quest.completed && (
-                            <Badge className="ml-2 bg-green-100 text-green-800">
-                              <i className="fas fa-check mr-1"></i> Completed
-                            </Badge>
-                          )}
-                        </CardTitle>
-                        <Badge className="bg-primary/10 text-primary">
-                          {quest.type}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600">{quest.description}</p>
-                      <div className="mt-2 bg-gray-50 p-2 rounded-md text-xs">
-                        <strong className="text-primary">How to complete:</strong> {getQuestGuide(quest)}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="mb-3">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Progress: {quest.objective}</span>
-                          <span>{quest.progress} / {quest.target}</span>
-                        </div>
-                        <Progress value={(quest.progress / quest.target) * 100} className="h-2" />
-                      </div>
-                      
-                      <div className="bg-yellow-50 p-3 rounded-md">
-                        <h4 className="font-medium mb-1">Rewards</h4>
-                        <div className="grid grid-cols-3 gap-2 text-sm">
-                          <div className="flex items-center">
-                            <i className="fas fa-coins text-amber-500 mr-1"></i>
-                            <span>{quest.rewards.gold} Gold</span>
-                          </div>
-                          <div className="flex items-center">
-                            <i className="fas fa-gem text-blue-500 mr-1"></i>
-                            <span>{quest.rewards.spiritualStones} Stones</span>
-                          </div>
-                          <div className="flex items-center">
-                            <i className="fas fa-fire text-red-500 mr-1"></i>
-                            <span>{quest.rewards.experience} Exp</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                      {quest.completed ? (
-                        <Button onClick={() => completeQuest(quest)} className="w-full">
-                          <i className="fas fa-trophy mr-2"></i> Claim Rewards
-                        </Button>
-                      ) : (
-                        <>
-                          <div className="text-sm text-gray-600">
-                            {quest.requiredLevel && (
-                              <span className="mr-4">Required Level: {quest.requiredLevel}</span>
-                            )}
-                            {quest.location && (
-                              <span className="mr-4">Location: {formatLocationName(quest.location)}</span>
-                            )}
-                            {quest.enemyType && (
-                              <span>Target: {capitalizeFirst(quest.enemyType)}</span>
-                            )}
-                          </div>
-                          <div className="text-sm text-primary">
-                            <i className="fas fa-info-circle mr-1"></i> 
-                            See guide for completion details
-                          </div>
-                        </>
-                      )}
-                    </CardFooter>
-                  </Card>
-                ))
-              )}
-            </div>
-          </>
-        )}
+  
+  if (!game.characterCreated) {
+    return (
+      <div className="container mx-auto py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Character Required</CardTitle>
+            <CardDescription>
+              You need to create a character before accessing sect quests.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Please go to the Character page to create your character first.</p>
+          </CardContent>
+        </Card>
       </div>
+    );
+  }
+  
+  return (
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-serif mb-6 text-center text-primary">
+        <i className="fas fa-tasks mr-2"></i> Sect Quests
+      </h1>
+      
+      <div className="mb-6 p-4 rounded-lg bg-primary/5 flex justify-between items-center">
+        <div>
+          <span className="font-semibold text-primary">Active Quests:</span> 
+          <span className="ml-2">{activeQuests.length}</span>
+        </div>
+        <div>
+          <span className="font-semibold text-primary">Completed Quests:</span> 
+          <span className="ml-2">{game.exploration.completedQuests.length}</span>
+        </div>
+      </div>
+      
+      {activeQuests.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {activeQuests.map(quest => (
+            <Card key={quest.id} className="overflow-hidden">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg font-serif">{quest.name}</CardTitle>
+                  <Badge className={getQuestTypeColor(quest.type)}>
+                    {quest.type.charAt(0).toUpperCase() + quest.type.slice(1)}
+                  </Badge>
+                </div>
+                <CardDescription>{quest.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between mb-1 text-sm">
+                      <span>Objective: {quest.objective}</span>
+                      <span>
+                        {quest.progress}/{quest.target}
+                      </span>
+                    </div>
+                    <Progress value={(quest.progress / quest.target) * 100} />
+                  </div>
+                  
+                  {quest.guide && (
+                    <div className="bg-blue-50 border border-blue-200 p-3 rounded-md text-sm">
+                      <h4 className="font-medium mb-1">How to complete:</h4>
+                      <p>{quest.guide}</p>
+                    </div>
+                  )}
+                  
+                  <div className="bg-primary/5 p-3 rounded-md text-sm">
+                    <h4 className="font-medium mb-2">Rewards:</h4>
+                    <div className="space-y-1">
+                      {quest.rewards.gold > 0 && <div className="flex items-center">
+                        <i className="fas fa-coins text-amber-500 mr-2"></i>
+                        <span>{quest.rewards.gold} Gold</span>
+                      </div>}
+                      
+                      {quest.rewards.spiritualStones > 0 && <div className="flex items-center">
+                        <i className="fas fa-gem text-blue-500 mr-2"></i>
+                        <span>{quest.rewards.spiritualStones} Qi Stones</span>
+                      </div>}
+                      
+                      {quest.rewards.experience > 0 && <div className="flex items-center">
+                        <i className="fas fa-fire text-red-500 mr-2"></i>
+                        <span>{quest.rewards.experience} Rank Experience</span>
+                      </div>}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-end pt-0">
+                <Button 
+                  onClick={() => completeQuest(quest)}
+                  disabled={quest.progress < quest.target}
+                >
+                  Complete Quest
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">No active quests available.</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
-}
-
-// Helper functions
-function formatLocationName(location: string): string {
-  const names: Record<string, string> = {
-    'forest': 'Verdant Spirit Forest',
-    'mountain': 'Azure Dragon Mountains',
-    'ruins': 'Immortal Emperor Ruins',
-    'jade-valley': 'Nine Treasures Jade Valley',
-    'poison-marsh': 'Miasma Venom Marsh',
-    'flame-desert': 'Nine Suns Flame Desert',
-    'frozen-peak': 'Frost Immortal Summit',
-    'demonic-beast': 'Demonic Spirit Beast',
-    'qi-wolf': 'Frost Wind Spirit Wolf',
-    'bloodbear': 'Blood Mist Cave Bear',
-    'venomsnake': 'Nine-Pattern Poison Serpent',
-    'celestial-tiger': 'White Mountain Spirit Tiger',
-    'golden-eagle': 'Golden Wing Thunder Eagle',
-    'rogue-cultivator': 'Rogue Cultivator'
-  };
-  
-  return names[location] || location;
-}
-
-function capitalizeFirst(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// Get appropriate completion guide based on quest type
-function getQuestGuide(quest: Quest): string {
-  if (quest.name.includes("Profound Dao Heart") || quest.name.includes("Divine Scripture") || quest.name.includes("Heavenly Dao")) {
-    return "Go to the main cultivation page. Fill your cultivation bar to maximum by using the 'Cultivate' button repeatedly. Each cultivation session will increase your progress toward the target.";
-  }
-  
-  if (quest.name.includes("Breakthrough") || quest.name.includes("Realm Breakthrough")) {
-    return "Accumulate enough cultivation progress, then attempt a breakthrough on the main cultivation page by clicking the 'Attempt Breakthrough' button when it becomes available.";
-  }
-  
-  if (quest.enemyType || quest.name.includes("Subdue") || quest.name.includes("Beast") || quest.name.includes("Hunt") || quest.name.includes("Demonic Beast")) {
-    const enemyName = quest.enemyType ? formatLocationName(quest.enemyType) : "enemies";
-    return `Travel to the Combat page and battle ${enemyName} by selecting an appropriate hunting ground and engaging in combat. Defeat enemies until you reach the target number.`;
-  }
-  
-  if (quest.location || quest.name.includes("Harvest") || quest.name.includes("Gather") || quest.name.includes("Collection")) {
-    const locationName = quest.location ? formatLocationName(quest.location) : "appropriate locations";
-    return `Visit the Map page and travel to ${locationName}. Click on gathering spots to collect resources until you reach the target number.`;
-  }
-  
-  if (quest.name.includes("Artifact") || quest.name.includes("Refinement")) {
-    return "Go to the Artifact Refinement section and participate in the refinement process by contributing materials and spiritual energy. Each successful refinement session counts toward your progress.";
-  }
-  
-  if (quest.name.includes("Array") || quest.name.includes("Formation") || quest.name.includes("Defense")) {
-    return "Visit the Sect Defense page and participate in patrol duties by activating the defensive arrays. Each successful patrol adds to your progress.";
-  }
-  
-  if (quest.name.includes("Knowledge") || quest.name.includes("Study")) {
-    return "Go to the Sect Library and study cultivation techniques. Each study session will increase your comprehension and count toward quest progress.";
-  }
-  
-  if (quest.name.includes("Elder")) {
-    return "Visit the Sect Elders Hall and speak with the elders to receive their specific requests. Complete the tasks they assign to progress in the quest.";
-  }
-  
-  // Default guide if no specific category is matched
-  return "Participate in activities related to the quest objective. Your progress will update automatically as you perform relevant actions throughout the game.";
 }

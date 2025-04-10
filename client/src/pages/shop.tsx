@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Define weapon and apparel types for shop items
 interface ShopItem {
@@ -17,7 +16,7 @@ interface ShopItem {
   stats: Record<string, number>;
   price: {
     gold: number;
-    spiritualStones: number;
+    qiStones: number;
     qi: number;
   };
   requiredLevel: number;
@@ -62,12 +61,12 @@ const generateWeapons = (): ShopItem[] => {
       stats['intelligence'] = 1 + Math.floor(Math.random() * rarityIndex * 3);
     }
     
-    // Determine if the weapon costs spiritual stones based on rarity
-    let spiritualStoneCost = 0;
+    // Determine if the weapon costs Qi stones based on rarity
+    let qiStoneCost = 0;
     let qiCost = 0;
     
     if (rarityIndex >= 3) {
-      spiritualStoneCost = (rarityIndex - 2) * 5;
+      qiStoneCost = (rarityIndex - 2) * 5;
     }
     if (rarityIndex >= 4) {
       qiCost = (rarityIndex - 3) * 100;
@@ -82,20 +81,22 @@ const generateWeapons = (): ShopItem[] => {
       stats: stats,
       price: {
         gold: basePrice,
-        spiritualStones: spiritualStoneCost,
+        qiStones: qiStoneCost,
         qi: qiCost
       },
       requiredLevel: Math.max(1, rarityIndex * 5),
-      icon: weaponType === 'sword' ? 'fa-khanda' :
-             weaponType === 'saber' ? 'fa-utensils' :
-             weaponType === 'spear' ? 'fa-location-arrow' :
-             weaponType === 'staff' ? 'fa-magic' :
-             weaponType === 'dagger' ? 'fa-cut' :
-             weaponType === 'bow' ? 'fa-arrow-right' :
-             weaponType === 'fan' ? 'fa-hand-paper' :
-             weaponType === 'whip' ? 'fa-wave-square' :
-             weaponType === 'hammer' ? 'fa-hammer' :
-             weaponType === 'axe' ? 'fa-axe' : 'fa-sword'
+      icon: `fa-${
+        weaponType === 'sword' ? 'khanda' : 
+        weaponType === 'bow' ? 'bow-arrow' : 
+        weaponType === 'spear' ? 'bahai' :
+        weaponType === 'staff' ? 'wand-magic' :
+        weaponType === 'dagger' ? 'dagger' :
+        weaponType === 'fan' ? 'fan' :
+        weaponType === 'whip' ? 'whip' :
+        weaponType === 'hammer' ? 'hammer' :
+        weaponType === 'axe' ? 'axe' :
+        'khanda' // default fallback
+      }`
     });
   }
   
@@ -140,12 +141,12 @@ const generateApparel = (): ShopItem[] => {
       stats['maxHealth'] = 10 + Math.floor(Math.random() * rarityIndex * 10);
     }
     
-    // Determine if the apparel costs spiritual stones based on rarity
-    let spiritualStoneCost = 0;
+    // Determine if the apparel costs Qi stones based on rarity
+    let qiStoneCost = 0;
     let qiCost = 0;
     
     if (rarityIndex >= 3) {
-      spiritualStoneCost = (rarityIndex - 2) * 4;
+      qiStoneCost = (rarityIndex - 2) * 4;
     }
     if (rarityIndex >= 4) {
       qiCost = (rarityIndex - 3) * 80;
@@ -160,7 +161,7 @@ const generateApparel = (): ShopItem[] => {
       stats: stats,
       price: {
         gold: basePrice,
-        spiritualStones: spiritualStoneCost,
+        qiStones: qiStoneCost,
         qi: qiCost
       },
       requiredLevel: Math.max(1, rarityIndex * 4),
@@ -209,12 +210,12 @@ const generateAdditionalApparel = (): ShopItem[] => {
       stats['maxHealth'] = 10 + Math.floor(Math.random() * rarityIndex * 10);
     }
     
-    // Determine if the apparel costs spiritual stones based on rarity
-    let spiritualStoneCost = 0;
+    // Determine if the apparel costs Qi stones based on rarity
+    let qiStoneCost = 0;
     let qiCost = 0;
     
     if (rarityIndex >= 3) {
-      spiritualStoneCost = (rarityIndex - 2) * 4;
+      qiStoneCost = (rarityIndex - 2) * 4;
     }
     if (rarityIndex >= 4) {
       qiCost = (rarityIndex - 3) * 80;
@@ -229,7 +230,7 @@ const generateAdditionalApparel = (): ShopItem[] => {
       stats: stats,
       price: {
         gold: basePrice,
-        spiritualStones: spiritualStoneCost,
+        qiStones: qiStoneCost,
         qi: qiCost
       },
       requiredLevel: Math.max(1, rarityIndex * 4),
@@ -242,24 +243,9 @@ const generateAdditionalApparel = (): ShopItem[] => {
 
 export default function Shop() {
   const { game, updateGameState } = useGameEngine();
-  const [weapons] = useState<ShopItem[]>(generateWeapons());
-  const [apparel] = useState<ShopItem[]>([...generateApparel(), ...generateAdditionalApparel()]);
+  const [weapons, setWeapons] = useState<ShopItem[]>(generateWeapons());
+  const [apparel, setApparel] = useState<ShopItem[]>([...generateApparel(), ...generateAdditionalApparel()]);
   const [currentTab, setCurrentTab] = useState('weapons');
-  
-  // Add filter functionality
-  const [rarityFilter, setRarityFilter] = useState<string>('all');
-  const [levelFilter, setLevelFilter] = useState<number | null>(null);
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
-  
-  // Get available types based on the current tab
-  const getAvailableTypes = () => {
-    if (currentTab === 'weapons') {
-      return ['sword', 'saber', 'spear', 'staff', 'dagger', 'bow', 'fan', 'whip', 'hammer', 'axe'];
-    } else {
-      return ['robe', 'armor', 'innerWear', 'outerWear', 'belt', 'boots', 'gloves', 'hat', 'mask', 'accessory'];
-    }
-  };
   
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -275,7 +261,7 @@ export default function Shop() {
   
   const canAfford = (item: ShopItem) => {
     return game.gold >= item.price.gold &&
-           game.spiritualStones >= item.price.spiritualStones &&
+           game.qiStones >= item.price.qiStones &&
            game.energy >= item.price.qi;
   };
   
@@ -308,7 +294,7 @@ export default function Shop() {
       const newState = {
         ...state,
         gold: state.gold - item.price.gold,
-        spiritualStones: state.spiritualStones - item.price.spiritualStones,
+        qiStones: state.qiStones - item.price.qiStones,
         energy: state.energy - item.price.qi
       };
       
@@ -324,7 +310,7 @@ export default function Shop() {
           equipped: false,
           icon: item.icon,
           description: item.description,
-          price: item.price,
+          price: { gold: item.price.gold, qiStones: item.price.qiStones, qi: item.price.qi },
           requiredLevel: item.requiredLevel
         };
       } else {
@@ -338,13 +324,20 @@ export default function Shop() {
           equipped: false,
           icon: item.icon,
           description: item.description,
-          price: item.price,
+          price: { gold: item.price.gold, qiStones: item.price.qiStones, qi: item.price.qi },
           requiredLevel: item.requiredLevel
         };
       }
       
       return newState;
     });
+    
+    // Remove the item from the shop
+    if (item.id.startsWith('weapon')) {
+      setWeapons(prevWeapons => prevWeapons.filter(weapon => weapon.id !== item.id));
+    } else {
+      setApparel(prevApparel => prevApparel.filter(apparelItem => apparelItem.id !== item.id));
+    }
     
     toast({
       title: "Item Purchased",
@@ -362,37 +355,8 @@ export default function Shop() {
     ));
   };
   
-  // Filter and sort items for display
-  const getFilteredAndSortedItems = () => {
-    let items = currentTab === 'weapons' ? weapons : apparel;
-    
-    // Apply rarity filter
-    if (rarityFilter !== 'all') {
-      items = items.filter(item => item.rarity === rarityFilter);
-    }
-    
-    // Apply level filter
-    if (levelFilter !== null) {
-      items = items.filter(item => item.requiredLevel <= levelFilter);
-    }
-    
-    // Apply type filter
-    if (typeFilter !== 'all') {
-      items = items.filter(item => item.type === typeFilter);
-    }
-    
-    // Apply price sorting
-    if (priceSort === 'asc') {
-      items = [...items].sort((a, b) => a.price.gold - b.price.gold);
-    } else if (priceSort === 'desc') {
-      items = [...items].sort((a, b) => b.price.gold - a.price.gold);
-    }
-    
-    return items;
-  };
-  
   // Display items for the current tab
-  const itemsToDisplay = getFilteredAndSortedItems();
+  const itemsToDisplay = currentTab === 'weapons' ? weapons : apparel;
   
   if (!game.characterCreated) {
     return (
@@ -426,10 +390,10 @@ export default function Shop() {
           </div>
           <div>
             <span className="font-semibold text-primary">Qi Stones:</span> 
-            <span className="ml-2 text-blue-600">{game.spiritualStones}</span>
+            <span className="ml-2 text-blue-600">{game.qiStones}</span>
           </div>
           <div>
-            <span className="font-semibold text-primary">Qi:</span> 
+            <span className="font-semibold text-primary">Qi Energy:</span> 
             <span className="ml-2 text-green-600">{Math.floor(game.energy)}</span>
           </div>
         </div>
@@ -445,97 +409,14 @@ export default function Shop() {
           </TabsTrigger>
         </TabsList>
         
-        <div className="flex flex-wrap gap-4 mb-6 bg-primary/5 p-4 rounded-lg">
-          <div className="w-full md:w-auto">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Rarity</label>
-            <Select value={rarityFilter} onValueChange={setRarityFilter}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="All Rarities" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Rarities</SelectItem>
-                <SelectItem value="common">Common</SelectItem>
-                <SelectItem value="uncommon">Uncommon</SelectItem>
-                <SelectItem value="rare">Rare</SelectItem>
-                <SelectItem value="epic">Epic</SelectItem>
-                <SelectItem value="legendary">Legendary</SelectItem>
-                <SelectItem value="mythic">Mythic</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="w-full md:w-auto">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Level Filter</label>
-            <Select value={levelFilter?.toString() || "all"} onValueChange={(val) => setLevelFilter(val === "all" ? null : parseInt(val))}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="All Levels" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="10">Level 10 or below</SelectItem>
-                <SelectItem value="20">Level 20 or below</SelectItem>
-                <SelectItem value="30">Level 30 or below</SelectItem>
-                <SelectItem value="40">Level 40 or below</SelectItem>
-                <SelectItem value="50">Level 50 or below</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="w-full md:w-auto">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="All Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {getAvailableTypes().map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="w-full md:w-auto">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-            <Select value={priceSort || "default"} onValueChange={(val) => setPriceSort(val === "default" ? null : val as 'asc' | 'desc')}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Price Sorting" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default">Default</SelectItem>
-                <SelectItem value="asc">Price: Low to High</SelectItem>
-                <SelectItem value="desc">Price: High to Low</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="w-full md:w-auto flex items-end">
-            <Button 
-              variant="outline"
-              className="w-full md:w-auto"
-              onClick={() => {
-                setRarityFilter('all');
-                setLevelFilter(null);
-                setTypeFilter('all');
-                setPriceSort(null);
-              }}
-            >
-              <i className="fas fa-times-circle mr-2"></i> Clear Filters
-            </Button>
-          </div>
-        </div>
-        
         <TabsContent value="weapons" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {itemsToDisplay.map(weapon => (
+            {weapons.map(weapon => (
               <Card key={weapon.id} className="overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg font-serif">
-                      <i className={`fas ${weapon.icon} mr-2 text-primary`}></i> 
+                      <i className={`fas fa-khanda mr-2 text-primary`}></i> 
                       {weapon.name}
                     </CardTitle>
                     <Badge className={getRarityColor(weapon.rarity)}>
@@ -561,7 +442,7 @@ export default function Shop() {
                         <span>Price:</span>
                         <div className="space-x-2">
                           {weapon.price.gold > 0 && <span className="text-amber-600">{weapon.price.gold} Gold</span>}
-                          {weapon.price.spiritualStones > 0 && <span className="text-blue-600">{weapon.price.spiritualStones} Qi Stones</span>}
+                          {weapon.price.qiStones > 0 && <span className="text-blue-600">{weapon.price.qiStones} Stones</span>}
                           {weapon.price.qi > 0 && <span className="text-green-600">{weapon.price.qi} Qi</span>}
                         </div>
                       </div>
@@ -583,12 +464,12 @@ export default function Shop() {
         
         <TabsContent value="apparel" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {itemsToDisplay.map(item => (
+            {apparel.map(item => (
               <Card key={item.id} className="overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg font-serif">
-                      <i className={`fas ${item.icon.startsWith('fa-') ? item.icon : 'fa-'+item.icon} mr-2 text-primary`}></i> 
+                      <i className={`fas fa-tshirt mr-2 text-primary`}></i> 
                       {item.name}
                     </CardTitle>
                     <Badge className={getRarityColor(item.rarity)}>
@@ -614,7 +495,7 @@ export default function Shop() {
                         <span>Price:</span>
                         <div className="space-x-2">
                           {item.price.gold > 0 && <span className="text-amber-600">{item.price.gold} Gold</span>}
-                          {item.price.spiritualStones > 0 && <span className="text-blue-600">{item.price.spiritualStones} Qi Stones</span>}
+                          {item.price.qiStones > 0 && <span className="text-blue-600">{item.price.qiStones} Stones</span>}
                           {item.price.qi > 0 && <span className="text-green-600">{item.price.qi} Qi</span>}
                         </div>
                       </div>

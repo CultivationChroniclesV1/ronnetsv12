@@ -40,7 +40,7 @@ export function CultivationActions() {
         <div className="mb-4">
           <div className="flex justify-between text-sm mb-1">
             <span>Current Technique:</span>
-            <span className="text-blue-500">Basic Qi Technique</span>
+            <span className="text-blue-500">Qi Gong <span className="text-xs text-gray-500">(Energy Cultivation)</span></span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Base Production:</span>
@@ -73,11 +73,12 @@ export function CultivationActions() {
           
           <Progress 
             value={breakthroughProgress} 
-            className={`h-2 mb-2 ${breakthroughProgress >= 100 ? 'bg-amber-100' : ''}`}
+            // Change color based on progress
+            className={`h-2 mb-2 ${breakthroughProgress >= 100 ? 'bg-amber-500' : ''}`}
           />
           
           <div className="text-xs text-center text-gray-600 italic">
-            <p>Required: {formatNumber(game.maxCultivationProgress)} Qi</p>
+            <p>Required: {formatNumber(game.maxCultivationProgress)} Qi Energy</p>
             <p className="mt-1">Breakthrough to advance to the next cultivation level</p>
           </div>
         </div>

@@ -14,28 +14,28 @@ export function HeaderStats() {
           </h1>
           
           <div className="flex items-center space-x-4 mt-1 md:mt-0">
-            {/* Qi */}
+            {/* Energy */}
             <div className="flex items-center">
               <i className="fas fa-fire-alt text-amber-300 mr-1"></i>
               <span className="text-sm">{formatNumber(game.energy)} Qi</span>
             </div>
             
-            {/* Gold */}
-            <div className="flex items-center">
-              <i className="fas fa-coins text-yellow-400 mr-1"></i>
-              <span className="text-sm">{formatNumber(game.gold)}</span>
-            </div>
-            
-            {/* Qi Stones */}
-            <div className="flex items-center">
-              <i className="fas fa-gem text-blue-300 mr-1"></i>
-              <span className="text-sm">{formatNumber(game.spiritualStones)}</span>
-            </div>
-            
             {/* Energy Rate */}
-            <div className="hidden md:flex items-center">
+            <div className="flex items-center">
               <i className="fas fa-tachometer-alt text-green-300 mr-1"></i>
               <span className="text-sm">{game.energyRate.toFixed(1)}/s</span>
+            </div>
+            
+            {/* Gold */}
+            <div className="flex items-center">
+              <i className="fas fa-coins text-yellow-300 mr-1"></i>
+              <span className="text-sm">{formatNumber(game.gold)} Gold</span>
+            </div>
+            
+            {/* Spiritual Stones */}
+            <div className="flex items-center">
+              <i className="fas fa-gem text-blue-300 mr-1"></i>
+              <span className="text-sm">{formatNumber(game.spiritualStones)} Stones</span>
             </div>
           </div>
         </div>

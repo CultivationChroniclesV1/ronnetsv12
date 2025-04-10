@@ -1,91 +1,12 @@
 import { useState, useEffect } from "react";
 import { useGameEngine } from "@/lib/gameEngine";
-import { ENEMIES, MARTIAL_ARTS, RESOURCES, RESOURCE_TYPES, LOCATIONS } from "@/lib/constants";
+import { ENEMIES, MARTIAL_ARTS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { motion } from "framer-motion";
-
-// Helper function to determine location difficulty scaling
-function getLocationDifficultyScale(locationId: string, playerLevel: number) {
-  // Define base difficulty tiers
-  const locationTiers = {
-    // Beginner areas (low difficulty)
-    "forest": { baseHealth: 1.0, baseAttack: 1.0, baseDefense: 1.0, tier: "beginner" },
-    "city": { baseHealth: 1.2, baseAttack: 1.1, baseDefense: 1.0, tier: "beginner" },
-    "mountain": { baseHealth: 1.4, baseAttack: 1.3, baseDefense: 1.2, tier: "beginner" },
-    "poison-marsh": { baseHealth: 1.6, baseAttack: 1.4, baseDefense: 1.3, tier: "beginner" },
-    
-    // Intermediate areas (medium difficulty)
-    "jade-valley": { baseHealth: 2.0, baseAttack: 1.6, baseDefense: 1.5, tier: "intermediate" },
-    "ruins": { baseHealth: 2.2, baseAttack: 1.8, baseDefense: 1.7, tier: "intermediate" },
-    "frozen-peak": { baseHealth: 2.5, baseAttack: 2.0, baseDefense: 1.8, tier: "intermediate" },
-    "thunder-peak": { baseHealth: 2.7, baseAttack: 2.2, baseDefense: 2.0, tier: "intermediate" },
-    
-    // Advanced areas (high difficulty)
-    "flame-desert": { baseHealth: 3.0, baseAttack: 2.5, baseDefense: 2.2, tier: "advanced" },
-    "great-river": { baseHealth: 3.3, baseAttack: 2.7, baseDefense: 2.4, tier: "advanced" },
-    "void-rift": { baseHealth: 3.6, baseAttack: 3.0, baseDefense: 2.7, tier: "advanced" },
-    "dragon-volcano": { baseHealth: 4.0, baseAttack: 3.5, baseDefense: 3.0, tier: "advanced" },
-  };
-  
-  // Get base multipliers for the location or use default
-  const baseMultipliers = (locationTiers as any)[locationId] || 
-    { baseHealth: 1.0, baseAttack: 1.0, baseDefense: 1.0, tier: "beginner" };
-  
-  // Scale multipliers based on player level (progressive difficulty)
-  // Each level beyond minimum requirement increases difficulty by 5-10%
-  const locationData = Object.entries(LOCATIONS).find(([id]) => id === locationId);
-  const requiredLevel = locationData ? locationData[1].requiredLevel : 1;
-  const levelDifference = Math.max(0, playerLevel - requiredLevel);
-  const levelScaling = 1 + (levelDifference * 0.08); // 8% increase per level over requirement
-  
-  return {
-    healthMultiplier: baseMultipliers.baseHealth * levelScaling,
-    attackMultiplier: baseMultipliers.baseAttack * levelScaling,
-    defenseMultiplier: baseMultipliers.baseDefense * levelScaling,
-    tier: baseMultipliers.tier
-  };
-}
-
-// Helper function to get area difficulty description
-function getAreaDifficultyDescription(locationId: string) {
-  // Use default player level of 1 for description (it doesn't need to be precise)
-  const scale = getLocationDifficultyScale(locationId, 1);
-  
-  switch(scale.tier) {
-    case "beginner":
-      return "relatively weak, suitable for your current level";
-    case "intermediate":
-      return "tougher than normal, with enhanced physical abilities";
-    case "advanced":
-      return "extremely powerful, with formidable strength and resilience";
-    default:
-      return "of average strength";
-  }
-}
-
-// Helper function to get healing herbs from inventory
-function getHealingHerbs(inventory: any) {
-  if (!inventory || !inventory.herbs) return [];
-  
-  // Filter herbs with healing effects
-  return Object.entries(inventory.herbs)
-    .filter(([id, herb]: [string, any]) => {
-      const herbData = RESOURCES[id as keyof typeof RESOURCES];
-      return herbData && herbData.effects && herbData.effects.health;
-    })
-    .map(([id, herb]: [string, any]) => ({
-      id,
-      count: herb.quantity || 0, // Use quantity instead of count
-      data: RESOURCES[id as keyof typeof RESOURCES]
-    }))
-    .filter(herb => herb.count > 0)
-    .sort((a, b) => a.data.effects.health - b.data.effects.health); // Sort by healing amount
-}
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Enemy = {
   id: string;
@@ -95,6 +16,13 @@ type Enemy = {
   maxHealth: number;
   attack: number;
   defense: number;
+};
+
+// Define the possible reward structure
+type EnemyRewards = {
+  experience: number;
+  spiritualStones: number;
+  gold?: number;
 };
 
 type CombatStatus = "idle" | "fighting" | "victory" | "defeat";
@@ -107,11 +35,6 @@ const CombatPage = () => {
   const [combatLog, setCombatLog] = useState<string[]>([]);
   const [selectedArea, setSelectedArea] = useState<string>("forest");
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
-  const [showHerbPanel, setShowHerbPanel] = useState<boolean>(false);
-  const [herbAnimating, setHerbAnimating] = useState<string | null>(null);
-  const [attackAnimation, setAttackAnimation] = useState<string | null>(null);
-  const [damageEffect, setDamageEffect] = useState<boolean>(false);
-  const [attackTarget, setAttackTarget] = useState<"player" | "enemy" | null>(null);
 
   // Check if character is created
   useEffect(() => {
@@ -119,139 +42,55 @@ const CombatPage = () => {
       setLocation("/character");
     }
   }, [game.characterCreated, setLocation]);
-
-  // Handle cooldown timers
-  // Handle cooldowns and health regeneration
+  
+  // Add health regeneration system (5% of max HP every 2 seconds during combat)
   useEffect(() => {
+    // Setup HP regeneration only during combat
     if (combatStatus === "fighting") {
-      // Main combat timer that runs every second
-      const timer = setInterval(() => {
-        // Process cooldowns
-        if (Object.keys(cooldowns).length > 0) {
-          setCooldowns(prev => {
-            const updated = { ...prev };
-            let changed = false;
-            
-            Object.keys(updated).forEach(key => {
-              if (updated[key] > 0) {
-                updated[key] -= 1;
-                changed = true;
-              }
-            });
-            
-            return changed ? updated : prev;
-          });
-        }
-        
-        // Health regeneration (5% of max HP every 2 seconds)
-        // Using a counter to only regenerate every other second
-        if (enemy && game.health < game.maxHealth) {
-          // Only regenerate on even seconds (every 2s)
-          const currentTime = Date.now();
-          if (Math.floor(currentTime / 2000) % 2 === 0) {
-            const regenAmount = Math.ceil(game.maxHealth * 0.05); // 5% of max health
-            const newHealth = Math.min(game.maxHealth, game.health + regenAmount);
-            
-            if (newHealth > game.health) {
-              updateGameState(state => ({
-                ...state,
-                health: newHealth
-              }));
-              
-              // Add regeneration message to combat log
-              setCombatLog(prev => [
-                ...prev,
-                `You regenerate ${regenAmount} health through qi circulation.`
-              ].slice(-15)); // Keep only the last 15 messages
-            }
+      const healthRegenInterval = setInterval(() => {
+        if (game.health < game.maxHealth) {
+          const regenAmount = Math.ceil(game.maxHealth * 0.05); // 5% of max health
+          updateGameState(state => ({
+            ...state,
+            health: Math.min(state.maxHealth, state.health + regenAmount)
+          }));
+          
+          // Log health regeneration only if significant amount
+          if (regenAmount > 10) {
+            setCombatLog(prev => [...prev, `You recovered ${regenAmount} health from natural regeneration.`]);
           }
         }
-      }, 1000); // Run every second
+      }, 2000); // Every 2 seconds as requested
+      
+      // Cleanup interval on unmount or when combat ends
+      return () => clearInterval(healthRegenInterval);
+    }
+  }, [game.maxHealth, combatStatus, game.health]);
+
+  // Handle cooldown timers
+  useEffect(() => {
+    if (combatStatus === "fighting" && Object.keys(cooldowns).length > 0) {
+      const timer = setInterval(() => {
+        setCooldowns(prev => {
+          const updated = { ...prev };
+          let changed = false;
+          
+          Object.keys(updated).forEach(key => {
+            if (updated[key] > 0) {
+              updated[key] -= 1;
+              changed = true;
+            }
+          });
+          
+          return changed ? updated : prev;
+        });
+      }, 1000);
       
       return () => clearInterval(timer);
     }
-  }, [combatStatus, cooldowns, enemy, game.health, game.maxHealth, updateGameState]);
+  }, [cooldowns, combatStatus]);
 
 
-
-  // Use a healing herb during combat
-  const useHerb = (herbId: string) => {
-    if (combatStatus !== "fighting") {
-      setCombatLog(prev => [...prev, "You can only use herbs during combat!"]);
-      return;
-    }
-    
-    // Ensure inventory structure exists
-    if (!game.inventory || !game.inventory.herbs) {
-      toast({
-        title: "Inventory Error",
-        description: "No herbs found in inventory.",
-        variant: "destructive"
-      });
-      setShowHerbPanel(false);
-      return;
-    }
-    
-    // Get herb data
-    const herbData = game.inventory.herbs[herbId];
-    const herb = RESOURCES[herbId as keyof typeof RESOURCES];
-    
-    if (!herbData || !herbData.quantity || herbData.quantity <= 0) {
-      toast({
-        title: "Herb Not Available",
-        description: "You don't have any of this herb.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Set herb animation
-    setHerbAnimating(herbId);
-    
-    // Get healing amount
-    const healAmount = herb.effects?.health || 20; // Default to 20 if not specified
-    
-    // Update player health
-    const newHealth = Math.min(game.maxHealth, game.health + healAmount);
-    
-    // Add to combat log
-    setCombatLog(prev => [
-      ...prev,
-      `You use ${herb.name} and recover ${healAmount} health!`
-    ]);
-    
-    // Update game state
-    updateGameState(state => {
-      const updatedInventory = { ...state.inventory };
-      
-      if (!updatedInventory.herbs) {
-        updatedInventory.herbs = {};
-      }
-      
-      // Reduce herb quantity
-      updatedInventory.herbs[herbId] = {
-        ...updatedInventory.herbs[herbId],
-        quantity: (updatedInventory.herbs[herbId]?.quantity || 0) - 1
-      };
-      
-      // Remove herb if quantity is 0
-      if (updatedInventory.herbs[herbId].quantity <= 0) {
-        delete updatedInventory.herbs[herbId];
-      }
-      
-      return {
-        ...state,
-        health: newHealth,
-        inventory: updatedInventory
-      };
-    });
-    
-    // Close herb panel and clear animation after a delay
-    setTimeout(() => {
-      setHerbAnimating(null);
-      setShowHerbPanel(false);
-    }, 1000);
-  };
 
   // Use a martial arts technique
   const useTechnique = (techniqueId: string) => {
@@ -314,27 +153,11 @@ const CombatPage = () => {
       energy: Math.max(0, state.energy - technique.cost)
     }));
     
-    // Trigger attack animation
-    setAttackAnimation(techniqueId);
-    setAttackTarget("enemy");
-    setDamageEffect(true);
-    
-    // Update enemy after animation delay
-    setTimeout(() => {
-      setEnemy(prev => prev ? {
-        ...prev,
-        health: newEnemyHealth
-      } : null);
-      
-      // Clear animations
-      setAttackAnimation(null);
-      setDamageEffect(false);
-    }, 600);
-    
-    // Longer delay for attack target to ensure animations play in sequence
-    setTimeout(() => {
-      setAttackTarget(null);
-    }, 700);
+    // Update enemy
+    setEnemy(prev => prev ? {
+      ...prev,
+      health: newEnemyHealth
+    } : null);
     
     // Check if enemy defeated
     if (newEnemyHealth <= 0) {
@@ -372,62 +195,117 @@ const CombatPage = () => {
       `${enemy.name} attacks you for ${damage} damage!`
     ]);
     
-    // Trigger enemy attack animation
-    setAttackAnimation("enemy-attack");
-    setAttackTarget("player");
-    setDamageEffect(true);
+    // Update game state
+    updateGameState(state => ({
+      ...state,
+      health: newHealth
+    }));
     
-    // Update game state after animation
-    setTimeout(() => {
-      updateGameState(state => ({
-        ...state,
-        health: newHealth
-      }));
-      
-      // Clear animations
-      setAttackAnimation(null);
-      setDamageEffect(false);
-    }, 600);
-    
-    // Longer delay for attack target to ensure animations play in sequence
-    setTimeout(() => {
-      setAttackTarget(null);
-      
-      // Check if player defeated
-      if (newHealth <= 0) {
-        handleDefeat();
-      }
-    }, 700);
+    // Check if player defeated
+    if (newHealth <= 0) {
+      handleDefeat();
+    }
   };
   
-  // Start combat with enhanced location difficulty scaling
+  // Get the location difficulty multiplier
+  const getLocationDifficultyMultiplier = (area: string): number => {
+    const locationDifficulty: Record<string, number> = {
+      "forest": 1,      // Base level difficulty
+      "city": 2,        // 2x as difficult as forest
+      "mountain": 3,    // 3x as difficult as forest
+      "poison-marsh": 4, // 4x as difficult as forest
+      "jade-valley": 5, // 5x as difficult as forest
+      "ruins": 6,       // 6x as difficult as forest
+      "flame-desert": 8, // 8x as difficult as forest
+      "frozen-peak": 10  // 10x as difficult as forest
+    };
+    
+    return locationDifficulty[area] || 1;
+  };
+  
+  // Generate a unique name for the enemy based on its type and random modifiers
+  const generateUniqueEnemyName = (baseEnemyId: string, baseEnemyName: string): string => {
+    // Arrays of modifiers to create unique enemy names
+    const prefixes = [
+      "Elder", "Young", "Ancient", "Ferocious", "Deadly", "Savage", "Venomous", "Spiritual", 
+      "Corrupted", "Wild", "Fierce", "Enraged", "Wounded", "Giant", "Tiny", "Starving",
+      "Shadow", "Blood", "Jade", "Golden", "Azure", "Crimson", "Obsidian", "Verdant"
+    ];
+    
+    const suffixes = [
+      "of the Forest", "of the Mountains", "of the Valley", "Hunter", "Stalker", 
+      "Killer", "Predator", "Champion", "Alpha", "Omega", "Matriarch", "Patriarch",
+      "Lord", "Master", "King", "Queen", "Guardian", "Protector", "Slayer"
+    ];
+    
+    // Specific name templates for certain enemy types
+    const specialNames: Record<string, string[]> = {
+      "wolf": ["Moonfang", "Shadowpelt", "Nighthowler", "Steelclaw", "Frostbite", "Bloodmaw"],
+      "snake": ["Venomfang", "Slitherlash", "Poisontail", "Deathcoil", "Stonescale"],
+      "bear": ["Ironhide", "Thunderpaw", "Bonecrusher", "Mountainshaker", "Honeyseeker"],
+      "tiger": ["Razorstripe", "Bloodstreak", "Shadowclaw", "Emberfur", "Stormpouncer"],
+      "eagle": ["Skyrender", "Stormwing", "Talonshriek", "Cloudrider", "Windcutter"],
+      "bandit": ["Red Blade", "Silent Shadow", "Black Dagger", "Night Phantom", "Cutthroat"],
+      "demon": ["Soul Harvester", "Dream Eater", "Blood Thirster", "Mind Breaker", "Flesh Ripper"]
+    };
+    
+    // 50% chance to use a special name if available
+    if (specialNames[baseEnemyId] && Math.random() > 0.5) {
+      const specialName = specialNames[baseEnemyId][Math.floor(Math.random() * specialNames[baseEnemyId].length)];
+      return `${specialName} the ${baseEnemyName}`;
+    }
+    
+    // Otherwise create a random name with prefix/suffix
+    const prefix = Math.random() > 0.3 ? prefixes[Math.floor(Math.random() * prefixes.length)] : "";
+    const suffix = Math.random() > 0.3 ? suffixes[Math.floor(Math.random() * suffixes.length)] : "";
+    
+    if (prefix && suffix) {
+      return `${prefix} ${baseEnemyName} ${suffix}`;
+    } else if (prefix) {
+      return `${prefix} ${baseEnemyName}`;
+    } else if (suffix) {
+      return `${baseEnemyName} ${suffix}`;
+    } else {
+      // If no modifiers were selected, add "Wild" prefix to ensure some uniqueness
+      return `Wild ${baseEnemyName}`;
+    }
+  };
+
+  // Start combat with the selected enemy
   const startCombat = (enemyId: string) => {
     const enemyData = ENEMIES[enemyId as keyof typeof ENEMIES];
     
-    // Apply location-based difficulty scaling with player level consideration
-    const locationScaling = getLocationDifficultyScale(selectedArea, game.cultivationLevel);
+    // Get the multiplier for the current area
+    const multiplier = getLocationDifficultyMultiplier(selectedArea);
     
-    // Scale enemy stats based on location difficulty
-    const scaledHealth = Math.round(enemyData.health * locationScaling.healthMultiplier);
-    const scaledAttack = Math.round(enemyData.attack * locationScaling.attackMultiplier);
-    const scaledDefense = Math.round(enemyData.defense * locationScaling.defenseMultiplier);
+    // Generate a unique enemy name
+    const uniqueName = generateUniqueEnemyName(enemyId, enemyData.name);
+    
+    // Create the enemy with stats scaled by location difficulty
+    // For enemy HP we scale it much higher to make combat more challenging
+    // Beginners should have 500-800 HP, then intermediate 2x more, advanced 2x again
+    const baseHealth = enemyData.health;
+    const scaledBaseHealth = baseHealth >= 50 && baseHealth <= 100 ? 
+                            Math.floor(500 + Math.random() * 300) : // Beginner enemies (500-800 HP)
+                            baseHealth; // Keep any other values as a fallback
+                            
+    const hpMultiplier = multiplier <= 2 ? 1 : // Beginner areas (use base 500-800)
+                         multiplier <= 5 ? 2 : // Intermediate areas (2x)
+                         4; // Advanced areas (4x = 2x intermediate)
     
     const newEnemy: Enemy = {
       id: enemyId,
-      name: enemyData.name,
+      name: uniqueName,
       description: enemyData.description,
-      health: scaledHealth,
-      maxHealth: scaledHealth,
-      attack: scaledAttack,
-      defense: scaledDefense
+      health: Math.round(scaledBaseHealth * hpMultiplier),
+      maxHealth: Math.round(scaledBaseHealth * hpMultiplier),
+      attack: Math.round(enemyData.attack * multiplier * 5), // Significantly increased damage scaling
+      defense: Math.round(enemyData.defense * multiplier)
     };
     
     setEnemy(newEnemy);
     setCombatStatus("fighting");
-    setCombatLog([
-      `You encounter a ${enemyData.name}!`,
-      `This enemy appears ${getAreaDifficultyDescription(selectedArea)}.`
-    ]);
+    setCombatLog([`You encounter ${uniqueName}!`]);
     
     // Initialize cooldowns
     const initialCooldowns: Record<string, number> = {};
@@ -435,7 +313,108 @@ const CombatPage = () => {
     setCooldowns(initialCooldowns);
   };
 
-  // Handle player victory with item drops
+  // Define herb type interface
+  interface Herb {
+    id: string;
+    name: string;
+    description: string;
+    quality: number;
+    quantity: number;
+    value: number;
+    icon: string;
+    effects: Record<string, number>;
+  }
+
+  // Generate random herb drops based on enemy and location
+  const generateHerbDrops = (): Herb | null => {
+    // Chance to drop a herb (60%)
+    if (Math.random() > 0.4) {
+      // Basic herb types
+      const herbTypes: Herb[] = [
+        {
+          id: "minor-healing-herb",
+          name: "Minor Healing Herb",
+          description: "A common herb with minor healing properties",
+          quality: 1,
+          quantity: 1,
+          value: 10,
+          icon: "leaf-oak",
+          effects: { "healing": 20 }
+        },
+        {
+          id: "qi-replenishing-grass",
+          name: "Qi Replenishing Grass",
+          description: "A plant that helps restore spiritual energy",
+          quality: 1,
+          quantity: 1,
+          value: 15,
+          icon: "sprout",
+          effects: { "qi-recovery": 15 }
+        },
+        {
+          id: "spirit-mushroom",
+          name: "Spirit Mushroom",
+          description: "A mushroom that enhances spiritual perception",
+          quality: 2,
+          quantity: 1,
+          value: 25,
+          icon: "flower",
+          effects: { "qi-recovery": 25 }
+        },
+        {
+          id: "blood-flower",
+          name: "Blood Flower",
+          description: "A rare flower that can rapidly restore health",
+          quality: 3,
+          quantity: 1,
+          value: 50,
+          icon: "flower-lotus",
+          effects: { "healing": 50 }
+        },
+        {
+          id: "five-element-fruit",
+          name: "Five Element Fruit",
+          description: "A rare fruit that enhances all attributes",
+          quality: 4,
+          quantity: 1,
+          value: 100,
+          icon: "gem",
+          effects: { "attribute-boost": 1 }
+        }
+      ];
+      
+      // Determine herb quality based on location difficulty
+      const multiplier = getLocationDifficultyMultiplier(selectedArea);
+      let herbPool = herbTypes;
+      
+      // Filter herbs based on difficulty
+      if (multiplier >= 5) {
+        // Higher difficulty areas can drop better herbs
+        herbPool = herbTypes.filter(herb => herb.quality >= 2);
+      } else if (multiplier >= 3) {
+        // Medium difficulty areas drop mid-tier herbs
+        herbPool = herbTypes.filter(herb => herb.quality >= 1 && herb.quality <= 3);
+      } else {
+        // Lowest areas only drop basic herbs
+        herbPool = herbTypes.filter(herb => herb.quality <= 2);
+      }
+      
+      // Select a random herb
+      const selectedHerb = herbPool[Math.floor(Math.random() * herbPool.length)];
+      
+      // Amount can vary based on difficulty
+      const amount = Math.floor(Math.random() * multiplier) + 1;
+      
+      return {
+        ...selectedHerb,
+        quantity: amount
+      };
+    }
+    
+    return null;
+  };
+
+  // Handle player victory
   const handleVictory = () => {
     if (!enemy) return;
     
@@ -443,96 +422,87 @@ const CombatPage = () => {
     
     // Get enemy rewards
     const enemyData = ENEMIES[enemy.id as keyof typeof ENEMIES];
-    const rewards = enemyData.rewards;
+    const rewards = enemyData.rewards as EnemyRewards;
     
-    // Calculate gold reward based on experience
-    const goldReward = Math.floor(rewards.experience * 2);
+    // Get location multiplier to scale rewards
+    const multiplier = getLocationDifficultyMultiplier(selectedArea);
     
-    // Determine herb drops based on enemy and location
-    const droppedItems: { id: string, name: string, amount: number }[] = [];
+    // Scale rewards based on location difficulty
+    const scaledExperience = Math.round(rewards.experience * (multiplier * 0.7)); // Scale experience a bit less
+    const scaledSpiritualStones = Math.round(rewards.spiritualStones * multiplier);
+    const scaledGold = rewards.gold ? Math.round(rewards.gold * multiplier) : 0;
     
-    // Random herb drop chance based on location difficulty
-    const locationDifficulty = getLocationDifficultyScale(selectedArea, game.cultivationLevel);
-    const dropChanceMultiplier = locationDifficulty.tier === 'advanced' ? 1.5 : 
-                                locationDifficulty.tier === 'intermediate' ? 1.2 : 1.0;
-    
-    // Potential healing herb drops
-    const potentialHerbDrops = [
-      { id: 'healing-grass', chance: 0.3 * dropChanceMultiplier, amount: 1 },
-      { id: 'blood-lotus', chance: 0.15 * dropChanceMultiplier, amount: 1 },
-      { id: 'celestial-peach', chance: 0.05 * dropChanceMultiplier, amount: 1 }
-    ];
-    
-    // Roll for drops
-    potentialHerbDrops.forEach(herb => {
-      if (Math.random() < herb.chance) {
-        const herbData = RESOURCES[herb.id as keyof typeof RESOURCES];
-        droppedItems.push({
-          id: herb.id,
-          name: herbData.name,
-          amount: herb.amount
-        });
-      }
-    });
+    // Generate herb drops
+    const herbDrop = generateHerbDrops();
     
     // Add rewards to log
-    const rewardLog = [
-      `You defeated the ${enemy.name}!`,
-      `Gained ${rewards.experience} cultivation experience, ${rewards.spiritualStones} spiritual stones, and ${goldReward} gold.`
-    ];
-    
-    // Add dropped items to log if any
-    if (droppedItems.length > 0) {
-      rewardLog.push(`The enemy dropped: ${droppedItems.map(item => `${item.amount} ${item.name}`).join(', ')}`);
-    }
-    
-    setCombatLog(prev => [...prev, ...rewardLog]);
-    
-    // Update game state with rewards and drops
-    updateGameState(state => {
-      // Calculate new cultivation progress
-      const newProgress = state.cultivationProgress + rewards.experience;
+    setCombatLog(prev => {
+      const rewardText = [
+        `You defeated ${enemy.name}!`,
+        `Gained ${scaledExperience} cultivation experience and ${scaledSpiritualStones} spiritual stones.`
+      ];
       
-      // Create updated inventory for herbs
-      const updatedInventory = { ...state.inventory };
-      
-      // Initialize herbs object if it doesn't exist
-      if (!updatedInventory.herbs) {
-        updatedInventory.herbs = {};
+      // Add gold reward to log if it exists
+      if (scaledGold > 0) {
+        rewardText.push(`Earned ${scaledGold} gold coins.`);
       }
       
-      // Add dropped herbs to inventory
-      droppedItems.forEach(item => {
-        if (!updatedInventory.herbs[item.id]) {
-          updatedInventory.herbs[item.id] = { 
-            id: item.id,
-            name: RESOURCES[item.id as keyof typeof RESOURCES].name,
-            description: RESOURCES[item.id as keyof typeof RESOURCES].description,
-            quantity: 0,
-            icon: RESOURCES[item.id as keyof typeof RESOURCES].icon || "",
-            value: RESOURCES[item.id as keyof typeof RESOURCES].value || 0,
-            quality: RESOURCES[item.id as keyof typeof RESOURCES].quality || 1,
-            effects: RESOURCES[item.id as keyof typeof RESOURCES].effects || {}
-          };
-        }
-        updatedInventory.herbs[item.id].quantity = (updatedInventory.herbs[item.id].quantity || 0) + item.amount;
-      });
+      // Add herb drop to log if any
+      if (herbDrop) {
+        rewardText.push(`Found ${herbDrop.quantity} ${herbDrop.name}!`);
+      }
       
-      return {
+      return [...prev, ...rewardText];
+    });
+    
+    // Update game state with rewards
+    updateGameState(state => {
+      // Calculate new cultivation progress
+      const newProgress = state.cultivationProgress + scaledExperience;
+      
+      // Prepare updated state
+      const updatedState = {
         ...state,
-        // Add spiritual stones directly to the spiritualStones property
-        spiritualStones: state.spiritualStones + rewards.spiritualStones,
-        // Add gold rewards
-        gold: state.gold + goldReward,
+        // Add spiritual stones
+        spiritualStones: state.spiritualStones + scaledSpiritualStones,
+        // Add gold
+        gold: state.gold + scaledGold,
         // Add cultivation progress
         cultivationProgress: Math.min(state.maxCultivationProgress, newProgress),
-        // Update inventory with herb drops
-        inventory: updatedInventory,
         // If health is less than 50%, heal a bit
         health: state.health < state.maxHealth * 0.5 
           ? Math.min(state.maxHealth, state.health + Math.floor(state.maxHealth * 0.2))
           : state.health
       };
+      
+      // Add herb to inventory if one was dropped
+      if (herbDrop) {
+        // Ensure inventory and herbs collection exists
+        if (!updatedState.inventory) {
+          updatedState.inventory = {
+            resources: {},
+            herbs: {},
+            weapons: {},
+            apparel: {},
+            artifacts: {}
+          };
+        }
+        
+        if (!updatedState.inventory.herbs) {
+          updatedState.inventory.herbs = {};
+        }
+        
+        // Check if herb already exists in inventory
+        if (updatedState.inventory.herbs[herbDrop.id]) {
+          // Increase quantity
+          updatedState.inventory.herbs[herbDrop.id].quantity += herbDrop.quantity;
+        } else {
+          // Add new herb
+          updatedState.inventory.herbs[herbDrop.id] = herbDrop;
+        }
+      }
+      
+      return updatedState;
     });
   };
 
@@ -565,9 +535,167 @@ const CombatPage = () => {
     setLocation("/game");
   };
 
+  // Define area types for TypeScript type safety
+  type AreaName = 
+    | "forest" 
+    | "city" 
+    | "mountain" 
+    | "poison-marsh"
+    | "jade-valley" 
+    | "ruins" 
+    | "frozen-peak" 
+    | "thunder-peak" 
+    | "flame-desert" 
+    | "great-river" 
+    | "tiger-mountain" 
+    | "dragon-volcano";
+
+  // Define level requirements for each area - Scaled up to level 100
+  const getAreaRequirements = (): Record<AreaName, number> => {
+    return {
+      "forest": 1,           // Beginners
+      "city": 5,             // Level 5+
+      "mountain": 10,        // Level 10+
+      "poison-marsh": 15,    // Level 15+
+      "jade-valley": 20,     // Level 20+
+      "ruins": 25,           // Level 25+
+      "frozen-peak": 30,     // Level 30+
+      "thunder-peak": 40,    // Level 40+
+      "flame-desert": 50,    // Level 50+
+      "great-river": 65,     // Level 65+
+      "tiger-mountain": 80,  // Level 80+
+      "dragon-volcano": 100  // Level 100+
+    };
+  };
+  
+  // Check if player meets level requirements for an area
+  const canAccessArea = (area: string): boolean => {
+    const requirements = getAreaRequirements();
+    // Type guard to ensure area is a valid key
+    const isValidArea = (x: string): x is AreaName => 
+      Object.keys(requirements).includes(x);
+    
+    if (isValidArea(area)) {
+      return game.cultivationLevel >= requirements[area];
+    }
+    return true; // Default to accessible if area name is unknown
+  };
+  
+  // Get area display style based on player access
+  const getAreaDisplayStyle = (area: string) => {
+    if (canAccessArea(area)) {
+      return {
+        opacity: 1,
+        filter: "none",
+        cursor: "pointer",
+        position: "relative" as const
+      };
+    } else {
+      return {
+        opacity: 0.7,
+        filter: "blur(1px)",
+        cursor: "not-allowed",
+        position: "relative" as const
+      };
+    }
+  };
+
+  // Handle area selection with level check
+  const handleAreaSelection = (area: string) => {
+    if (canAccessArea(area)) {
+      setSelectedArea(area);
+    } else {
+      const requirements = getAreaRequirements();
+      // Type guard to ensure area is a valid key for toast message
+      const isValidArea = (x: string): x is AreaName => 
+        Object.keys(requirements).includes(x);
+      
+      const requiredLevel = isValidArea(area) 
+        ? requirements[area] 
+        : 1;
+        
+      toast({
+        title: "Area Locked",
+        description: `You need to be at least level ${requiredLevel} to access this area.`,
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Function to use herbs during combat
+  const useHerb = (herbId: string) => {
+    if (!game.inventory?.herbs || !game.inventory.herbs[herbId]) {
+      setCombatLog(prev => [...prev, "This herb is not in your inventory!"]);
+      return;
+    }
+    
+    const herb = game.inventory.herbs[herbId];
+    
+    if (herb.quantity <= 0) {
+      setCombatLog(prev => [...prev, `You don't have any ${herb.name} left!`]);
+      return;
+    }
+    
+    // Apply herb effects
+    updateGameState(state => {
+      const updatedState = {...state};
+      
+      // Healing herbs
+      if (herb.effects.healing) {
+        const healAmount = Math.ceil(state.maxHealth * (herb.effects.healing / 100));
+        updatedState.health = Math.min(state.maxHealth, state.health + healAmount);
+        setCombatLog(prev => [...prev, `You used ${herb.name} and recovered ${healAmount} health!`]);
+      }
+      
+      // Qi recovery herbs
+      if (herb.effects["qi-recovery"]) {
+        // Use the regular energy cap as the maxEnergy
+        const qiAmount = Math.ceil(state.energy * 2 * (herb.effects["qi-recovery"] / 100));
+        updatedState.energy = Math.min(state.energy * 2, state.energy + qiAmount);
+        setCombatLog(prev => [...prev, `You used ${herb.name} and recovered ${qiAmount} Qi!`]);
+      }
+      
+      // Attribute boost (not implemented in detail here)
+      if (herb.effects["attribute-boost"]) {
+        setCombatLog(prev => [...prev, `You used ${herb.name} and temporarily boosted your attributes!`]);
+      }
+      
+      // Update inventory
+      if (!updatedState.inventory) {
+        updatedState.inventory = {
+          resources: {},
+          herbs: {},
+          weapons: {},
+          apparel: {},
+          artifacts: {}
+        };
+      }
+      if (!updatedState.inventory.herbs) updatedState.inventory.herbs = {};
+      
+      // Decrement quantity
+      updatedState.inventory.herbs[herbId] = {
+        ...herb,
+        quantity: herb.quantity - 1
+      };
+      
+      // Remove herb if quantity is 0
+      if (updatedState.inventory.herbs[herbId].quantity <= 0) {
+        delete updatedState.inventory.herbs[herbId];
+      }
+      
+      return updatedState;
+    });
+  };
+  
   // Current available techniques
   const availableTechniques = Object.entries(game.martialArts)
     .filter(([id, technique]) => technique.unlocked);
+    
+  // Available herbs that can be used in combat
+  const availableHerbs = game.inventory?.herbs ? 
+    Object.entries(game.inventory.herbs)
+      .filter(([_, herb]) => herb.quantity > 0)
+    : [];
 
   // Filter enemies by area and player level
   const getAreaEnemies = () => {
@@ -657,8 +785,9 @@ const CombatPage = () => {
                 <TabsContent value="beginner">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "forest" ? "ring-2 ring-green-500" : ""}`}
-                      onClick={() => setSelectedArea("forest")}
+                      className={`transition-all ${selectedArea === "forest" ? "ring-2 ring-green-500" : ""} ${canAccessArea("forest") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("forest")}
+                      style={getAreaDisplayStyle("forest")}
                     >
                       <CardHeader className="bg-green-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -667,13 +796,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">A mystical forest with spiritual beasts.</p>
-                        <p className="text-xs mt-2 text-gray-600">Recommended for new cultivators</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 1+ required</p>
                       </CardContent>
+                      {!canAccessArea("forest") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "city" ? "ring-2 ring-blue-500" : ""}`}
-                      onClick={() => setSelectedArea("city")}
+                      className={`transition-all ${selectedArea === "city" ? "ring-2 ring-blue-500" : ""} ${canAccessArea("city") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("city")}
+                      style={getAreaDisplayStyle("city")}
                     >
                       <CardHeader className="bg-blue-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -682,13 +817,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">Encounter bandits and rogue cultivators.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 3-7 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 5+ required</p>
                       </CardContent>
+                      {!canAccessArea("city") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "mountain" ? "ring-2 ring-yellow-500" : ""}`}
-                      onClick={() => setSelectedArea("mountain")}
+                      className={`transition-all ${selectedArea === "mountain" ? "ring-2 ring-yellow-500" : ""} ${canAccessArea("mountain") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("mountain")}
+                      style={getAreaDisplayStyle("mountain")}
                     >
                       <CardHeader className="bg-yellow-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -697,13 +838,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">Home to powerful beasts and flying creatures.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 4-8 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 10+ required</p>
                       </CardContent>
+                      {!canAccessArea("mountain") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "poison-marsh" ? "ring-2 ring-green-700" : ""}`}
-                      onClick={() => setSelectedArea("poison-marsh")}
+                      className={`transition-all ${selectedArea === "poison-marsh" ? "ring-2 ring-green-700" : ""} ${canAccessArea("poison-marsh") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("poison-marsh")}
+                      style={getAreaDisplayStyle("poison-marsh")}
                     >
                       <CardHeader className="bg-green-700 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -712,8 +859,13 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">A dangerous swamp filled with venomous creatures.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 5-10 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 5+ required</p>
                       </CardContent>
+                      {!canAccessArea("poison-marsh") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                   </div>
                 </TabsContent>
@@ -721,8 +873,9 @@ const CombatPage = () => {
                 <TabsContent value="intermediate">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "jade-valley" ? "ring-2 ring-emerald-500" : ""}`}
-                      onClick={() => setSelectedArea("jade-valley")}
+                      className={`transition-all ${selectedArea === "jade-valley" ? "ring-2 ring-emerald-500" : ""} ${canAccessArea("jade-valley") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("jade-valley")}
+                      style={getAreaDisplayStyle("jade-valley")}
                     >
                       <CardHeader className="bg-emerald-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -731,13 +884,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">A valley rich with jade essence and mineral spirits.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 6-12 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 20+ required</p>
                       </CardContent>
+                      {!canAccessArea("jade-valley") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "ruins" ? "ring-2 ring-purple-500" : ""}`}
-                      onClick={() => setSelectedArea("ruins")}
+                      className={`transition-all ${selectedArea === "ruins" ? "ring-2 ring-purple-500" : ""} ${canAccessArea("ruins") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("ruins")}
+                      style={getAreaDisplayStyle("ruins")}
                     >
                       <CardHeader className="bg-purple-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -746,13 +905,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">Face guardians and demons of the ruins.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 10-15 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 25+ required</p>
                       </CardContent>
+                      {!canAccessArea("ruins") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "frozen-peak" ? "ring-2 ring-blue-300" : ""}`}
-                      onClick={() => setSelectedArea("frozen-peak")}
+                      className={`transition-all ${selectedArea === "frozen-peak" ? "ring-2 ring-blue-300" : ""} ${canAccessArea("frozen-peak") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("frozen-peak")}
+                      style={getAreaDisplayStyle("frozen-peak")}
                     >
                       <CardHeader className="bg-blue-400 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -761,13 +926,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">A mountaintop covered in eternal ice with frost spirits.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 12-18 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 10+ required</p>
                       </CardContent>
+                      {!canAccessArea("frozen-peak") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "thunder-peak" ? "ring-2 ring-indigo-500" : ""}`}
-                      onClick={() => setSelectedArea("thunder-peak")}
+                      className={`transition-all ${selectedArea === "thunder-peak" ? "ring-2 ring-indigo-500" : ""} ${canAccessArea("thunder-peak") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("thunder-peak")}
+                      style={getAreaDisplayStyle("thunder-peak")}
                     >
                       <CardHeader className="bg-indigo-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -776,8 +947,13 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">A high mountain constantly struck by lightning.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 15-20 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 40+ required</p>
                       </CardContent>
+                      {!canAccessArea("thunder-peak") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                   </div>
                 </TabsContent>
@@ -785,8 +961,9 @@ const CombatPage = () => {
                 <TabsContent value="advanced">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "flame-desert" ? "ring-2 ring-red-500" : ""}`}
-                      onClick={() => setSelectedArea("flame-desert")}
+                      className={`transition-all ${selectedArea === "flame-desert" ? "ring-2 ring-red-500" : ""} ${canAccessArea("flame-desert") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("flame-desert")}
+                      style={getAreaDisplayStyle("flame-desert")}
                     >
                       <CardHeader className="bg-red-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -795,14 +972,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">A scorching desert with fire elementals and beasts.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 15-25 recommended</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 50+ required</p>
                       </CardContent>
+                      {!canAccessArea("flame-desert") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "great-river" ? "ring-2 ring-blue-500" : ""}`}
-                      onClick={() => setSelectedArea("great-river")}
-                      style={{ opacity: game.cultivationLevel >= 20 ? 1 : 0.5 }}
+                      className={`transition-all ${selectedArea === "great-river" ? "ring-2 ring-blue-500" : ""} ${canAccessArea("great-river") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("great-river")}
+                      style={getAreaDisplayStyle("great-river")}
                     >
                       <CardHeader className="bg-blue-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -811,14 +993,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">Home to powerful water creatures including dragons.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 20+ required</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 65+ required</p>
                       </CardContent>
+                      {!canAccessArea("great-river") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "tiger-mountain" ? "ring-2 ring-amber-500" : ""}`}
-                      onClick={() => setSelectedArea("tiger-mountain")}
-                      style={{ opacity: game.cultivationLevel >= 25 ? 1 : 0.5 }}
+                      className={`transition-all ${selectedArea === "tiger-mountain" ? "ring-2 ring-amber-500" : ""} ${canAccessArea("tiger-mountain") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("tiger-mountain")}
+                      style={getAreaDisplayStyle("tiger-mountain")}
                     >
                       <CardHeader className="bg-amber-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -827,14 +1014,19 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">The domain of ancient tiger spirits with great power.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 25+ required</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 80+ required</p>
                       </CardContent>
+                      {!canAccessArea("tiger-mountain") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                     
                     <Card 
-                      className={`cursor-pointer transition-all ${selectedArea === "dragon-volcano" ? "ring-2 ring-rose-500" : ""}`}
-                      onClick={() => setSelectedArea("dragon-volcano")}
-                      style={{ opacity: game.cultivationLevel >= 35 ? 1 : 0.5 }}
+                      className={`transition-all ${selectedArea === "dragon-volcano" ? "ring-2 ring-rose-500" : ""} ${canAccessArea("dragon-volcano") ? "cursor-pointer" : "cursor-not-allowed"}`}
+                      onClick={() => handleAreaSelection("dragon-volcano")}
+                      style={getAreaDisplayStyle("dragon-volcano")}
                     >
                       <CardHeader className="bg-rose-600 text-white py-3">
                         <CardTitle className="text-lg flex items-center">
@@ -843,9 +1035,14 @@ const CombatPage = () => {
                       </CardHeader>
                       <CardContent className="p-4">
                         <p className="text-sm">The lair of the Fire Dragon King. Extremely dangerous.</p>
-                        <p className="text-xs mt-2 text-gray-600">Levels 35+ required</p>
+                        <p className="text-xs mt-2 text-gray-600">Level 100+ required</p>
                         <p className="text-xs mt-1 text-red-500 font-semibold">Boss Location</p>
                       </CardContent>
+                      {!canAccessArea("dragon-volcano") && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-md">
+                          <i className="fas fa-lock text-4xl text-white opacity-80"></i>
+                        </div>
+                      )}
                     </Card>
                   </div>
                 </TabsContent>
@@ -906,88 +1103,11 @@ const CombatPage = () => {
             {/* Combat UI */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Player Stats */}
-              <Card className={`bg-white shadow-md relative ${attackTarget === "player" && "overflow-hidden"}`}>
-                {attackTarget === "player" && damageEffect && (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-red-500 bg-opacity-30 z-10"
-                  />
-                )}
-                {attackAnimation === "enemy-attack" && attackTarget === "player" && (
-                  <motion.div 
-                    initial={{ x: 100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: -100, opacity: 0 }}
-                    className="absolute inset-0 flex items-center justify-center z-20"
-                  >
-                    <div className="text-4xl text-red-500 font-bold">💥</div>
-                  </motion.div>
-                )}
-                {herbAnimating && (
-                  <motion.div 
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -50, opacity: 0 }}
-                    className="absolute inset-0 flex items-center justify-center z-20"
-                  >
-                    <div className="text-4xl text-green-500 font-bold">🌿</div>
-                  </motion.div>
-                )}
+              <Card className="bg-white shadow-md">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg flex justify-between items-center">
-                    <span>{game.characterName}</span>
-                    {/* Herbs button */}
-                    {combatStatus === "fighting" && (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="text-xs"
-                        onClick={() => setShowHerbPanel(!showHerbPanel)}
-                      >
-                        <i className="fas fa-leaf text-green-500 mr-1"></i> Herbs
-                      </Button>
-                    )}
-                  </CardTitle>
+                  <CardTitle className="text-lg">{game.characterName}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {/* Herb Selection Panel */}
-                  {showHerbPanel && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mb-3 p-3 bg-green-50 border border-green-200 rounded-md"
-                    >
-                      <h3 className="text-sm font-medium mb-2 text-green-700">Healing Herbs</h3>
-                      {getHealingHerbs(game.inventory || {}).length === 0 ? (
-                        <p className="text-xs text-gray-500">No healing herbs in inventory</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {getHealingHerbs(game.inventory || {}).map(herb => (
-                            <motion.div 
-                              key={herb.id}
-                              whileHover={{ scale: 1.02 }}
-                              className={`p-2 border ${herbAnimating === herb.id ? 'border-green-500 bg-green-100' : 'border-gray-200'} rounded-md cursor-pointer`}
-                              onClick={() => useHerb(herb.id)}
-                            >
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <div className="text-sm font-medium">{herb.data.name}</div>
-                                  <div className="text-xs text-gray-600">Heals {herb.data.effects.health} HP</div>
-                                </div>
-                                <div className="text-xs bg-green-100 px-2 py-1 rounded">
-                                  {herb.count || 0}
-                                </div>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-
                   <div className="mb-3">
                     <div className="flex justify-between text-sm mb-1">
                       <span>Health</span>
@@ -1029,50 +1149,36 @@ const CombatPage = () => {
               
               {/* Enemy Stats */}
               {enemy && (
-                <Card className={`bg-white shadow-md relative ${attackTarget === "enemy" && "overflow-hidden"}`}>
-                  {attackTarget === "enemy" && damageEffect && (
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-red-500 bg-opacity-30 z-10"
-                    />
-                  )}
-                  {attackAnimation && attackTarget === "enemy" && (
-                    <motion.div 
-                      initial={{ x: -100, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      exit={{ x: 100, opacity: 0 }}
-                      className="absolute inset-0 flex items-center justify-center z-20"
-                    >
-                      <div className="text-4xl text-primary font-bold">⚔️</div>
-                    </motion.div>
-                  )}
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">{enemy.name}</CardTitle>
+                <Card className="bg-white shadow-md animate-slide-in-left relative overflow-hidden">
+                  <div className={`absolute inset-0 bg-red-500 opacity-20 ${combatStatus === "fighting" ? "animate-pulse-slow" : ""}`}></div>
+                  <CardHeader className="pb-2 relative">
+                    <CardTitle className="text-lg flex items-center">
+                      <span className="inline-block w-5 h-5 mr-2 rounded-full bg-red-500 animate-pulse-slow"></span>
+                      {enemy.name}
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="relative">
                     <div className="mb-3">
                       <div className="flex justify-between text-sm mb-1">
-                        <span>Health</span>
-                        <span>{enemy.health} / {enemy.maxHealth}</span>
+                        <span className="font-bold text-red-600">Health</span>
+                        <span className="animate-pulse-slow">{enemy.health} / {enemy.maxHealth}</span>
                       </div>
                       <Progress 
                         value={(enemy.health / enemy.maxHealth) * 100} 
-                        className="h-2 [&>div]:bg-red-500"
+                        className="h-2 [&>div]:bg-red-500 [&>div]:animate-pulse-slow"
                       />
                     </div>
                     
-                    <p className="text-sm mb-4">{enemy.description}</p>
+                    <p className="text-sm mb-4 italic">{enemy.description}</p>
                     
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <p className="font-medium">Attack</p>
-                        <p>{enemy.attack}</p>
+                      <div className="bg-red-50 p-2 rounded-md shadow-sm animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                        <p className="font-medium text-red-700">Attack</p>
+                        <p className="text-lg font-bold">{enemy.attack}</p>
                       </div>
-                      <div>
-                        <p className="font-medium">Defense</p>
-                        <p>{enemy.defense}</p>
+                      <div className="bg-blue-50 p-2 rounded-md shadow-sm animate-fade-in" style={{ animationDelay: '0.5s' }}>
+                        <p className="font-medium text-blue-700">Defense</p>
+                        <p className="text-lg font-bold">{enemy.defense}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -1081,43 +1187,147 @@ const CombatPage = () => {
             </div>
             
             {/* Combat Log */}
-            <Card className="bg-white shadow-md mb-6">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Combat Log</CardTitle>
+            <Card className="bg-white shadow-md mb-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <CardHeader className="pb-2 bg-gradient-to-r from-gray-50 to-gray-100">
+                <CardTitle className="text-lg flex items-center">
+                  <span className="inline-block w-4 h-4 mr-2 rounded-full bg-primary animate-ping-slow"></span>
+                  Combat Log
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-32 overflow-y-auto p-2 bg-gray-50 rounded text-sm">
-                  {combatLog.map((log, index) => (
-                    <p key={index} className="mb-1">{log}</p>
-                  ))}
+                <div className="h-40 overflow-y-auto p-3 bg-gray-50 rounded shadow-inner text-sm">
+                  {combatLog.map((log, index) => {
+                    // Style different types of log messages differently
+                    let className = "mb-2 transition-opacity animate-fade-in";
+                    
+                    if (log.includes("encounter")) {
+                      className += " text-purple-700 font-semibold";
+                    } else if (log.includes("defeated")) {
+                      className += " text-green-700 font-semibold";
+                    } else if (log.includes("defeated!") || log.includes("been defeated")) {
+                      className += " text-red-700 font-semibold";
+                    } else if (log.includes("use") && log.includes("technique")) {
+                      className += " text-blue-700";
+                    } else if (log.includes("deal")) {
+                      className += " text-orange-700";
+                    } else if (log.includes("recovered") || log.includes("healing")) {
+                      className += " text-green-700";
+                    } else if (log.includes("Gained")) {
+                      className += " text-green-700 font-medium";
+                    } else if (log.includes("cooldown")) {
+                      className += " text-gray-500 italic";
+                    }
+                    
+                    return (
+                      <p key={index} className={className} style={{ animationDelay: `${0.1 * (combatLog.length - index)}s` }}>
+                        {log}
+                      </p>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
             
             {/* Combat Actions */}
             {combatStatus === "fighting" && (
-              <Card className="bg-white shadow-md mb-6">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Martial Techniques</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {availableTechniques.map(([id, technique]) => (
-                      <Button
-                        key={id}
-                        onClick={() => useTechnique(id)}
-                        disabled={cooldowns[id] > 0 || game.energy < technique.cost}
-                        className="justify-start"
-                        variant={cooldowns[id] > 0 ? "outline" : "default"}
-                      >
-                        <span className="truncate mr-2">{technique.name}</span>
-                        {cooldowns[id] > 0 && <span className="text-xs">({cooldowns[id]}s)</span>}
-                        <span className="ml-auto text-xs">Cost: {technique.cost} Qi</span>
-                      </Button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Martial Techniques Card */}
+                <Card className="bg-white shadow-md mb-6 animate-slide-in-bottom" style={{ animationDelay: '0.5s' }}>
+                  <CardHeader className="pb-2 bg-gradient-to-r from-primary/10 to-primary/5">
+                    <CardTitle className="text-lg flex items-center">
+                      <span className="inline-block w-4 h-4 mr-2 rounded-full bg-primary animate-pulse-slow"></span>
+                      Martial Techniques
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 gap-3">
+                      {availableTechniques.map(([id, technique], index) => (
+                        <Button
+                          key={id}
+                          onClick={() => useTechnique(id)}
+                          disabled={cooldowns[id] > 0 || game.energy < technique.cost}
+                          className={`justify-start relative overflow-hidden transition-all transform hover:scale-105 ${cooldowns[id] > 0 ? 'opacity-70' : 'animate-bounce-soft hover:shadow-md'}`}
+                          style={{ 
+                            animationDelay: `${0.2 * index}s`,
+                            animationDuration: '4s'
+                          }}
+                          variant={cooldowns[id] > 0 ? "outline" : "default"}
+                        >
+                          {cooldowns[id] > 0 && (
+                            <div className="absolute inset-0 bg-gray-200 bg-opacity-40 flex items-center justify-center">
+                              <span className="font-bold text-xl text-primary animate-pulse-slow">{cooldowns[id]}s</span>
+                            </div>
+                          )}
+                          <span className="truncate mr-2 font-medium">{technique.name}</span>
+                          <span className="ml-auto text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-600">
+                            {technique.cost} Qi
+                          </span>
+                        </Button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Herbs Card */}
+                <Card className="bg-white shadow-md mb-6 animate-slide-in-bottom" style={{ animationDelay: '0.7s' }}>
+                  <CardHeader className="pb-2 bg-gradient-to-r from-green-50 to-green-100">
+                    <CardTitle className="text-lg flex items-center">
+                      <span className="inline-block w-4 h-4 mr-2 rounded-full bg-green-500 animate-pulse-slow"></span>
+                      Herbs & Items
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {availableHerbs.length > 0 ? (
+                      <div className="grid grid-cols-1 gap-3">
+                        {availableHerbs.map(([id, herb], index) => {
+                          // Determine herb type and assign color
+                          let herbColor = "green";
+                          let herbEffect = "Healing";
+                          
+                          if (herb.effects["qi-recovery"]) {
+                            herbColor = "blue";
+                            herbEffect = "Qi Recovery";
+                          } else if (herb.effects["attribute-boost"]) {
+                            herbColor = "purple";
+                            herbEffect = "Attribute Boost";
+                          }
+                          
+                          return (
+                            <Button
+                              key={id}
+                              onClick={() => useHerb(id)}
+                              className={`justify-start relative overflow-hidden transition-all transform hover:scale-105 hover:shadow-md animate-fade-in`}
+                              style={{ animationDelay: `${0.2 * index + 0.5}s` }}
+                              variant="outline"
+                            >
+                              <div className={`absolute top-0 left-0 h-full w-1 bg-${herbColor}-500`}></div>
+                              <div className="flex items-center w-full">
+                                <div className={`mr-3 h-8 w-8 rounded-full bg-${herbColor}-100 flex items-center justify-center text-${herbColor}-600 animate-pulse-slow`}>
+                                  <span className="text-lg">🌿</span>
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-medium">{herb.name}</div>
+                                  <div className="text-xs text-gray-500">{herbEffect}</div>
+                                </div>
+                                <div className={`ml-auto px-2 py-1 rounded-full bg-${herbColor}-100 text-${herbColor}-600 text-xs font-medium`}>
+                                  x{herb.quantity}
+                                </div>
+                              </div>
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-8 text-center animate-fade-in">
+                        <div className="text-6xl mb-4 animate-bounce-soft">🌱</div>
+                        <p className="text-gray-500 text-sm">
+                          No herbs available yet. Defeat enemies to find herbs!
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             )}
             
             {/* Combat Result Buttons */}

@@ -1,19 +1,16 @@
 import { useState, useEffect } from "react";
 import { useGameEngine } from "@/lib/gameEngine";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const InventoryPage = () => {
   const { game, updateGameState } = useGameEngine();
   const [location, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   
   // Check if character is created
   useEffect(() => {
@@ -24,8 +21,6 @@ const InventoryPage = () => {
 
   // Use herb function
   const useHerb = (herbId: string) => {
-    setIsLoading(true);
-    
     // Ensure inventory structure exists
     if (!game.inventory || !game.inventory.herbs) {
       updateGameState(state => ({
@@ -33,8 +28,8 @@ const InventoryPage = () => {
         inventory: {
           ...state.inventory,
           herbs: {},
-          weapons: state.inventory?.weapons || {},
-          apparel: state.inventory?.apparel || {},
+          weapons: {},
+          apparel: {}
         }
       }));
       toast({
@@ -42,15 +37,11 @@ const InventoryPage = () => {
         description: "Inventory was incorrectly initialized. The issue has been fixed.",
         variant: "destructive"
       });
-      setIsLoading(false);
       return;
     }
     
     const herb = game.inventory.herbs[herbId];
-    if (!herb || herb.quantity <= 0) {
-      setIsLoading(false);
-      return;
-    }
+    if (!herb || herb.quantity <= 0) return;
     
     // Apply herb effects
     updateGameState(state => {
@@ -67,12 +58,39 @@ const InventoryPage = () => {
         switch (effect) {
           case "qi-recovery":
             newState.energy = Math.min(state.energy + value, state.maxCultivationProgress);
+            toast({
+              title: "Herb Used",
+              description: `Recovered ${value} Qi energy from ${herb.name}.`
+            });
             break;
-          case "health-recovery":
+          case "healing":
             newState.health = Math.min(state.health + value, state.maxHealth);
+            toast({
+              title: "Herb Used",
+              description: `Recovered ${value} Health from ${herb.name}.`
+            });
             break;
-          case "cultivation-boost":
-            newState.cultivationProgress = Math.min(state.cultivationProgress + value, state.maxCultivationProgress);
+          case "attribute-boost":
+            // Initialize attributes if not present
+            if (!newState.attributes) {
+              newState.attributes = {
+                strength: 10,
+                agility: 10,
+                endurance: 10,
+                intelligence: 10,
+                perception: 10
+              };
+            }
+            
+            // For now, just boost all attributes by the value
+            Object.keys(newState.attributes).forEach(attr => {
+              newState.attributes[attr as keyof typeof newState.attributes] += 1;
+            });
+            
+            toast({
+              title: "Herb Used",
+              description: `All attributes increased by 1 from ${herb.name}.`
+            });
             break;
         }
       });
@@ -87,14 +105,10 @@ const InventoryPage = () => {
       
       return newState;
     });
-    
-    setTimeout(() => setIsLoading(false), 300);
   };
 
-  // Equip/Unequip weapons
+  // Equip/Unequip weapon
   const toggleEquipWeapon = (itemId: string) => {
-    setIsLoading(true);
-    
     // Check if inventory is properly initialized
     if (!game.inventory || !game.inventory.weapons) {
       updateGameState(state => ({
@@ -103,7 +117,7 @@ const InventoryPage = () => {
           ...state.inventory,
           herbs: state.inventory?.herbs || {},
           weapons: {},
-          apparel: state.inventory?.apparel || {},
+          apparel: state.inventory?.apparel || {}
         }
       }));
       toast({
@@ -111,15 +125,11 @@ const InventoryPage = () => {
         description: "Weapons inventory was incorrectly initialized. The issue has been fixed.",
         variant: "destructive"
       });
-      setIsLoading(false);
       return;
     }
     
     const item = game.inventory.weapons[itemId];
-    if (!item) {
-      setIsLoading(false);
-      return;
-    }
+    if (!item) return;
     
     updateGameState(state => {
       const newState = { ...state };
@@ -137,10 +147,10 @@ const InventoryPage = () => {
       // Toggle equipped status
       newState.inventory.weapons[itemId].equipped = !item.equipped;
       
-      // If equipping, unequip any other weapon
+      // If equipping, unequip any other weapon of the same type
       if (!item.equipped) {
         Object.entries(newState.inventory.weapons).forEach(([id, weapon]) => {
-          if (id !== itemId && weapon.equipped) {
+          if (id !== itemId && weapon.type === item.type && weapon.equipped) {
             newState.inventory.weapons[id].equipped = false;
           }
         });
@@ -161,14 +171,10 @@ const InventoryPage = () => {
       
       return newState;
     });
-    
-    setTimeout(() => setIsLoading(false), 300);
   };
   
   // Equip/Unequip apparel
   const toggleEquipApparel = (itemId: string) => {
-    setIsLoading(true);
-    
     // Check if inventory is properly initialized
     if (!game.inventory || !game.inventory.apparel) {
       updateGameState(state => ({
@@ -177,7 +183,7 @@ const InventoryPage = () => {
           ...state.inventory,
           herbs: state.inventory?.herbs || {},
           weapons: state.inventory?.weapons || {},
-          apparel: {},
+          apparel: {}
         }
       }));
       toast({
@@ -185,15 +191,11 @@ const InventoryPage = () => {
         description: "Apparel inventory was incorrectly initialized. The issue has been fixed.",
         variant: "destructive"
       });
-      setIsLoading(false);
       return;
     }
     
     const item = game.inventory.apparel[itemId];
-    if (!item) {
-      setIsLoading(false);
-      return;
-    }
+    if (!item) return;
     
     updateGameState(state => {
       const newState = { ...state };
@@ -211,7 +213,7 @@ const InventoryPage = () => {
       // Toggle equipped status
       newState.inventory.apparel[itemId].equipped = !item.equipped;
       
-      // If equipping, unequip any other item of same type
+      // If equipping, unequip any other apparel of same type
       if (!item.equipped) {
         Object.entries(newState.inventory.apparel).forEach(([id, apparel]) => {
           if (id !== itemId && apparel.type === item.type && apparel.equipped) {
@@ -220,12 +222,12 @@ const InventoryPage = () => {
         });
         
         toast({
-          title: "Item Equipped",
+          title: "Apparel Equipped",
           description: `${item.name} has been equipped.`
         });
       } else {
         toast({
-          title: "Item Unequipped",
+          title: "Apparel Unequipped",
           description: `${item.name} has been unequipped.`
         });
       }
@@ -235,8 +237,6 @@ const InventoryPage = () => {
       
       return newState;
     });
-    
-    setTimeout(() => setIsLoading(false), 300);
   };
 
   // Recalculate player stats based on equipped items
@@ -245,101 +245,89 @@ const InventoryPage = () => {
     let attack = 10;
     let defense = 5;
     let maxHealth = 100;
-    let critChance = 5;
-    let dodgeChance = 5;
-    let strength = state.attributes.strength;
-    let agility = state.attributes.agility;
-    let endurance = state.attributes.endurance;
-    let intelligence = state.attributes.intelligence;
-    let perception = state.attributes.perception;
     
     // Add attribute bonuses
-    attack += Math.floor(strength * 0.5);
-    defense += Math.floor(endurance * 0.3);
-    maxHealth += endurance * 10;
-    critChance += Math.floor(perception * 0.2);
-    dodgeChance += Math.floor(agility * 0.2);
+    attack += Math.floor(state.attributes.strength * 0.5);
+    defense += Math.floor(state.attributes.endurance * 0.3);
+    maxHealth += state.attributes.endurance * 10;
     
     // Add weapon bonuses
-    Object.values(state.inventory.weapons || {}).forEach(item => {
-      if (item.equipped && item.stats) {
-        Object.entries(item.stats).forEach(([stat, value]) => {
-          switch (stat) {
-            case "attack": attack += value as number; break;
-            case "defense": defense += value as number; break;
-            case "critChance": critChance += value as number; break;
-            case "dodgeChance": dodgeChance += value as number; break;
-            case "maxHealth": maxHealth += value as number; break;
-            case "strength": strength += value as number; break;
-            case "agility": agility += value as number; break;
-            case "endurance": endurance += value as number; break;
-            case "intelligence": intelligence += value as number; break;
-            case "perception": perception += value as number; break;
-          }
-        });
-      }
-    });
+    if (state.inventory?.weapons) {
+      Object.values(state.inventory.weapons).forEach(item => {
+        if (item.equipped) {
+          Object.entries(item.stats).forEach(([stat, value]) => {
+            switch (stat) {
+              case "attack":
+                attack += value;
+                break;
+              case "defense":
+                defense += value;
+                break;
+              case "health":
+                maxHealth += value;
+                break;
+            }
+          });
+        }
+      });
+    }
     
     // Add apparel bonuses
-    Object.values(state.inventory.apparel || {}).forEach(item => {
-      if (item.equipped && item.stats) {
-        Object.entries(item.stats).forEach(([stat, value]) => {
-          switch (stat) {
-            case "attack": attack += value as number; break;
-            case "defense": defense += value as number; break;
-            case "critChance": critChance += value as number; break;
-            case "dodgeChance": dodgeChance += value as number; break;
-            case "maxHealth": maxHealth += value as number; break;
-            case "strength": strength += value as number; break;
-            case "agility": agility += value as number; break;
-            case "endurance": endurance += value as number; break;
-            case "intelligence": intelligence += value as number; break;
-            case "perception": perception += value as number; break;
-          }
-        });
-      }
-    });
+    if (state.inventory?.apparel) {
+      Object.values(state.inventory.apparel).forEach(item => {
+        if (item.equipped) {
+          Object.entries(item.stats).forEach(([stat, value]) => {
+            switch (stat) {
+              case "attack":
+                attack += value;
+                break;
+              case "defense":
+                defense += value;
+                break;
+              case "health":
+                maxHealth += value;
+                break;
+            }
+          });
+        }
+      });
+    }
     
     // Update stats
     state.attack = attack;
     state.defense = defense;
     state.maxHealth = maxHealth;
-    state.critChance = critChance;
-    state.dodgeChance = dodgeChance;
-    
-    // Update attributes with bonuses
-    state.attributes = {
-      strength,
-      agility,
-      endurance,
-      intelligence,
-      perception
-    };
     
     // Ensure health doesn't exceed max health
     if (state.health > state.maxHealth) {
       state.health = state.maxHealth;
     }
+    
+    return state;
   };
-  
-  const getRarityColor = (rarity: string) => {
-    switch (rarity) {
-      case 'common': return 'bg-gray-200 text-gray-800';
-      case 'uncommon': return 'bg-green-100 text-green-800';
-      case 'rare': return 'bg-blue-100 text-blue-800';
-      case 'epic': return 'bg-purple-100 text-purple-800';
-      case 'legendary': return 'bg-yellow-100 text-yellow-800';
-      case 'mythic': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+
+  // Count items by category - safely handle potential undefined values
+  const itemCounts = {
+    herbs: game.inventory && game.inventory.herbs ? Object.keys(game.inventory.herbs).length : 0,
+    equipment: (
+      (game.inventory?.weapons ? Object.keys(game.inventory.weapons).length : 0) +
+      (game.inventory?.apparel ? Object.keys(game.inventory.apparel).length : 0)
+    ),
+    equipped: (
+      (game.inventory?.weapons ? Object.values(game.inventory.weapons).filter(item => item.equipped).length : 0) +
+      (game.inventory?.apparel ? Object.values(game.inventory.apparel).filter(item => item.equipped).length : 0)
+    )
   };
 
   return (
     <div className="min-h-screen bg-scroll py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 text-center">
-          <h1 className="text-3xl font-serif text-primary mb-2">Inventory</h1>
-          <p className="text-gray-700">Manage your equipment and resources</p>
+          <h1 className="text-3xl font-serif text-primary mb-2">
+            <i className="fas fa-archive mr-2"></i>
+            Inventory
+          </h1>
+          <p className="text-gray-700">Manage your spiritual items, herbs, and equipment</p>
         </div>
 
         {!game.characterCreated ? (
@@ -351,11 +339,52 @@ const InventoryPage = () => {
           </Card>
         ) : (
           <>
+            <Card className="bg-white shadow-md mb-6">
+              <CardHeader>
+                <CardTitle className="text-lg">Resources</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-amber-50 border border-amber-200 rounded-md p-3">
+                    <div className="flex items-center mb-1">
+                      <i className="fas fa-gem text-amber-500 mr-2"></i>
+                      <span className="font-medium">Spiritual Stones</span>
+                    </div>
+                    <p className="text-xl">{game.spiritualStones || 0}</p>
+                  </div>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                    <div className="flex items-center mb-1">
+                      <i className="fas fa-leaf text-green-500 mr-2"></i>
+                      <span className="font-medium">Herbs</span>
+                    </div>
+                    <p className="text-xl">{itemCounts.herbs} types</p>
+                  </div>
+                  
+                  <div className="bg-purple-50 border border-purple-200 rounded-md p-3">
+                    <div className="flex items-center mb-1">
+                      <i className="fas fa-gavel text-purple-500 mr-2"></i>
+                      <span className="font-medium">Equipment</span>
+                    </div>
+                    <p className="text-xl">{itemCounts.equipment} items</p>
+                  </div>
+                  
+                  <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                    <div className="flex items-center mb-1">
+                      <i className="fas fa-shield-alt text-green-600 mr-2"></i>
+                      <span className="font-medium">Equipped</span>
+                    </div>
+                    <p className="text-xl">{itemCounts.equipped} items</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid grid-cols-3 mb-6">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="weapons">Weapons</TabsTrigger>
-                <TabsTrigger value="apparel">Apparel</TabsTrigger>
+                <TabsTrigger value="herbs">Herbs</TabsTrigger>
+                <TabsTrigger value="equipment">Equipment</TabsTrigger>
               </TabsList>
               
               <TabsContent value="overview">
@@ -414,52 +443,66 @@ const InventoryPage = () => {
                     </div>
                   </CardContent>
                 </Card>
-                
-                {/* Herbs Section */}
-                <Card className="bg-white shadow-md mt-4">
+              </TabsContent>
+              
+              <TabsContent value="herbs">
+                <Card className="bg-white shadow-md">
                   <CardHeader>
-                    <CardTitle className="text-lg">Herbs & Resources</CardTitle>
+                    <CardTitle className="text-lg">Herbs Collection</CardTitle>
                   </CardHeader>
                   <CardContent>
                     {!game.inventory?.herbs || Object.keys(game.inventory.herbs).length === 0 ? (
                       <p className="text-center text-gray-500 py-4">
-                        You have not collected any herbs yet. Explore to gather resources.
+                        You have not collected any herbs yet. Explore the world to gather herbs.
                       </p>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {Object.entries(game.inventory.herbs).map(([herbId, herb]) => (
-                          <div key={herbId} className="border border-gray-200 rounded-md p-3 hover:bg-gray-50 transition-colors">
-                            <div className="flex justify-between items-start mb-1">
-                              <h3 className="font-medium">{herb.name}</h3>
-                              <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">
-                                {herb.quantity}
-                              </span>
+                          <div 
+                            key={herbId}
+                            className="border border-gray-200 rounded-md p-3 hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h3 className="font-medium">{herb.name}</h3>
+                                <p className="text-xs text-gray-600">Quality: {Array(herb.quality).fill("★").join("")}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-medium">Quantity: {herb.quantity}</p>
+                              </div>
                             </div>
-                            <p className="text-sm text-gray-600 mb-2">{herb.description}</p>
                             
-                            <h4 className="text-xs font-medium mb-1">Effects:</h4>
-                            <ul className="text-xs space-y-1 mb-3">
-                              {Object.entries(herb.effects).map(([effect, value]) => (
-                                <li key={effect} className="capitalize">
-                                  {effect.replace(/-/g, ' ')}: +{value}
-                                </li>
-                              ))}
-                            </ul>
+                            <p className="text-sm mb-2">{herb.description}</p>
+                            <div className="mb-3">
+                              <h4 className="text-xs font-medium mb-1">Effects:</h4>
+                              <ul className="text-xs space-y-1">
+                                {Object.entries(herb.effects).map(([effect, value]) => (
+                                  <li key={effect} className="flex items-center">
+                                    <span className={`mr-1 ${
+                                      effect === "qi-recovery" ? "text-blue-500" : 
+                                      effect === "healing" ? "text-red-500" : 
+                                      "text-amber-500"
+                                    }`}>
+                                      <i className={`fas fa-${
+                                        effect === "qi-recovery" ? "fire-alt" : 
+                                        effect === "healing" ? "heart" : 
+                                        "star"
+                                      } mr-1`}></i>
+                                    </span>
+                                    {effect === "qi-recovery" && `Recover ${value} Qi when consumed`}
+                                    {effect === "healing" && `Restore ${value} Health when consumed`}
+                                    {effect === "attribute-boost" && `Permanently boost all attributes by ${value}`}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                             
                             <Button 
                               size="sm" 
                               onClick={() => useHerb(herbId)}
                               className="w-full"
-                              disabled={isLoading}
                             >
-                              {isLoading ? (
-                                <div className="flex items-center space-x-2">
-                                  <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
-                                  <span>Using...</span>
-                                </div>
-                              ) : (
-                                "Use Herb"
-                              )}
+                              Use Herb
                             </Button>
                           </div>
                         ))}
@@ -469,25 +512,22 @@ const InventoryPage = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="weapons">
+              <TabsContent value="equipment">
                 <Card className="bg-white shadow-md">
                   <CardHeader>
-                    <CardTitle className="text-lg">Weapons</CardTitle>
-                    <CardDescription>Equip weapons to increase your combat abilities</CardDescription>
+                    <CardTitle className="text-lg">Equipment</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {!game.inventory?.weapons || Object.keys(game.inventory.weapons).length === 0 ? (
-                      <div className="text-center py-6">
-                        <p className="text-gray-500 mb-4">
-                          You have not found any weapons yet. Visit the Shop to purchase equipment.
-                        </p>
-                        <Button onClick={() => setLocation('/shop')}>
-                          Visit Shop
-                        </Button>
-                      </div>
+                    {/* Check if we have any weapons or apparel */}
+                    {(!game.inventory?.weapons || Object.keys(game.inventory.weapons).length === 0) && 
+                     (!game.inventory?.apparel || Object.keys(game.inventory.apparel).length === 0) ? (
+                      <p className="text-center text-gray-500 py-4">
+                        You have not found any equipment yet. Visit the shop to purchase equipment.
+                      </p>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {Object.entries(game.inventory.weapons).map(([itemId, item]) => (
+                        {/* Render weapons */}
+                        {game.inventory?.weapons && Object.entries(game.inventory.weapons).map(([itemId, item]) => (
                           <div 
                             key={itemId}
                             className={`border ${item.equipped ? 'border-primary' : 'border-gray-200'} rounded-md p-3 hover:bg-gray-50 transition-colors`}
@@ -495,6 +535,7 @@ const InventoryPage = () => {
                             <div className="flex justify-between items-start mb-2">
                               <div>
                                 <h3 className="font-medium flex items-center">
+                                  <i className="fas fa-khanda mr-2 text-primary"></i>
                                   {item.name}
                                   {item.equipped && (
                                     <span className="ml-2 text-xs bg-primary text-white px-2 py-0.5 rounded">
@@ -503,20 +544,37 @@ const InventoryPage = () => {
                                   )}
                                 </h3>
                                 <p className="text-xs text-gray-600 capitalize">
-                                  {item.type} • {item.rarity}
+                                  Weapon • {item.type} • {item.rarity}
                                 </p>
                               </div>
-                              <Badge className={getRarityColor(item.rarity)}>
-                                {item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}
-                              </Badge>
+                              <div className="text-right">
+                                <p className="text-sm font-medium">Level {item.level}</p>
+                              </div>
                             </div>
                             
+                            <p className="text-sm mb-2">{item.description}</p>
                             <div className="mb-3">
-                              <p className="text-xs text-gray-600 mb-1">{item.description}</p>
                               <h4 className="text-xs font-medium mb-1">Stats:</h4>
                               <ul className="text-xs space-y-1">
                                 {Object.entries(item.stats).map(([stat, value]) => (
-                                  <li key={stat} className="capitalize">
+                                  <li key={stat} className="capitalize flex items-center">
+                                    <span className={`mr-1 ${
+                                      stat === "attack" ? "text-red-500" : 
+                                      stat === "defense" ? "text-blue-500" : 
+                                      stat === "critChance" ? "text-amber-500" :
+                                      stat === "dodgeChance" ? "text-green-500" :
+                                      stat === "maxHealth" ? "text-pink-500" :
+                                      "text-purple-500"
+                                    }`}>
+                                      <i className={`fas fa-${
+                                        stat === "attack" ? "fist-raised" : 
+                                        stat === "defense" ? "shield-alt" : 
+                                        stat === "critChance" ? "crosshairs" :
+                                        stat === "dodgeChance" ? "wind" :
+                                        stat === "maxHealth" ? "heart" :
+                                        "star"
+                                      } mr-1`}></i>
+                                    </span>
                                     {stat}: +{value}
                                   </li>
                                 ))}
@@ -528,44 +586,14 @@ const InventoryPage = () => {
                               variant={item.equipped ? "outline" : "default"}
                               onClick={() => toggleEquipWeapon(itemId)}
                               className="w-full"
-                              disabled={isLoading}
                             >
-                              {isLoading ? (
-                                <div className="flex items-center justify-center space-x-2">
-                                  <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
-                                  <span>Processing...</span>
-                                </div>
-                              ) : (
-                                item.equipped ? "Unequip" : "Equip"
-                              )}
+                              {item.equipped ? "Unequip" : "Equip"}
                             </Button>
                           </div>
                         ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="apparel">
-                <Card className="bg-white shadow-md">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Apparel</CardTitle>
-                    <CardDescription>Equip clothing and armor to enhance your abilities</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {!game.inventory?.apparel || Object.keys(game.inventory.apparel).length === 0 ? (
-                      <div className="text-center py-6">
-                        <p className="text-gray-500 mb-4">
-                          You have not found any apparel yet. Visit the Shop to purchase equipment.
-                        </p>
-                        <Button onClick={() => setLocation('/shop')}>
-                          Visit Shop
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {Object.entries(game.inventory.apparel).map(([itemId, item]) => (
+
+                        {/* Render apparel */}
+                        {game.inventory?.apparel && Object.entries(game.inventory.apparel).map(([itemId, item]) => (
                           <div 
                             key={itemId}
                             className={`border ${item.equipped ? 'border-primary' : 'border-gray-200'} rounded-md p-3 hover:bg-gray-50 transition-colors`}
@@ -573,6 +601,7 @@ const InventoryPage = () => {
                             <div className="flex justify-between items-start mb-2">
                               <div>
                                 <h3 className="font-medium flex items-center">
+                                  <i className="fas fa-tshirt mr-2 text-primary"></i>
                                   {item.name}
                                   {item.equipped && (
                                     <span className="ml-2 text-xs bg-primary text-white px-2 py-0.5 rounded">
@@ -581,20 +610,37 @@ const InventoryPage = () => {
                                   )}
                                 </h3>
                                 <p className="text-xs text-gray-600 capitalize">
-                                  {item.type} • {item.rarity}
+                                  Apparel • {item.type} • {item.rarity}
                                 </p>
                               </div>
-                              <Badge className={getRarityColor(item.rarity)}>
-                                {item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}
-                              </Badge>
+                              <div className="text-right">
+                                <p className="text-sm font-medium">Level {item.level}</p>
+                              </div>
                             </div>
                             
+                            <p className="text-sm mb-2">{item.description}</p>
                             <div className="mb-3">
-                              <p className="text-xs text-gray-600 mb-1">{item.description}</p>
                               <h4 className="text-xs font-medium mb-1">Stats:</h4>
                               <ul className="text-xs space-y-1">
                                 {Object.entries(item.stats).map(([stat, value]) => (
-                                  <li key={stat} className="capitalize">
+                                  <li key={stat} className="capitalize flex items-center">
+                                    <span className={`mr-1 ${
+                                      stat === "attack" ? "text-red-500" : 
+                                      stat === "defense" ? "text-blue-500" : 
+                                      stat === "critChance" ? "text-amber-500" :
+                                      stat === "dodgeChance" ? "text-green-500" :
+                                      stat === "maxHealth" ? "text-pink-500" :
+                                      "text-purple-500"
+                                    }`}>
+                                      <i className={`fas fa-${
+                                        stat === "attack" ? "fist-raised" : 
+                                        stat === "defense" ? "shield-alt" : 
+                                        stat === "critChance" ? "crosshairs" :
+                                        stat === "dodgeChance" ? "wind" :
+                                        stat === "maxHealth" ? "heart" :
+                                        "star"
+                                      } mr-1`}></i>
+                                    </span>
                                     {stat}: +{value}
                                   </li>
                                 ))}
@@ -606,16 +652,8 @@ const InventoryPage = () => {
                               variant={item.equipped ? "outline" : "default"}
                               onClick={() => toggleEquipApparel(itemId)}
                               className="w-full"
-                              disabled={isLoading}
                             >
-                              {isLoading ? (
-                                <div className="flex items-center justify-center space-x-2">
-                                  <div className="w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
-                                  <span>Processing...</span>
-                                </div>
-                              ) : (
-                                item.equipped ? "Unequip" : "Equip"
-                              )}
+                              {item.equipped ? "Unequip" : "Equip"}
                             </Button>
                           </div>
                         ))}

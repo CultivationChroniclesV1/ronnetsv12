@@ -292,7 +292,7 @@ const MapPage = () => {
                     className={`bg-white shadow-md cursor-pointer transition-all ${
                       selectedLocation === locationId ? "ring-2 ring-primary" : ""
                     } ${
-                      game.cultivationLevel < locationData.requiredLevel ? "opacity-50 blur-sm filter grayscale pointer-events-none" : ""
+                      game.cultivationLevel < locationData.requiredLevel ? "opacity-60" : ""
                     }`}
                     onClick={() => {
                       if (game.cultivationLevel >= locationData.requiredLevel) {
@@ -317,8 +317,8 @@ const MapPage = () => {
                         {locationData.name}
                         
                         {game.cultivationLevel < locationData.requiredLevel && (
-                          <span className="ml-auto text-xs bg-red-100 text-red-800 px-2 py-1 rounded flex items-center">
-                            <i className="fas fa-lock mr-1"></i> Lvl {locationData.requiredLevel}
+                          <span className="ml-auto text-xs bg-gray-200 px-2 py-1 rounded">
+                            Lvl {locationData.requiredLevel}
                           </span>
                         )}
                         
