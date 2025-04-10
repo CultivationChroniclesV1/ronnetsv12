@@ -77,7 +77,7 @@ export function CultivationActions() {
           />
           
           <div className="text-xs text-center text-gray-600 italic">
-            <p>Required: {formatNumber(game.maxCultivationProgress)} Qi Energy</p>
+            <p>Required: {formatNumber(game.maxCultivationProgress)} Qi</p>
             <p className="mt-1">Breakthrough to advance to the next cultivation level</p>
           </div>
         </div>

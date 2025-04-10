@@ -2488,7 +2488,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 8000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 100,
+      [CURRENCY_TYPES.QI_STONES]: 100,
     },
     rarity: 'EPIC',
   },
@@ -2510,7 +2510,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 20000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
+      [CURRENCY_TYPES.QI_STONES]: 500,
     },
     rarity: 'LEGENDARY',
   },
@@ -2533,7 +2533,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 100000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 2000,
+      [CURRENCY_TYPES.QI_STONES]: 2000,
     },
     rarity: 'MYTHIC',
   },
@@ -2577,7 +2577,7 @@ export const WEAPONS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 12000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 200,
+      [CURRENCY_TYPES.QI_STONES]: 200,
     },
     rarity: 'EPIC',
   },
@@ -2622,7 +2622,7 @@ export const WEAPONS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 5000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 50,
+      [CURRENCY_TYPES.QI_STONES]: 50,
     },
     rarity: 'RARE',
   },
@@ -2644,7 +2644,7 @@ export const WEAPONS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 30000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 800,
+      [CURRENCY_TYPES.QI_STONES]: 800,
     },
     rarity: 'LEGENDARY',
   },
@@ -2691,7 +2691,7 @@ export const WEAPONS = {
     requiredStage: 4,
     price: {
       [CURRENCY_TYPES.GOLD]: 4500,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 40,
+      [CURRENCY_TYPES.QI_STONES]: 40,
     },
     rarity: 'RARE',
   },
@@ -2714,7 +2714,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 15000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 300,
+      [CURRENCY_TYPES.QI_STONES]: 300,
     },
     rarity: 'EPIC',
   },
@@ -2760,7 +2760,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 10000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 180,
+      [CURRENCY_TYPES.QI_STONES]: 180,
     },
     rarity: 'EPIC',
   },
@@ -2806,7 +2806,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 18000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 450,
+      [CURRENCY_TYPES.QI_STONES]: 450,
     },
     rarity: 'LEGENDARY',
   },
@@ -2852,7 +2852,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 3800,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
+      [CURRENCY_TYPES.QI_STONES]: 35,
     },
     rarity: 'RARE',
   },
@@ -2875,7 +2875,7 @@ export const WEAPONS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 14000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 250,
+      [CURRENCY_TYPES.QI_STONES]: 250,
     },
     rarity: 'EPIC',
   },
@@ -2923,7 +2923,7 @@ export const WEAPONS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 25000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 600,
+      [CURRENCY_TYPES.QI_STONES]: 600,
     },
     rarity: 'LEGENDARY',
   },
@@ -2953,7 +2953,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 1000000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 10000,
+      [CURRENCY_TYPES.QI_STONES]: 10000,
     },
     rarity: 'ARTIFACT',
   },
@@ -2980,7 +2980,7 @@ export const WEAPONS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 1000000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 10000,
+      [CURRENCY_TYPES.QI_STONES]: 10000,
     },
     rarity: 'ARTIFACT',
   },
@@ -3052,7 +3052,7 @@ export const ARMORS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 5000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 50,
+      [CURRENCY_TYPES.QI_STONES]: 50,
     },
     rarity: 'RARE',
   },
@@ -3077,7 +3077,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 25000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
+      [CURRENCY_TYPES.QI_STONES]: 500,
     },
     rarity: 'LEGENDARY',
   },
@@ -3123,7 +3123,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 2200,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 20,
+      [CURRENCY_TYPES.QI_STONES]: 20,
     },
     rarity: 'RARE',
   },
@@ -3146,7 +3146,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 9000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 150,
+      [CURRENCY_TYPES.QI_STONES]: 150,
     },
     rarity: 'EPIC',
   },
@@ -3194,7 +3194,7 @@ export const ARMORS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 3500,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
+      [CURRENCY_TYPES.QI_STONES]: 35,
     },
     rarity: 'RARE',
   },
@@ -3219,7 +3219,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 18000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 400,
+      [CURRENCY_TYPES.QI_STONES]: 400,
     },
     rarity: 'LEGENDARY',
   },
@@ -3267,7 +3267,7 @@ export const ARMORS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 6000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 60,
+      [CURRENCY_TYPES.QI_STONES]: 60,
     },
     rarity: 'RARE',
   },
@@ -3293,7 +3293,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 50000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 1000,
+      [CURRENCY_TYPES.QI_STONES]: 1000,
     },
     rarity: 'MYTHIC',
   },
@@ -3339,7 +3339,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 1800,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 15,
+      [CURRENCY_TYPES.QI_STONES]: 15,
     },
     rarity: 'RARE',
   },
@@ -3362,7 +3362,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 7500,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 120,
+      [CURRENCY_TYPES.QI_STONES]: 120,
     },
     rarity: 'EPIC',
   },
@@ -3408,7 +3408,7 @@ export const ARMORS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 2800,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 25,
+      [CURRENCY_TYPES.QI_STONES]: 25,
     },
     rarity: 'RARE',
   },
@@ -3453,7 +3453,7 @@ export const ARMORS = {
     requiredStage: 5,
     price: {
       [CURRENCY_TYPES.GOLD]: 5500,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 55,
+      [CURRENCY_TYPES.QI_STONES]: 55,
     },
     rarity: 'RARE',
   },
@@ -3477,7 +3477,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 1600,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 15,
+      [CURRENCY_TYPES.QI_STONES]: 15,
     },
     rarity: 'RARE',
   },
@@ -3501,7 +3501,7 @@ export const ARMORS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 11000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 200,
+      [CURRENCY_TYPES.QI_STONES]: 200,
     },
     rarity: 'EPIC',
   },
@@ -3545,7 +3545,7 @@ export const ARMORS = {
     requiredStage: 3,
     price: {
       [CURRENCY_TYPES.GOLD]: 3500,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 35,
+      [CURRENCY_TYPES.QI_STONES]: 35,
     },
     rarity: 'RARE',
   },
@@ -3568,7 +3568,7 @@ export const ARMORS = {
     requiredStage: 2,
     price: {
       [CURRENCY_TYPES.GOLD]: 12000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 250,
+      [CURRENCY_TYPES.QI_STONES]: 250,
     },
     rarity: 'EPIC',
   },
@@ -3592,7 +3592,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 25000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 500,
+      [CURRENCY_TYPES.QI_STONES]: 500,
     },
     rarity: 'LEGENDARY',
   },
@@ -3615,7 +3615,7 @@ export const ARMORS = {
     requiredStage: 1,
     price: {
       [CURRENCY_TYPES.GOLD]: 60000,
-      [CURRENCY_TYPES.SPIRITUAL_STONES]: 1200,
+      [CURRENCY_TYPES.QI_STONES]: 1200,
     },
     rarity: 'MYTHIC',
   },

@@ -135,7 +135,7 @@ export default function CharacterInfo() {
                         <Progress value={(game.health / game.maxHealth) * 100} className="h-2 [&>div]:bg-red-500 mb-4" />
                         
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Qi Energy</span>
+                          <span>Qi</span>
                           <span className="font-medium">{Math.floor(game.energy)} / {game.maxCultivationProgress}</span>
                         </div>
                         <Progress value={(game.energy / game.maxCultivationProgress) * 100} className="h-2 [&>div]:bg-cyan-500" />

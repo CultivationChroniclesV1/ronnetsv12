@@ -14,7 +14,7 @@ export function HeaderStats() {
           </h1>
           
           <div className="flex items-center space-x-4 mt-1 md:mt-0">
-            {/* Qi Energy */}
+            {/* Qi */}
             <div className="flex items-center">
               <i className="fas fa-fire-alt text-amber-300 mr-1"></i>
               <span className="text-sm">{formatNumber(game.energy)} Qi</span>

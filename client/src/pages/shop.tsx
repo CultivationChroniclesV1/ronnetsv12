@@ -420,7 +420,7 @@ export default function Shop() {
             <span className="ml-2 text-blue-600">{game.spiritualStones}</span>
           </div>
           <div>
-            <span className="font-semibold text-primary">Qi Energy:</span> 
+            <span className="font-semibold text-primary">Qi:</span> 
             <span className="ml-2 text-green-600">{Math.floor(game.energy)}</span>
           </div>
         </div>
