@@ -981,7 +981,7 @@ function SkillCard({
       <CardHeader className={`pb-2 ${state === 'locked' ? 'opacity-50' : ''}`}>
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg flex items-center gap-2">
-            <i className={`fas fa-${skill.icon} text-${
+            <i className={`fas ${skill.icon.startsWith('fa-') ? skill.icon : 'fa-'+skill.icon} text-${
               skill.type === 'attack' ? 'red' :
               skill.type === 'defense' ? 'blue' :
               skill.type === 'utility' ? 'purple' :
