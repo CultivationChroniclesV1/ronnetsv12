@@ -49,37 +49,37 @@ export const UPGRADES = {
     name: 'Meridian Expansion',
     description: 'Increases Qi storage capacity',
     baseCost: 250,
-    costMultiplier: 1.8,
-    effectPerLevel: 1.0, // 100% increase per level
-    effectDescription: (level: number) => `+${level * 100}% Qi capacity`,
+    costMultiplier: 2.2,
+    effectPerLevel: 2.0, // 200% increase per level
+    effectDescription: (level: number) => `+${level * 200}% Qi capacity`,
     maxLevel: Infinity // Infinite upgrades
   },
   circulation: {
     name: 'Qi Circulation',
     description: 'Increases passive Qi generation',
     baseCost: 375,
-    costMultiplier: 1.9,
-    effectPerLevel: 25, // 25 Qi/s per level
-    effectDescription: (level: number) => `+${level * 25} Qi/second`,
+    costMultiplier: 2.3,
+    effectPerLevel: 50, // 50 Qi/s per level
+    effectDescription: (level: number) => `+${level * 50} Qi/second`,
     maxLevel: Infinity // Infinite upgrades
   },
   spirit: {
     name: 'Spirit Sense',
     description: 'Increases manual cultivation efficiency',
     baseCost: 400,
-    costMultiplier: 2.0,
-    effectPerLevel: 25, // +25 Qi per click per level
-    effectDescription: (level: number) => `+${level * 25} Qi per click`,
+    costMultiplier: 2.4,
+    effectPerLevel: 75, // +75 Qi per click per level
+    effectDescription: (level: number) => `+${level * 75} Qi per click`,
     maxLevel: Infinity // Infinite upgrades
   },
   breakthrough: {
     name: 'Breakthrough Insight',
     description: 'Improves breakthrough success rate',
     baseCost: 500,
-    costMultiplier: 2.2,
-    effectPerLevel: 0.05, // 5% increase per level
-    effectDescription: (level: number) => `+${level * 5}% breakthrough chance`,
-    maxLevel: 10, // Limited for balance
+    costMultiplier: 2.5,
+    effectPerLevel: 0.08, // 8% increase per level
+    effectDescription: (level: number) => `+${level * 8}% breakthrough chance`,
+    maxLevel: 15, // Increased max level
     requiredRealm: 'foundation'
   }
 };
@@ -90,10 +90,10 @@ export const SKILLS = {
     chineseName: '气功',
     description: 'Foundation technique that circulates Qi through your body\'s meridians.',
     baseCost: 150,
-    costMultiplier: 1.7,
-    effectPerLevel: 10, // 10 Qi/s per level
-    effectDescription: (level: number) => `+${level * 10} Qi/second`,
-    maxLevel: 50,
+    costMultiplier: 2.0,
+    effectPerLevel: 30, // 30 Qi/s per level
+    effectDescription: (level: number) => `+${level * 30} Qi/second`,
+    maxLevel: 100,
     requiredRealm: 'qi',
     requiredStage: 1
   },
@@ -102,10 +102,10 @@ export const SKILLS = {
     chineseName: '火心诀',
     description: 'Harness the power of inner fire to accelerate Qi generation.',
     baseCost: 400,
-    costMultiplier: 1.9,
-    effectPerLevel: 25, // 25 Qi/s per level
-    effectDescription: (level: number) => `+${level * 25} Qi/second`,
-    maxLevel: 50,
+    costMultiplier: 2.2,
+    effectPerLevel: 75, // 75 Qi/s per level
+    effectDescription: (level: number) => `+${level * 75} Qi/second`,
+    maxLevel: 100,
     requiredRealm: 'foundation',
     requiredStage: 1
   },
@@ -114,12 +114,48 @@ export const SKILLS = {
     chineseName: '玄冰诀',
     description: 'Condense spiritual energy into mystic ice, enhancing breakthrough chance.',
     baseCost: 600,
-    costMultiplier: 2.0,
-    effectPerLevel: 0.1, // 10% per level
-    effectDescription: (level: number) => `+${level * 10}% breakthrough chance`,
-    maxLevel: 10,
+    costMultiplier: 2.3,
+    effectPerLevel: 0.15, // 15% per level
+    effectDescription: (level: number) => `+${level * 15}% breakthrough chance`,
+    maxLevel: 20,
     requiredRealm: 'qi',
     requiredStage: 7
+  },
+  'celestial-orbit': {
+    name: 'Celestial Orbit Technique',
+    chineseName: '周天功',
+    description: 'Advanced technique that creates a perfect cycle of Qi through your meridians.',
+    baseCost: 1000,
+    costMultiplier: 2.4,
+    effectPerLevel: 150, // 150 Qi/s per level
+    effectDescription: (level: number) => `+${level * 150} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'core',
+    requiredStage: 1
+  },
+  'golden-body': {
+    name: 'Golden Body Refinement',
+    chineseName: '金身诀',
+    description: 'Transform your physical body with Qi, greatly increasing your cultivation speed.',
+    baseCost: 2000,
+    costMultiplier: 2.5,
+    effectPerLevel: 250, // 250 Qi/s per level
+    effectDescription: (level: number) => `+${level * 250} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'spirit',
+    requiredStage: 1
+  },
+  'void-harmony': {
+    name: 'Void Harmony Scripture',
+    chineseName: '虚空和合经',
+    description: 'Harmonize with the void to accelerate cultivation to unprecedented levels.',
+    baseCost: 5000,
+    costMultiplier: 2.7,
+    effectPerLevel: 500, // 500 Qi/s per level
+    effectDescription: (level: number) => `+${level * 500} Qi/second`,
+    maxLevel: 100,
+    requiredRealm: 'void',
+    requiredStage: 1
   }
 };
 

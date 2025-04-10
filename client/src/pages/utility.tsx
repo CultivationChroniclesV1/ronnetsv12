@@ -2,14 +2,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGameEngine } from "@/lib/gameEngine";
-import { ACHIEVEMENTS } from "@/lib/constants";
+import { ACHIEVEMENTS, GAME_NAME } from "@/lib/constants";
 import { useToast } from "@/hooks/use-toast";
 import { formatNumber, formatTime } from "@/lib/utils";
 import { PageTransition, PageContent } from "@/components/page-transition";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Utility() {
-  const { game, saveGame, isAutoSaveEnabled, toggleAutoSave, toggleOfflineProgress, toggleNotifications, resetGame } = useGameEngine();
+  const { game, saveGame, isAutoSaveEnabled, toggleAutoSave, toggleOfflineProgress, toggleNotifications, resetGame, updateGameState } = useGameEngine();
   const { toast } = useToast();
+  const [exportedData, setExportedData] = useState("");
+  const [importedData, setImportedData] = useState("");
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   
   // Function to handle manual save
   const handleSaveGame = async () => {
@@ -42,6 +50,57 @@ export default function Utility() {
       earned
     };
   });
+  
+  // Export save data to string
+  const exportSaveData = () => {
+    try {
+      const saveData = JSON.stringify(game);
+      setExportedData(saveData);
+      navigator.clipboard.writeText(saveData).then(() => {
+        toast({
+          title: "Save Data Exported",
+          description: "Save data copied to clipboard. You can now paste and save it somewhere safe.",
+        });
+      });
+      return saveData;
+    } catch (error) {
+      console.error("Error exporting save data:", error);
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting your save data.",
+        variant: "destructive",
+      });
+      return null;
+    }
+  };
+  
+  // Import save data from string
+  const importSaveData = () => {
+    try {
+      const importedGameState = JSON.parse(importedData);
+      
+      // Add validation to ensure it's a valid game state
+      if (!importedGameState.characterName || !importedGameState.realm) {
+        throw new Error("Invalid save data format");
+      }
+      
+      updateGameState(() => importedGameState);
+      setImportDialogOpen(false);
+      setImportedData("");
+      
+      toast({
+        title: "Save Data Imported",
+        description: "Your save data has been successfully imported.",
+      });
+    } catch (error) {
+      console.error("Error importing save data:", error);
+      toast({
+        title: "Import Failed",
+        description: "There was an error importing your save data. Make sure the format is correct.",
+        variant: "destructive",
+      });
+    }
+  };
   
   return (
     <PageTransition>
@@ -123,6 +182,65 @@ export default function Utility() {
                       >
                         {game.showNotifications ? "Enabled" : "Disabled"}
                       </Button>
+                    </div>
+                    
+                    <div className="flex justify-between items-center p-3 border rounded-md">
+                      <div>
+                        <h3 className="font-medium">Export Game Data</h3>
+                        <p className="text-sm text-gray-600">
+                          Save your progress to a backup file
+                        </p>
+                      </div>
+                      <Button onClick={exportSaveData}>
+                        <i className="fas fa-download mr-2"></i> Export
+                      </Button>
+                    </div>
+                    
+                    <div className="flex justify-between items-center p-3 border rounded-md">
+                      <div>
+                        <h3 className="font-medium">Import Game Data</h3>
+                        <p className="text-sm text-gray-600">
+                          Restore your progress from a backup
+                        </p>
+                      </div>
+                      <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button>
+                            <i className="fas fa-upload mr-2"></i> Import
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Import Game Data</DialogTitle>
+                            <DialogDescription>
+                              Paste your saved game data below to restore your progress.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="import-data">Game Data:</Label>
+                              <Textarea 
+                                id="import-data" 
+                                value={importedData} 
+                                onChange={(e) => setImportedData(e.target.value)}
+                                placeholder="Paste your game data here..."
+                                className="h-40"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex justify-end gap-3">
+                            <Button 
+                              variant="outline" 
+                              onClick={() => setImportDialogOpen(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button onClick={importSaveData}>
+                              Import Data
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                     
                     <div className="flex justify-between items-center p-3 border rounded-md border-red-200 bg-red-50">
