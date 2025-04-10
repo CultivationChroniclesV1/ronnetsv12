@@ -1,223 +1,224 @@
 import { useState, useEffect } from "react";
 import { useGameEngine } from "@/lib/gameEngine";
 import { SECTS } from "@/lib/constants";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useLocation } from "wouter";
 import { toast } from "@/hooks/use-toast";
 
-const CharacterCreation = () => {
+export default function Character() {
   const { game, updateGameState } = useGameEngine();
-  const [characterName, setCharacterName] = useState<string>("");
-  const [selectedSect, setSelectedSect] = useState<string | null>(null);
   const [, setLocation] = useLocation();
+  const [characterName, setCharacterName] = useState("");
+  const [selectedSect, setSelectedSect] = useState<string | null>(null);
 
-  // Redirect to game if character already created
+  // If character already created, redirect to game
   useEffect(() => {
     if (game.characterCreated) {
       setLocation("/game");
     }
   }, [game.characterCreated, setLocation]);
 
-  // Create character function
   const handleCreateCharacter = () => {
     if (!characterName.trim()) {
       toast({
         title: "Name Required",
         description: "Please enter a name for your character.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
 
     if (!selectedSect) {
       toast({
-        title: "Sect Required",
+        title: "Sect Selection Required",
         description: "Please select a sect to join.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
 
-    // Apply sect benefits and create character
-    updateGameState((state) => {
-      // Get the benefit function for the selected sect
-      const sectData = SECTS[selectedSect as keyof typeof SECTS];
-      const updatedState = sectData.benefits.effect(state);
-      
-      // Set character creation data
-      updatedState.characterCreated = true;
-      updatedState.characterName = characterName;
-      updatedState.sect = selectedSect;
-      
-      // Initialize core objects if they don't exist
-      if (!updatedState.martialArts) {
-        updatedState.martialArts = {};
-      }
-      
-      if (!updatedState.attributes) {
-        updatedState.attributes = {
-          strength: 10,
-          agility: 10,
-          endurance: 10,
-          intelligence: 10,
-          perception: 10
-        };
-      }
-      
-      if (!updatedState.inventory) {
-        updatedState.inventory = {
-          spiritualStones: 0,
-          herbs: {},
-          equipment: {}
-        };
-      }
-      
-      if (!updatedState.exploration) {
-        updatedState.exploration = {
-          currentArea: "sect",
-          discoveredAreas: { "sect": true },
-          completedChallenges: {},
-          dailyTasksCompleted: {}
-        };
-      }
-      
-      // Initialize or reset HP system
-      updatedState.health = 100;
-      updatedState.maxHealth = 100;
-      updatedState.defense = 5;
-      updatedState.attack = 10;
-      updatedState.critChance = 5;
-      updatedState.dodgeChance = 5;
-      
-      // Calculate starting HP based on endurance (10 HP per point)
-      if (updatedState.attributes.endurance) {
-        updatedState.maxHealth = 50 + (updatedState.attributes.endurance * 5);
-        updatedState.health = updatedState.maxHealth; // Start with full health
-      }
-      
-      // Calculate starting attack based on strength
-      if (updatedState.attributes.strength) {
-        updatedState.attack = 5 + (updatedState.attributes.strength * 0.5);
-      }
-      
-      // Calculate defense based on endurance
-      if (updatedState.attributes.endurance) {
-        updatedState.defense = 2 + (updatedState.attributes.endurance * 0.3);
-      }
-      
-      // Add initial martial arts for the character
-      // Every character starts with Basic Palm Strike
-      updatedState.martialArts["palm-strike"] = {
-        id: "palm-strike",
-        name: "Azure Dragon Palm",
-        chineseName: "青龙掌",
-        description: "A basic yet powerful palm technique that channels Qi to strike opponents.",
-        level: 1,
-        maxLevel: 10,
-        unlocked: true,
-        damage: 15,
-        cost: 5,
-        cooldown: 2,
-        type: "attack",
-        attributeScaling: "strength"
-      };
-      
-      return updatedState;
-    });
+    // Update game state with character info
+    updateGameState((state) => ({
+      ...state,
+      characterCreated: true,
+      characterName,
+      sect: selectedSect,
+      // Initialize starting attributes based on sect
+      attributes: {
+        ...state.attributes,
+        // Add any sect-specific attribute bonuses here
+        ...(selectedSect === 'azure-cloud' && { intelligence: state.attributes.intelligence + 2 }),
+        ...(selectedSect === 'iron-fist' && { strength: state.attributes.strength + 2 }),
+        ...(selectedSect === 'jade-lotus' && { agility: state.attributes.agility + 2 }),
+        ...(selectedSect === 'mystic-ice' && { perception: state.attributes.perception + 2 }),
+        ...(selectedSect === 'blood-moon' && { endurance: state.attributes.endurance + 2 }),
+      },
+    }));
 
     toast({
       title: "Character Created",
-      description: `Welcome, ${characterName} of the ${SECTS[selectedSect as keyof typeof SECTS].name}!`,
+      description: `Welcome, ${characterName} of the ${SECTS[selectedSect as keyof typeof SECTS].name} Sect!`,
     });
 
-    // Redirect to game page
+    // Redirect to game
     setLocation("/game");
   };
 
   return (
-    <div className="min-h-screen bg-scroll py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-serif text-center mb-8 text-primary">
-          <span className="font-['Ma_Shan_Zheng'] text-amber-500 mr-2">修士</span>
-          Character Creation
-        </h1>
+    <div className="min-h-screen bg-scroll py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-serif text-primary mb-2">Character Creation</h1>
+          <p className="text-gray-700">Begin your journey to immortality</p>
+        </div>
 
         <Card className="bg-white bg-opacity-90 shadow-lg mb-8">
           <CardHeader>
-            <CardTitle className="text-xl">Your Immortal Identity</CardTitle>
+            <CardTitle>Your Identity</CardTitle>
             <CardDescription>
-              Choose your name and destiny on the path to immortality
+              Choose your name and sect carefully. They will define your path.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">
-                Cultivator Name
-              </label>
+              <Label htmlFor="name">Your Daoist Name</Label>
               <Input
-                type="text"
+                id="name"
+                placeholder="Enter your name"
+                className="mt-1"
                 value={characterName}
                 onChange={(e) => setCharacterName(e.target.value)}
-                placeholder="Enter your cultivation name"
-                className="w-full"
-                maxLength={20}
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Choose wisely, for your name will echo throughout the cultivation world.
-              </p>
+            </div>
+
+            <div>
+              <Label className="mb-2 block">Select Your Sect</Label>
+              <RadioGroup value={selectedSect || ""} onValueChange={setSelectedSect}>
+                {Object.entries(SECTS).map(([id, sect]) => {
+                  // Default attribute values for each sect
+                  const sectAttributes = {
+                    righteous: { 
+                      primaryAttribute: "strength", 
+                      values: { strength: 12, agility: 10, endurance: 10, intelligence: 9, perception: 9 } 
+                    },
+                    demonic: { 
+                      primaryAttribute: "perception", 
+                      values: { strength: 10, agility: 11, endurance: 9, intelligence: 9, perception: 11 }
+                    },
+                    scholarly: { 
+                      primaryAttribute: "intelligence", 
+                      values: { strength: 8, agility: 9, endurance: 8, intelligence: 13, perception: 12 }
+                    },
+                    medical: { 
+                      primaryAttribute: "intelligence", 
+                      values: { strength: 8, agility: 10, endurance: 11, intelligence: 12, perception: 9 }
+                    },
+                    hidden: { 
+                      primaryAttribute: "endurance", 
+                      values: { strength: 9, agility: 10, endurance: 12, intelligence: 10, perception: 9 }
+                    }
+                  };
+                  
+                  const attributes = sectAttributes[id as keyof typeof sectAttributes] || 
+                    { primaryAttribute: "strength", values: { strength: 10, agility: 10, endurance: 10, intelligence: 10, perception: 10 } };
+                  
+                  return (
+                    <Card key={id} className={`mb-3 cursor-pointer transition-all ${selectedSect === id ? "ring-2 ring-primary" : ""}`}>
+                      <div className="p-4" onClick={() => setSelectedSect(id)}>
+                        <RadioGroupItem value={id} id={`sect-${id}`} className="peer sr-only" />
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <Label htmlFor={`sect-${id}`} className="text-lg font-medium text-primary">
+                              {sect.name}
+                            </Label>
+                            <p className="text-sm text-gray-600">{sect.description}</p>
+                          </div>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${sect.color}`}>
+                            <i className={`fas fa-${sect.icon} text-white`}></i>
+                          </div>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <div className="grid grid-cols-5 gap-2 text-sm">
+                            <div className={attributes.primaryAttribute === "strength" ? "text-primary font-medium" : ""}>
+                              <span>Strength</span>
+                              <div className="flex items-center">
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                  <div
+                                    className={`${attributes.primaryAttribute === "strength" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
+                                    style={{ width: `${(attributes.values.strength / 15) * 100}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className={attributes.primaryAttribute === "agility" ? "text-primary font-medium" : ""}>
+                              <span>Agility</span>
+                              <div className="flex items-center">
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                  <div
+                                    className={`${attributes.primaryAttribute === "agility" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
+                                    style={{ width: `${(attributes.values.agility / 15) * 100}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className={attributes.primaryAttribute === "endurance" ? "text-primary font-medium" : ""}>
+                              <span>Endurance</span>
+                              <div className="flex items-center">
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                  <div
+                                    className={`${attributes.primaryAttribute === "endurance" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
+                                    style={{ width: `${(attributes.values.endurance / 15) * 100}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className={attributes.primaryAttribute === "intelligence" ? "text-primary font-medium" : ""}>
+                              <span>Intelligence</span>
+                              <div className="flex items-center">
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                  <div
+                                    className={`${attributes.primaryAttribute === "intelligence" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
+                                    style={{ width: `${(attributes.values.intelligence / 15) * 100}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className={attributes.primaryAttribute === "perception" ? "text-primary font-medium" : ""}>
+                              <span>Perception</span>
+                              <div className="flex items-center">
+                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                  <div
+                                    className={`${attributes.primaryAttribute === "perception" ? "bg-primary" : "bg-gray-400"} h-2 rounded-full`}
+                                    style={{ width: `${(attributes.values.perception / 15) * 100}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </RadioGroup>
             </div>
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-serif mb-4 text-center">Choose Your Sect</h2>
-        <p className="text-center text-gray-700 mb-6">
-          Each sect offers unique benefits that will shape your cultivation journey
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {Object.entries(SECTS).map(([sectId, sect]) => (
-            <Card 
-              key={sectId}
-              className={`cursor-pointer transition-all ${
-                selectedSect === sectId 
-                  ? `ring-2 ring-${sect.color.replace('bg-', '')} shadow-lg` 
-                  : 'hover:shadow-md'
-              }`}
-              onClick={() => setSelectedSect(sectId)}
-            >
-              <CardHeader className={`${sect.color} text-white py-3`}>
-                <CardTitle className="flex items-center text-lg">
-                  <i className={`fas fa-${sect.icon} mr-2`}></i>
-                  {sect.name}
-                </CardTitle>
-                <CardDescription className="text-white/80">
-                  <span className="font-['Ma_Shan_Zheng']">{sect.chineseName}</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <p className="text-sm mb-3">{sect.description}</p>
-                <div className="bg-gray-100 p-2 rounded-md">
-                  <p className="text-sm font-medium">Benefit:</p>
-                  <p className="text-sm">{sect.benefits.description}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
         <div className="text-center">
-          <Button 
-            className="px-8 py-2 text-lg" 
+          <Button
+            size="lg"
+            className="font-serif bg-primary hover:bg-primary/90 text-white px-8 py-6 h-auto"
             onClick={handleCreateCharacter}
           >
-            Begin Your Journey
+            <span className="text-xl">Begin Your Cultivation Journey</span>
           </Button>
         </div>
       </div>
     </div>
   );
-};
-
-export default CharacterCreation;
+}

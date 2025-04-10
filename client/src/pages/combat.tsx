@@ -4,6 +4,7 @@ import { ENEMIES, MARTIAL_ARTS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
@@ -208,11 +209,14 @@ const CombatPage = () => {
     const enemyData = ENEMIES[enemy.id as keyof typeof ENEMIES];
     const rewards = enemyData.rewards;
     
+    // Calculate gold reward based on experience
+    const goldReward = Math.floor(rewards.experience * 2);
+    
     // Add rewards to log
     setCombatLog(prev => [
       ...prev,
       `You defeated the ${enemy.name}!`,
-      `Gained ${rewards.experience} cultivation experience and ${rewards.spiritualStones} spiritual stones.`
+      `Gained ${rewards.experience} cultivation experience, ${rewards.spiritualStones} spiritual stones, and ${goldReward} gold.`
     ]);
     
     // Update game state with rewards
@@ -221,13 +225,15 @@ const CombatPage = () => {
       const newProgress = state.cultivationProgress + rewards.experience;
       const overflowProgress = Math.max(0, newProgress - state.maxCultivationProgress);
       
+      // Add gold rewards for defeating enemies
+      const goldReward = Math.floor(rewards.experience * 2); // Base gold reward scaled by experience
+      
       return {
         ...state,
-        // Add stones to inventory
-        inventory: {
-          ...state.inventory,
-          spiritualStones: state.inventory.spiritualStones + rewards.spiritualStones
-        },
+        // Add spiritual stones directly to the spiritualStones property
+        spiritualStones: state.spiritualStones + rewards.spiritualStones,
+        // Add gold rewards
+        gold: state.gold + goldReward,
         // Add cultivation progress
         cultivationProgress: Math.min(state.maxCultivationProgress, newProgress),
         // If health is less than 50%, heal a bit

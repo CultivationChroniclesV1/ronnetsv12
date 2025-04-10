@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { useGameEngine } from '@/lib/gameEngine';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from '@/hooks/use-toast';
-import { ENEMIES, LOCATIONS } from '@/lib/constants';
+import { useState, useEffect } from "react";
+import { useGameEngine } from "@/lib/gameEngine";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
-// Interface for quests
 interface Quest {
   id: string;
   name: string;
@@ -30,432 +28,416 @@ interface Quest {
   enemyType?: string;
 }
 
-// Function to generate quests
-const generateQuests = (cultivationLevel: number): Quest[] => {
-  const questTypes = ['sect', 'main', 'side', 'daily', 'weekly'];
-  const objectiveTypes = ['kill', 'gather', 'train', 'explore', 'breakthrough'];
+export default function SectQuests() {
+  const { game, updateGameState } = useGameEngine();
+  const [location, setLocation] = useLocation();
+  const [quests, setQuests] = useState<Quest[]>([]);
   
-  // Available enemies and locations based on game content
-  const availableEnemies = Object.keys(ENEMIES);
-  const availableLocations = Object.keys(LOCATIONS);
-  
-  const quests: Quest[] = [];
-  
-  for (let i = 0; i < 15; i++) {
-    const questType = questTypes[Math.floor(Math.random() * questTypes.length)];
-    const objectiveType = objectiveTypes[Math.floor(Math.random() * objectiveTypes.length)];
-    const requiredLevel = Math.max(1, cultivationLevel - 3 + Math.floor(Math.random() * 6));
-    let target = 0;
-    let questName = '';
-    let questDesc = '';
-    let objectiveDesc = '';
-    let rewardGold = 0;
-    let rewardStones = 0;
-    let rewardExp = 0;
-    let location = '';
-    let enemyType = '';
-    
-    switch (objectiveType) {
-      case 'kill':
-        enemyType = availableEnemies[Math.floor(Math.random() * availableEnemies.length)];
-        target = 5 + Math.floor(Math.random() * 10);
-        questName = `Hunt ${ENEMIES[enemyType as keyof typeof ENEMIES].name}s`;
-        questDesc = `The sect requires you to eliminate ${target} ${ENEMIES[enemyType as keyof typeof ENEMIES].name}s that have been causing trouble.`;
-        objectiveDesc = `Defeat ${target} ${ENEMIES[enemyType as keyof typeof ENEMIES].name}s`;
-        rewardGold = 50 * requiredLevel;
-        rewardStones = Math.floor(requiredLevel / 5) + 1;
-        rewardExp = 20 * requiredLevel;
-        break;
-        
-      case 'gather':
-        location = availableLocations[Math.floor(Math.random() * availableLocations.length)];
-        target = 3 + Math.floor(Math.random() * 5);
-        questName = `Gather Resources from ${LOCATIONS[location as keyof typeof LOCATIONS].name}`;
-        questDesc = `The sect needs specific resources that can be found in ${LOCATIONS[location as keyof typeof LOCATIONS].name}.`;
-        objectiveDesc = `Gather ${target} resources from ${LOCATIONS[location as keyof typeof LOCATIONS].name}`;
-        rewardGold = 40 * requiredLevel;
-        rewardStones = Math.floor(requiredLevel / 6) + 1;
-        rewardExp = 15 * requiredLevel;
-        break;
-        
-      case 'train':
-        target = 5 + Math.floor(Math.random() * 5);
-        questName = 'Sect Training Mission';
-        questDesc = `Complete ${target} training sessions to improve your cultivation technique.`;
-        objectiveDesc = `Complete ${target} training sessions`;
-        rewardGold = 30 * requiredLevel;
-        rewardStones = Math.floor(requiredLevel / 7) + 1;
-        rewardExp = 25 * requiredLevel;
-        break;
-        
-      case 'explore':
-        location = availableLocations[Math.floor(Math.random() * availableLocations.length)];
-        target = 1;
-        questName = `Explore ${LOCATIONS[location as keyof typeof LOCATIONS].name}`;
-        questDesc = `The sect elders want you to explore ${LOCATIONS[location as keyof typeof LOCATIONS].name} and report back your findings.`;
-        objectiveDesc = `Fully explore ${LOCATIONS[location as keyof typeof LOCATIONS].name}`;
-        rewardGold = 60 * requiredLevel;
-        rewardStones = Math.floor(requiredLevel / 4) + 1;
-        rewardExp = 30 * requiredLevel;
-        break;
-        
-      case 'breakthrough':
-        target = 1;
-        questName = 'Cultivation Breakthrough';
-        questDesc = 'The sect elders believe you are ready for a breakthrough in your cultivation. Show them your progress.';
-        objectiveDesc = 'Achieve a cultivation breakthrough';
-        rewardGold = 100 * requiredLevel;
-        rewardStones = Math.floor(requiredLevel / 3) + 2;
-        rewardExp = 50 * requiredLevel;
-        break;
+  // Check if character is created
+  useEffect(() => {
+    if (!game.characterCreated) {
+      setLocation("/character");
+    } else {
+      // Generate quests based on player level if none exist
+      generateQuests();
     }
+  }, [game.characterCreated, setLocation]);
+  
+  // Generate a set of quests based on player level
+  const generateQuests = () => {
+    const playerLevel = game.cultivationLevel;
+    const newQuests: Quest[] = [];
     
-    quests.push({
-      id: `quest-${i}`,
-      name: questName,
-      description: questDesc,
-      objective: objectiveDesc,
-      type: questType as any,
-      progress: Math.floor(Math.random() * (target + 1)),
-      target: target,
+    // Add cultivation quests
+    newQuests.push({
+      id: `cultivation-${Date.now()}`,
+      name: "Cultivation Insight",
+      description: "Meditate and gain cultivation insights",
+      objective: "Accumulate Qi energy",
+      type: "sect",
+      progress: 0,
+      target: playerLevel * 100,
       rewards: {
-        gold: rewardGold,
-        spiritualStones: rewardStones,
-        experience: rewardExp,
+        gold: playerLevel * 20,
+        spiritualStones: Math.ceil(playerLevel / 2),
+        experience: playerLevel * 15,
         items: []
       },
       completed: false,
-      requiredLevel: requiredLevel,
-      location: location || undefined,
-      enemyType: enemyType || undefined
+      requiredLevel: 1
     });
-  }
-  
-  return quests;
-};
-
-export default function SectQuests() {
-  const { game, updateGameState } = useGameEngine();
-  const [quests, setQuests] = useState<Quest[]>([]);
-  const [activeTab, setActiveTab] = useState('active');
-  
-  useEffect(() => {
-    // Load quests from game state or generate new ones if none exist
-    if (game.exploration.activeQuests.length === 0) {
-      const newQuests = generateQuests(game.cultivationLevel);
-      setQuests(newQuests);
-      
-      // Save the generated quests to the game state
-      updateGameState(state => ({
-        ...state,
-        exploration: {
-          ...state.exploration,
-          activeQuests: newQuests as any
-        }
-      }));
-    } else {
-      setQuests(game.exploration.activeQuests as any);
-    }
-  }, [game.exploration.activeQuests, game.cultivationLevel, updateGameState]);
-  
-  const completeQuest = (quest: Quest) => {
-    if (quest.progress < quest.target) {
-      toast({
-        title: "Quest Incomplete",
-        description: "You have not met the objective requirements yet.",
-        variant: "destructive"
+    
+    // Add combat quests based on player level
+    const enemyTypes = ['beast', 'wolf', 'bear', 'snake', 'tiger', 'eagle', 'bandit'];
+    const randomEnemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+    
+    newQuests.push({
+      id: `combat-${Date.now()}`,
+      name: `Hunt ${capitalizeFirst(randomEnemyType)}s`,
+      description: `The sect needs you to hunt ${randomEnemyType}s that are threatening nearby villages`,
+      objective: `Defeat ${randomEnemyType}s in combat`,
+      type: "sect",
+      progress: 0,
+      target: Math.max(3, Math.floor(playerLevel / 2)),
+      rewards: {
+        gold: playerLevel * 30,
+        spiritualStones: Math.ceil(playerLevel / 3) + 1,
+        experience: playerLevel * 20,
+        items: []
+      },
+      completed: false,
+      requiredLevel: 1,
+      enemyType: randomEnemyType
+    });
+    
+    // Add breakthrough quest for higher levels
+    if (playerLevel >= 5) {
+      newQuests.push({
+        id: `breakthrough-${Date.now()}`,
+        name: "Realm Breakthrough",
+        description: "Achieve a breakthrough in your cultivation to progress to the next stage",
+        objective: "Perform a successful breakthrough",
+        type: "sect",
+        progress: 0,
+        target: 1,
+        rewards: {
+          gold: playerLevel * 50,
+          spiritualStones: playerLevel,
+          experience: playerLevel * 30,
+          items: []
+        },
+        completed: false,
+        requiredLevel: 5
       });
-      return;
     }
     
-    // Update the game state to complete the quest and give rewards
-    updateGameState(state => {
-      // Mark the quest as completed
-      const updatedQuests = state.exploration.activeQuests.map((q: any) => 
-        q.id === quest.id ? { ...q, completed: true } : q
-      );
-      
-      // Generate a new quest to replace the completed one
-      const newQuest = generateQuests(state.cultivationLevel)[0];
-      
-      // Add quest ID to completed quests
-      const completedQuests = [...state.exploration.completedQuests, quest.id];
-      
-      // Apply rewards
-      return {
-        ...state,
-        gold: state.gold + quest.rewards.gold,
-        spiritualStones: state.spiritualStones + quest.rewards.spiritualStones,
-        cultivationProgress: Math.min(
-          state.cultivationProgress + quest.rewards.experience,
-          state.maxCultivationProgress
-        ),
-        exploration: {
-          ...state.exploration,
-          activeQuests: [
-            ...updatedQuests.filter((q: any) => q.id !== quest.id),
-            newQuest
-          ],
-          completedQuests
+    // Add resource gathering quest
+    const locations = ['forest', 'mountain', 'ruins', 'jade-valley', 'poison-marsh'];
+    const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+    
+    newQuests.push({
+      id: `gather-${Date.now()}`,
+      name: "Resource Gathering",
+      description: `Collect resources from ${formatLocationName(randomLocation)} for the sect's alchemists`,
+      objective: `Gather resources from ${formatLocationName(randomLocation)}`,
+      type: "sect",
+      progress: 0,
+      target: Math.max(2, Math.floor(playerLevel / 3)),
+      rewards: {
+        gold: playerLevel * 25,
+        spiritualStones: Math.ceil(playerLevel / 4),
+        experience: playerLevel * 18,
+        items: []
+      },
+      completed: false,
+      requiredLevel: 2,
+      location: randomLocation
+    });
+    
+    // Add additional random quests based on player level
+    for (let i = 0; i < Math.min(10, playerLevel); i++) {
+      const questTypes = [
+        {
+          name: "Herb Collection",
+          description: "Collect rare herbs for the sect's alchemy division",
+          objective: "Gather special herbs",
+          rewards: {
+            gold: playerLevel * 15 + Math.floor(Math.random() * 20),
+            spiritualStones: Math.max(1, Math.floor(playerLevel / 5)),
+            experience: playerLevel * 12,
+            items: []
+          }
+        },
+        {
+          name: "Sect Defense",
+          description: "Help defend the sect grounds from intruders",
+          objective: "Patrol the sect grounds",
+          rewards: {
+            gold: playerLevel * 20 + Math.floor(Math.random() * 15),
+            spiritualStones: Math.max(1, Math.floor(playerLevel / 4)),
+            experience: playerLevel * 18,
+            items: []
+          }
+        },
+        {
+          name: "Knowledge Seeking",
+          description: "Study ancient texts in the sect library",
+          objective: "Study cultivation techniques",
+          rewards: {
+            gold: playerLevel * 10 + Math.floor(Math.random() * 10),
+            spiritualStones: Math.max(1, Math.floor(playerLevel / 3)),
+            experience: playerLevel * 25,
+            items: []
+          }
+        },
+        {
+          name: "Artifact Refinement",
+          description: "Assist the sect's artifact refinement division",
+          objective: "Help refine artifacts",
+          rewards: {
+            gold: playerLevel * 25 + Math.floor(Math.random() * 30),
+            spiritualStones: Math.max(2, Math.floor(playerLevel / 2)),
+            experience: playerLevel * 15,
+            items: []
+          }
+        },
+        {
+          name: "Elder's Request",
+          description: "Complete a special request from a sect elder",
+          objective: "Fulfill the elder's request",
+          rewards: {
+            gold: playerLevel * 40 + Math.floor(Math.random() * 25),
+            spiritualStones: Math.max(3, Math.floor(playerLevel / 2)),
+            experience: playerLevel * 22,
+            items: []
+          }
         }
-      };
-    });
+      ];
+      
+      const randomQuest = questTypes[Math.floor(Math.random() * questTypes.length)];
+      
+      newQuests.push({
+        id: `additional-${i}-${Date.now()}`,
+        name: randomQuest.name,
+        description: randomQuest.description,
+        objective: randomQuest.objective,
+        type: "sect",
+        progress: 0,
+        target: Math.max(1, Math.floor(playerLevel / 3)) + Math.floor(Math.random() * 3),
+        rewards: randomQuest.rewards,
+        completed: false,
+        requiredLevel: Math.max(1, Math.floor(i / 2))
+      });
+    }
     
-    toast({
-      title: "Quest Completed",
-      description: `You have completed "${quest.name}" and received your rewards.`,
-      variant: "default"
-    });
+    // Filter to only show quests appropriate for player level
+    const filteredQuests = newQuests.filter(quest => 
+      quest.requiredLevel === undefined || quest.requiredLevel <= playerLevel
+    );
     
-    // Update the local state to reflect changes
-    setQuests(prev => [
-      ...prev.filter(q => q.id !== quest.id).map(q => q),
-      generateQuests(game.cultivationLevel)[0]
-    ]);
+    // Limit to 15 quests maximum
+    const finalQuests = filteredQuests.slice(0, 15);
+    
+    setQuests(finalQuests);
   };
   
+  // Progress a quest
   const progressQuest = (quest: Quest) => {
-    if (quest.progress >= quest.target) {
+    if (quest.completed) return;
+    
+    const newProgress = Math.min(quest.progress + 1, quest.target);
+    const updatedQuest = { ...quest, progress: newProgress };
+    
+    if (newProgress >= quest.target) {
+      updatedQuest.completed = true;
       toast({
-        title: "Quest Objective Met",
-        description: "You have already met the objective. Claim your reward!",
+        title: "Quest Completed!",
+        description: `You have completed "${quest.name}"`,
         variant: "default"
       });
-      return;
+    } else {
+      toast({
+        title: "Quest Progress",
+        description: `${newProgress}/${quest.target} ${quest.objective}`,
+        variant: "default"
+      });
     }
     
-    // Update the quest progress
-    updateGameState(state => {
-      const updatedQuests = state.exploration.activeQuests.map((q: any) => 
-        q.id === quest.id ? { ...q, progress: q.progress + 1 } : q
-      );
-      
-      return {
-        ...state,
-        exploration: {
-          ...state.exploration,
-          activeQuests: updatedQuests
-        }
-      };
-    });
+    setQuests(quests.map(q => q.id === quest.id ? updatedQuest : q));
+  };
+  
+  // Complete a quest and claim rewards
+  const completeQuest = (quest: Quest) => {
+    if (!quest.completed) return;
     
-    // Update local state
-    setQuests(prev => 
-      prev.map(q => q.id === quest.id ? { ...q, progress: q.progress + 1 } : q)
-    );
+    // Update game state with rewards
+    updateGameState(state => ({
+      ...state,
+      gold: state.gold + quest.rewards.gold,
+      spiritualStones: state.spiritualStones + quest.rewards.spiritualStones,
+      cultivationProgress: state.cultivationProgress + quest.rewards.experience
+    }));
     
     toast({
-      title: "Quest Progress",
-      description: `You have made progress on "${quest.name}".`,
+      title: "Rewards Claimed",
+      description: `You gained ${quest.rewards.gold} gold, ${quest.rewards.spiritualStones} spiritual stones, and ${quest.rewards.experience} cultivation experience.`,
       variant: "default"
     });
-  };
-  
-  const getQuestTypeColor = (type: string) => {
-    switch (type) {
-      case 'sect': return 'bg-blue-100 text-blue-800';
-      case 'main': return 'bg-purple-100 text-purple-800';
-      case 'side': return 'bg-green-100 text-green-800';
-      case 'daily': return 'bg-amber-100 text-amber-800';
-      case 'weekly': return 'bg-indigo-100 text-indigo-800';
-      default: return 'bg-gray-100 text-gray-800';
+    
+    // Remove the completed quest
+    setQuests(quests.filter(q => q.id !== quest.id));
+    
+    // If few quests remain, generate more
+    if (quests.length <= 5) {
+      generateQuests();
     }
   };
   
-  if (!game.characterCreated) {
-    return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Character Required</CardTitle>
-            <CardDescription>
-              You need to create a character before accessing sect quests.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p>Please go to the Character page to create your character first.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-  
-  const activeQuests = quests.filter(q => !q.completed);
-  const completedQuests = quests.filter(q => q.completed);
-  
+  // Generate a replacement quest when one is completed
+  const generateReplacementQuest = () => {
+    const playerLevel = game.cultivationLevel;
+    const questTypes = [
+      "Cultivation Insight",
+      "Monster Hunt",
+      "Resource Gathering",
+      "Sect Defense",
+      "Artifact Refinement",
+      "Knowledge Seeking"
+    ];
+    
+    const randomType = questTypes[Math.floor(Math.random() * questTypes.length)];
+    const newQuest: Quest = {
+      id: `quest-${Date.now()}`,
+      name: randomType,
+      description: `A new task from the sect: ${randomType.toLowerCase()}`,
+      objective: `Complete the ${randomType.toLowerCase()} task`,
+      type: "sect",
+      progress: 0,
+      target: Math.max(1, Math.floor(playerLevel / 2)) + Math.floor(Math.random() * 3),
+      rewards: {
+        gold: playerLevel * 20 + Math.floor(Math.random() * 30),
+        spiritualStones: Math.max(1, Math.floor(playerLevel / 3)),
+        experience: playerLevel * 15 + Math.floor(Math.random() * 10),
+        items: []
+      },
+      completed: false,
+      requiredLevel: Math.max(1, playerLevel - 2)
+    };
+    
+    setQuests([...quests, newQuest]);
+  };
+
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-serif mb-6 text-center text-primary">
-        <i className="fas fa-tasks mr-2"></i> Sect Quests
-      </h1>
-      
-      <div className="mb-6 p-4 rounded-lg bg-primary/5 flex justify-between items-center">
-        <div>
-          <span className="font-semibold text-primary">Active Quests:</span> 
-          <span className="ml-2">{activeQuests.length}</span>
+    <div className="min-h-screen bg-scroll py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-serif text-primary mb-2">
+            <i className="fas fa-tasks mr-2"></i>
+            Sect Quests
+          </h1>
+          <p className="text-gray-700">Complete tasks to earn rewards and gain favor with your sect</p>
         </div>
-        <div>
-          <span className="font-semibold text-primary">Completed Quests:</span> 
-          <span className="ml-2">{game.exploration.completedQuests.length}</span>
-        </div>
-        <div>
-          <span className="font-semibold text-primary">Cultivation Level:</span> 
-          <span className="ml-2">{game.cultivationLevel}</span>
-        </div>
-      </div>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-6 grid w-full grid-cols-2">
-          <TabsTrigger value="active">
-            <i className="fas fa-hourglass-half mr-2"></i> Active Quests
-          </TabsTrigger>
-          <TabsTrigger value="completed">
-            <i className="fas fa-check-circle mr-2"></i> Completed Quests
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="active" className="space-y-4">
-          {activeQuests.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {activeQuests.map(quest => (
-                <Card key={quest.id} className="overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg font-serif">{quest.name}</CardTitle>
-                      <Badge className={getQuestTypeColor(quest.type)}>
-                        {quest.type.charAt(0).toUpperCase() + quest.type.slice(1)}
-                      </Badge>
-                    </div>
-                    <CardDescription>{quest.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between mb-1 text-sm">
-                          <span>Objective: {quest.objective}</span>
-                          <span>
-                            {quest.progress}/{quest.target}
-                          </span>
+
+        {!game.characterCreated ? (
+          <Card className="bg-white bg-opacity-90 shadow-lg text-center p-6">
+            <p>Please create your character first.</p>
+            <Button className="mt-4" onClick={() => setLocation("/character")}>
+              Create Character
+            </Button>
+          </Card>
+        ) : (
+          <>
+            <div className="mb-4 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-medium">Available Quests</h2>
+                <p className="text-sm text-gray-600">Showing {quests.length} quests</p>
+              </div>
+              <Button onClick={generateQuests}>
+                <i className="fas fa-sync-alt mr-2"></i> Refresh Quests
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-4">
+              {quests.length === 0 ? (
+                <Card className="bg-white shadow-md text-center p-6">
+                  <p>No quests available. Generate new quests to get started.</p>
+                </Card>
+              ) : (
+                quests.map(quest => (
+                  <Card key={quest.id} className={`bg-white shadow-md transition-all ${quest.completed ? "border-green-300 border-2" : ""}`}>
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-lg flex items-center">
+                          {quest.name}
+                          {quest.completed && (
+                            <Badge className="ml-2 bg-green-100 text-green-800">
+                              <i className="fas fa-check mr-1"></i> Completed
+                            </Badge>
+                          )}
+                        </CardTitle>
+                        <Badge className="bg-primary/10 text-primary">
+                          {quest.type}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600">{quest.description}</p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="mb-3">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Progress: {quest.objective}</span>
+                          <span>{quest.progress} / {quest.target}</span>
                         </div>
-                        <Progress value={(quest.progress / quest.target) * 100} />
+                        <Progress value={(quest.progress / quest.target) * 100} className="h-2" />
                       </div>
                       
-                      <div className="bg-primary/5 p-3 rounded-md text-sm">
-                        <h4 className="font-medium mb-2">Rewards:</h4>
-                        <div className="space-y-1">
-                          {quest.rewards.gold > 0 && <div className="flex items-center">
-                            <i className="fas fa-coins text-amber-500 mr-2"></i>
+                      <div className="bg-yellow-50 p-3 rounded-md">
+                        <h4 className="font-medium mb-1">Rewards</h4>
+                        <div className="grid grid-cols-3 gap-2 text-sm">
+                          <div className="flex items-center">
+                            <i className="fas fa-coins text-amber-500 mr-1"></i>
                             <span>{quest.rewards.gold} Gold</span>
-                          </div>}
-                          
-                          {quest.rewards.spiritualStones > 0 && <div className="flex items-center">
-                            <i className="fas fa-gem text-blue-500 mr-2"></i>
-                            <span>{quest.rewards.spiritualStones} Spiritual Stones</span>
-                          </div>}
-                          
-                          {quest.rewards.experience > 0 && <div className="flex items-center">
-                            <i className="fas fa-fire text-red-500 mr-2"></i>
-                            <span>{quest.rewards.experience} Cultivation Experience</span>
-                          </div>}
+                          </div>
+                          <div className="flex items-center">
+                            <i className="fas fa-gem text-blue-500 mr-1"></i>
+                            <span>{quest.rewards.spiritualStones} Stones</span>
+                          </div>
+                          <div className="flex items-center">
+                            <i className="fas fa-fire text-red-500 mr-1"></i>
+                            <span>{quest.rewards.experience} Exp</span>
+                          </div>
                         </div>
                       </div>
-                      
-                      {quest.requiredLevel && (
-                        <div className="text-sm">
-                          <span className="font-medium">Required Level:</span>
-                          <span className={`ml-2 ${game.cultivationLevel < quest.requiredLevel ? 'text-red-500' : ''}`}>
-                            {quest.requiredLevel}
-                          </span>
-                        </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      {quest.completed ? (
+                        <Button onClick={() => completeQuest(quest)} className="w-full">
+                          <i className="fas fa-trophy mr-2"></i> Claim Rewards
+                        </Button>
+                      ) : (
+                        <>
+                          <div className="text-sm text-gray-600">
+                            {quest.requiredLevel && (
+                              <span className="mr-4">Required Level: {quest.requiredLevel}</span>
+                            )}
+                            {quest.location && (
+                              <span className="mr-4">Location: {formatLocationName(quest.location)}</span>
+                            )}
+                            {quest.enemyType && (
+                              <span>Target: {capitalizeFirst(quest.enemyType)}</span>
+                            )}
+                          </div>
+                          <Button onClick={() => progressQuest(quest)}>
+                            <i className="fas fa-play mr-2"></i> Progress Quest
+                          </Button>
+                        </>
                       )}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between pt-0">
-                    <Button 
-                      variant="outline"
-                      onClick={() => progressQuest(quest)}
-                      disabled={quest.progress >= quest.target}
-                    >
-                      Progress
-                    </Button>
-                    <Button 
-                      onClick={() => completeQuest(quest)}
-                      disabled={quest.progress < quest.target}
-                    >
-                      Complete
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+                    </CardFooter>
+                  </Card>
+                ))
+              )}
             </div>
-          ) : (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">No active quests available.</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="completed" className="space-y-4">
-          {game.exploration.completedQuests.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {completedQuests.map(quest => (
-                <Card key={quest.id} className="overflow-hidden opacity-70">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg font-serif">{quest.name}</CardTitle>
-                      <Badge className={getQuestTypeColor(quest.type)}>
-                        {quest.type.charAt(0).toUpperCase() + quest.type.slice(1)}
-                      </Badge>
-                    </div>
-                    <CardDescription>{quest.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between mb-1 text-sm">
-                          <span>Objective: {quest.objective}</span>
-                          <span className="text-green-600 font-medium">
-                            Completed
-                          </span>
-                        </div>
-                        <Progress value={100} className="bg-green-100" />
-                      </div>
-                      
-                      <div className="bg-green-50 p-3 rounded-md text-sm">
-                        <h4 className="font-medium mb-2">Rewards Claimed:</h4>
-                        <div className="space-y-1">
-                          {quest.rewards.gold > 0 && <div className="flex items-center">
-                            <i className="fas fa-coins text-amber-500 mr-2"></i>
-                            <span>{quest.rewards.gold} Gold</span>
-                          </div>}
-                          
-                          {quest.rewards.spiritualStones > 0 && <div className="flex items-center">
-                            <i className="fas fa-gem text-blue-500 mr-2"></i>
-                            <span>{quest.rewards.spiritualStones} Spiritual Stones</span>
-                          </div>}
-                          
-                          {quest.rewards.experience > 0 && <div className="flex items-center">
-                            <i className="fas fa-fire text-red-500 mr-2"></i>
-                            <span>{quest.rewards.experience} Cultivation Experience</span>
-                          </div>}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">You haven't completed any quests yet.</p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+          </>
+        )}
+      </div>
     </div>
   );
+}
+
+// Helper functions
+function formatLocationName(location: string): string {
+  const names: Record<string, string> = {
+    'forest': 'Spirit Forest',
+    'mountain': 'Azure Mountains',
+    'ruins': 'Ancient Ruins',
+    'jade-valley': 'Jade Valley',
+    'poison-marsh': 'Poison Marsh',
+    'flame-desert': 'Flame Desert',
+    'frozen-peak': 'Frozen Peak'
+  };
+  
+  return names[location] || location;
+}
+
+function capitalizeFirst(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
