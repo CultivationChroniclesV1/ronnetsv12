@@ -165,31 +165,31 @@ export const ACHIEVEMENTS = {
 
 // Sects and their unique benefits
 export const SECTS = {
-  'righteous': {
-    name: 'Virtuous Sword Sect',
-    chineseName: '正气剑派',
-    description: 'A renowned righteous sect that produces heroic disciples and emphasizes discipline, honor, and sword cultivation.',
-    icon: 'sword',
-    color: 'bg-blue-500',
-    textColor: 'text-blue-500',
+  'celestial': {
+    name: 'Celestial Phoenix Sect',
+    chineseName: '天凤宗',
+    description: 'An ancient sect whose disciples cultivate the legendary Phoenix Scripture, pursuing the immortal path of purification and rebirth.',
+    icon: 'fire-alt',
+    color: 'bg-amber-500',
+    textColor: 'text-amber-500',
     benefits: {
-      description: 'Increases breakthrough success rate by 10%',
+      description: 'Increases breakthrough success rate by 15%',
       effect: (state: any) => ({
         ...state,
-        // 10% higher breakthrough chance
-        breakthroughBonus: 0.1
+        // 15% higher breakthrough chance
+        breakthroughBonus: 0.15
       })
     }
   },
   'demonic': {
     name: 'Blood Shadow Cult',
     chineseName: '血影魔宗',
-    description: 'A feared demonic cult that pursues power through any means necessary, including forbidden techniques.',
+    description: 'A feared demonic cult that pursues power through any means necessary, including forbidden techniques and soul sacrifice.',
     icon: 'skull',
     color: 'bg-red-600',
     textColor: 'text-red-600',
     benefits: {
-      description: 'Doubles your base Qi generation',
+      description: 'Doubles your passive Qi generation speed',
       effect: (state: any) => ({
         ...state,
         // Double base Qi rate
@@ -200,50 +200,48 @@ export const SECTS = {
   'scholarly': {
     name: 'Azure Clouds Academy',
     chineseName: '青云书院',
-    description: 'An ancient academy focusing on scholarly pursuits and the refinement of spiritual knowledge.',
+    description: 'An ancient academy focusing on scholarly cultivation techniques and the refinement of spiritual knowledge through meditation.',
     icon: 'book',
     color: 'bg-cyan-500',
     textColor: 'text-cyan-500',
     benefits: {
-      description: 'Reduces all technique upgrade costs by 15%',
+      description: 'Increases manual cultivation efficiency by 20%',
       effect: (state: any) => ({
         ...state,
-        // 15% cost reduction for techniques
-        skillCostReduction: 0.15
+        // 20% more qi per click
+        manualCultivationBonus: 0.2
       })
     }
   },
-  'medical': {
-    name: 'Divine Healing Pavilion',
-    chineseName: '神医阁',
-    description: 'A sect dedicated to the healing arts and medicinal cultivation, with unparalleled skill in herb crafting.',
-    icon: 'first-aid',
-    color: 'bg-green-500',
-    textColor: 'text-green-500',
+  'immortal': {
+    name: 'Heavenly Sword Immortal Sect',
+    chineseName: '天剑仙门',
+    description: 'A prestigious sect whose disciples wield mystical flying swords and cultivate immortal techniques passed down from ancient times.',
+    icon: 'khanda',
+    color: 'bg-blue-500',
+    textColor: 'text-blue-500',
     benefits: {
-      description: 'Increases health regeneration by 20% and herb quality',
+      description: 'Reduces qi consumption during combat by 25%',
       effect: (state: any) => ({
         ...state,
-        // 20% regeneration bonus
-        healthRegenBonus: 0.2,
-        // Better herb quality
-        herbQualityBonus: 1
+        // 25% less qi used in combat
+        combatQiEfficiency: 0.25
       })
     }
   },
   'hidden': {
     name: 'Misty Valley Hermits',
     chineseName: '幽谷隐士',
-    description: 'A reclusive group of cultivators who have withdrawn from worldly affairs to pursue the ultimate dao.',
+    description: 'A reclusive group of cultivators who have withdrawn from worldly affairs to pursue the ultimate dao through natural harmony.',
     icon: 'mountain',
     color: 'bg-purple-500',
     textColor: 'text-purple-500',
     benefits: {
-      description: 'Increases cultivation speed by 15% when offline',
+      description: 'Increases qi storage capacity by 30%',
       effect: (state: any) => ({
         ...state,
-        // 15% offline progress bonus
-        offlineProgressBonus: 0.15
+        // 30% more qi storage
+        qiCapacityBonus: 0.3
       })
     }
   }
