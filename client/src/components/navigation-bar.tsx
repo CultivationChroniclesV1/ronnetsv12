@@ -53,6 +53,11 @@ export function NavigationBar() {
                 Combat
               </div>
             </Link>
+            <Link href="/skill-tree">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/skill-tree' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-book-open mr-1"></i> Skills
+              </div>
+            </Link>
             <Link href="/map">
               <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/map' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
                 Map
@@ -153,6 +158,11 @@ export function NavigationBar() {
                 <Link href="/combat">
                   <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/combat' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-fist-raised mr-2"></i> Combat
+                  </div>
+                </Link>
+                <Link href="/skill-tree">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/skill-tree' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-book-open mr-2"></i> Skills
                   </div>
                 </Link>
                 <Link href="/map">

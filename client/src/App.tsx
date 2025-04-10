@@ -18,6 +18,7 @@ const Map = lazy(() => import("./pages/map"));
 const Inventory = lazy(() => import("./pages/inventory"));
 const Shop = lazy(() => import("./pages/shop"));
 const SectQuests = lazy(() => import("./pages/sect-quests"));
+const SkillTree = lazy(() => import("./pages/skill-tree"));
 
 // Loading component for lazy-loaded pages
 const PageLoading = () => (
@@ -44,6 +45,7 @@ function Router() {
         <Route path="/inventory" component={Inventory} />
         <Route path="/shop" component={Shop} />
         <Route path="/sect-quests" component={SectQuests} />
+        <Route path="/skill-tree" component={SkillTree} />
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>
