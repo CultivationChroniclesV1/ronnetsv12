@@ -7,7 +7,6 @@ import Home from "@/pages/home";
 import Game from "@/pages/game";
 import { useEffect } from "react";
 import { NavigationBar } from "@/components/navigation-bar";
-import { MusicAutoStarter } from "@/components/music-auto-starter";
 
 // Lazy load other pages
 import { lazy, Suspense } from "react";
@@ -84,7 +83,6 @@ function App() {
           <Router />
         </main>
       </div>
-      <MusicAutoStarter />
       <Toaster />
     </QueryClientProvider>
   );
