@@ -458,11 +458,13 @@ export const useGameEngine = create<GameEngineState>()(
           // Save to server silently without notifications
           await apiRequest('POST', '/api/save', { gameState: gameWithUpdatedTimestamp });
           
-          // Only show notification for manual saves, not auto-saves
-          // Auto-save notification is suppressed by checking the call stack
-          const isAutoSave = new Error().stack?.includes('toggleAutoSave') || false;
+          // Only show notification for manual saves, never for auto-saves
+          // Auto-save is detected by checking the call stack
+          const isAutoSave = new Error().stack?.includes('toggleAutoSave') || 
+                             new Error().stack?.includes('autoSaveInterval') || 
+                             SILENT_AUTO_SAVE;
           
-          if (state.showNotifications && !isAutoSave && !SILENT_AUTO_SAVE) {
+          if (state.showNotifications && !isAutoSave) {
             toast({
               title: "Game Saved",
               description: "Your progress has been saved.",
@@ -471,10 +473,12 @@ export const useGameEngine = create<GameEngineState>()(
           }
         } catch (error) {
           console.error('Error saving game:', error);
-          // Only show error notifications for manual saves
-          const isAutoSave = new Error().stack?.includes('toggleAutoSave') || false;
+          // Only show error notifications for manual saves, never for auto-saves
+          const isAutoSave = new Error().stack?.includes('toggleAutoSave') || 
+                             new Error().stack?.includes('autoSaveInterval') || 
+                             SILENT_AUTO_SAVE;
           
-          if (get().showNotifications && !isAutoSave && !SILENT_AUTO_SAVE) {
+          if (get().showNotifications && !isAutoSave) {
             toast({
               title: "Save Failed",
               description: "Failed to save your progress to the server.",
