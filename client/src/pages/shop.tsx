@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Define weapon and apparel types for shop items
 interface ShopItem {
@@ -236,6 +237,11 @@ export default function Shop() {
   const [apparel] = useState<ShopItem[]>([...generateApparel(), ...generateAdditionalApparel()]);
   const [currentTab, setCurrentTab] = useState('weapons');
   
+  // Add filter functionality
+  const [rarityFilter, setRarityFilter] = useState<string>('all');
+  const [levelFilter, setLevelFilter] = useState<number | null>(null);
+  const [priceSort, setPriceSort] = useState<'asc' | 'desc' | null>(null);
+  
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
       case 'common': return 'bg-gray-200 text-gray-800';
@@ -337,8 +343,32 @@ export default function Shop() {
     ));
   };
   
+  // Filter and sort items for display
+  const getFilteredAndSortedItems = () => {
+    let items = currentTab === 'weapons' ? weapons : apparel;
+    
+    // Apply rarity filter
+    if (rarityFilter !== 'all') {
+      items = items.filter(item => item.rarity === rarityFilter);
+    }
+    
+    // Apply level filter
+    if (levelFilter !== null) {
+      items = items.filter(item => item.requiredLevel <= levelFilter);
+    }
+    
+    // Apply price sorting
+    if (priceSort === 'asc') {
+      items = [...items].sort((a, b) => a.price.gold - b.price.gold);
+    } else if (priceSort === 'desc') {
+      items = [...items].sort((a, b) => b.price.gold - a.price.gold);
+    }
+    
+    return items;
+  };
+  
   // Display items for the current tab
-  const itemsToDisplay = currentTab === 'weapons' ? weapons : apparel;
+  const itemsToDisplay = getFilteredAndSortedItems();
   
   if (!game.characterCreated) {
     return (
