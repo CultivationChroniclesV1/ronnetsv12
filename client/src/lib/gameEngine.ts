@@ -244,13 +244,13 @@ export const useGameEngine = create<GameEngineState>()(
               break;
               
             case 'circulation':
-              // Increase passive Qi generation by 0.1 per level
-              newGameState.energyRate += 0.1;
+              // Increase passive Qi generation by 9 per level
+              newGameState.energyRate += 9;
               break;
               
             case 'spirit':
-              // Increase manual cultivation by 2 per level
-              newGameState.manualCultivationAmount += 2;
+              // Increase manual cultivation by 10 per level
+              newGameState.manualCultivationAmount += 10;
               break;
               
             case 'breakthrough':
@@ -302,15 +302,15 @@ export const useGameEngine = create<GameEngineState>()(
           switch (skillId) {
             case 'basic-qi':
             case 'fireheart':
-              // Increase Qi rate
-              const effectAmount = skillId === 'basic-qi' ? 0.1 : 0.3;
+              // Increase Qi rate (25 for basic-qi, 40 for fireheart)
+              const effectAmount = skillId === 'basic-qi' ? 25 : 40;
               newGameState.energyRate += effectAmount;
               newGameState.skills[skillId].effect += effectAmount;
               break;
               
             case 'mystic-ice':
-              // Effect is calculated when attempting breakthrough
-              newGameState.skills[skillId].effect += 0.05;
+              // Increase breakthrough chance by 9% per level
+              newGameState.skills[skillId].effect += 0.09;
               break;
           }
           

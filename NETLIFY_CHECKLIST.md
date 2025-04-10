@@ -6,6 +6,7 @@ This checklist will help ensure a smooth deployment of your Wuxia Cultivation Ga
 
 ✅ Fixed code issues (duplicate keys in martial-techniques.tsx)
 ✅ Updated build-db.js to use ES module syntax (import instead of require)
+✅ Fixed game mechanics bugs (cultivation upgrades not applying correctly)
 ✅ Build script works properly (`npm run build`)
 ✅ Full Netlify build process runs without errors
 ✅ Netlify configuration file (netlify.toml) is configured properly

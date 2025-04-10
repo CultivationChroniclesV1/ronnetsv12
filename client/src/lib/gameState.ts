@@ -42,7 +42,7 @@ export function getInitialGameState(): GameState {
     
     // Basic cultivation stats
     energy: 0,
-    energyRate: BASE_QI_RATE + 0.1, // Base + basic-qi level 1
+    energyRate: BASE_QI_RATE + 7, // Base + basic-qi level 1
     manualCultivationAmount: DEFAULT_QI_PER_CLICK,
     cultivationLevel: 1,
     cultivationProgress: 0,
@@ -61,8 +61,8 @@ export function getInitialGameState(): GameState {
     },
     
     // Combat stats
-    health: 100,
-    maxHealth: 100,
+    health: 250,
+    maxHealth: 250,
     defense: 5,
     attack: 10,
     critChance: 5,

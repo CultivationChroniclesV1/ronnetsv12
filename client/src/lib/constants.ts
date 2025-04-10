@@ -50,8 +50,8 @@ export const UPGRADES = {
     description: 'Increases Qi storage capacity',
     baseCost: 200,
     costMultiplier: 1.5,
-    effectPerLevel: 1.1, // 10% increase per level
-    effectDescription: (level: number) => `+${level * 1.1}% Qi capacity`,
+    effectPerLevel: 0.50, // 50% increase per level
+    effectDescription: (level: number) => `+${level * 0.50}% Qi capacity`,
     maxLevel: 100000
   },
   circulation: {
@@ -59,8 +59,8 @@ export const UPGRADES = {
     description: 'Increases passive Qi generation',
     baseCost: 95,
     costMultiplier: 2,
-    effectPerLevel: 10, // 0.1 Qi/s per level
-    effectDescription: (level: number) => `+${level * 10} Qi/second`,
+    effectPerLevel: 9, // 9 Qi/s per level
+    effectDescription: (level: number) => `+${level * 9} Qi/second`,
     maxLevel: 100000
   },
   spirit: {
@@ -68,7 +68,7 @@ export const UPGRADES = {
     description: 'Increases manual cultivation efficiency',
     baseCost: 100,
     costMultiplier: 1.7,
-    effectPerLevel: 10, // +2 Qi per click per level
+    effectPerLevel: 10, // 10 Qi per click per level
     effectDescription: (level: number) => `+${level * 10} Qi per click`,
     maxLevel: 100000
   },
