@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useGameEngine } from "@/lib/gameEngine";
-import { ENEMIES, MARTIAL_ARTS, RESOURCES, RESOURCE_TYPES } from "@/lib/constants";
+import { ENEMIES, MARTIAL_ARTS, RESOURCES, RESOURCE_TYPES, LOCATIONS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -10,36 +10,51 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 
 // Helper function to determine location difficulty scaling
-function getLocationDifficultyScale(locationId: string) {
-  // Define difficulty tiers
+function getLocationDifficultyScale(locationId: string, playerLevel: number) {
+  // Define base difficulty tiers
   const locationTiers = {
     // Beginner areas (low difficulty)
-    "forest": { healthMultiplier: 1.0, attackMultiplier: 1.0, defenseMultiplier: 1.0, tier: "beginner" },
-    "city": { healthMultiplier: 1.1, attackMultiplier: 1.05, defenseMultiplier: 1.0, tier: "beginner" },
-    "mountain": { healthMultiplier: 1.2, attackMultiplier: 1.1, defenseMultiplier: 1.05, tier: "beginner" },
-    "poison-marsh": { healthMultiplier: 1.3, attackMultiplier: 1.2, defenseMultiplier: 1.1, tier: "beginner" },
+    "forest": { baseHealth: 1.0, baseAttack: 1.0, baseDefense: 1.0, tier: "beginner" },
+    "city": { baseHealth: 1.2, baseAttack: 1.1, baseDefense: 1.0, tier: "beginner" },
+    "mountain": { baseHealth: 1.4, baseAttack: 1.3, baseDefense: 1.2, tier: "beginner" },
+    "poison-marsh": { baseHealth: 1.6, baseAttack: 1.4, baseDefense: 1.3, tier: "beginner" },
     
     // Intermediate areas (medium difficulty)
-    "jade-valley": { healthMultiplier: 1.5, attackMultiplier: 1.3, defenseMultiplier: 1.2, tier: "intermediate" },
-    "ruins": { healthMultiplier: 1.7, attackMultiplier: 1.4, defenseMultiplier: 1.3, tier: "intermediate" },
-    "frozen-peak": { healthMultiplier: 1.9, attackMultiplier: 1.5, defenseMultiplier: 1.4, tier: "intermediate" },
-    "thunder-peak": { healthMultiplier: 2.0, attackMultiplier: 1.6, defenseMultiplier: 1.5, tier: "intermediate" },
+    "jade-valley": { baseHealth: 2.0, baseAttack: 1.6, baseDefense: 1.5, tier: "intermediate" },
+    "ruins": { baseHealth: 2.2, baseAttack: 1.8, baseDefense: 1.7, tier: "intermediate" },
+    "frozen-peak": { baseHealth: 2.5, baseAttack: 2.0, baseDefense: 1.8, tier: "intermediate" },
+    "thunder-peak": { baseHealth: 2.7, baseAttack: 2.2, baseDefense: 2.0, tier: "intermediate" },
     
     // Advanced areas (high difficulty)
-    "flame-desert": { healthMultiplier: 2.2, attackMultiplier: 1.8, defenseMultiplier: 1.6, tier: "advanced" },
-    "great-river": { healthMultiplier: 2.5, attackMultiplier: 2.0, defenseMultiplier: 1.8, tier: "advanced" },
-    "void-rift": { healthMultiplier: 2.8, attackMultiplier: 2.2, defenseMultiplier: 2.0, tier: "advanced" },
-    "dragon-volcano": { healthMultiplier: 3.0, attackMultiplier: 2.5, defenseMultiplier: 2.2, tier: "advanced" },
+    "flame-desert": { baseHealth: 3.0, baseAttack: 2.5, baseDefense: 2.2, tier: "advanced" },
+    "great-river": { baseHealth: 3.3, baseAttack: 2.7, baseDefense: 2.4, tier: "advanced" },
+    "void-rift": { baseHealth: 3.6, baseAttack: 3.0, baseDefense: 2.7, tier: "advanced" },
+    "dragon-volcano": { baseHealth: 4.0, baseAttack: 3.5, baseDefense: 3.0, tier: "advanced" },
   };
   
-  // Return the scaling for the location or default beginner scaling
-  return (locationTiers as any)[locationId] || 
-    { healthMultiplier: 1.0, attackMultiplier: 1.0, defenseMultiplier: 1.0, tier: "beginner" };
+  // Get base multipliers for the location or use default
+  const baseMultipliers = (locationTiers as any)[locationId] || 
+    { baseHealth: 1.0, baseAttack: 1.0, baseDefense: 1.0, tier: "beginner" };
+  
+  // Scale multipliers based on player level (progressive difficulty)
+  // Each level beyond minimum requirement increases difficulty by 5-10%
+  const locationData = Object.entries(LOCATIONS).find(([id]) => id === locationId);
+  const requiredLevel = locationData ? locationData[1].requiredLevel : 1;
+  const levelDifference = Math.max(0, playerLevel - requiredLevel);
+  const levelScaling = 1 + (levelDifference * 0.08); // 8% increase per level over requirement
+  
+  return {
+    healthMultiplier: baseMultipliers.baseHealth * levelScaling,
+    attackMultiplier: baseMultipliers.baseAttack * levelScaling,
+    defenseMultiplier: baseMultipliers.baseDefense * levelScaling,
+    tier: baseMultipliers.tier
+  };
 }
 
 // Helper function to get area difficulty description
 function getAreaDifficultyDescription(locationId: string) {
-  const scale = getLocationDifficultyScale(locationId);
+  // Use default player level of 1 for description (it doesn't need to be precise)
+  const scale = getLocationDifficultyScale(locationId, 1);
   
   switch(scale.tier) {
     case "beginner":
@@ -389,8 +404,8 @@ const CombatPage = () => {
   const startCombat = (enemyId: string) => {
     const enemyData = ENEMIES[enemyId as keyof typeof ENEMIES];
     
-    // Apply location-based difficulty scaling
-    const locationScaling = getLocationDifficultyScale(selectedArea);
+    // Apply location-based difficulty scaling with player level consideration
+    const locationScaling = getLocationDifficultyScale(selectedArea, game.cultivationLevel);
     
     // Scale enemy stats based on location difficulty
     const scaledHealth = Math.round(enemyData.health * locationScaling.healthMultiplier);
@@ -437,7 +452,7 @@ const CombatPage = () => {
     const droppedItems: { id: string, name: string, amount: number }[] = [];
     
     // Random herb drop chance based on location difficulty
-    const locationDifficulty = getLocationDifficultyScale(selectedArea);
+    const locationDifficulty = getLocationDifficultyScale(selectedArea, game.cultivationLevel);
     const dropChanceMultiplier = locationDifficulty.tier === 'advanced' ? 1.5 : 
                                 locationDifficulty.tier === 'intermediate' ? 1.2 : 1.0;
     
