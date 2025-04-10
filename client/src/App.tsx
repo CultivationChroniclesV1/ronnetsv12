@@ -10,7 +10,8 @@ import { NavigationBar } from "@/components/navigation-bar";
 import { BackgroundParticles } from "@/components/background-particles";
 import { LoadingAnimation } from "@/components/loading-animation";
 import { useLocation } from "wouter";
-import { getThemeForPath } from "@/lib/animations";
+import { getThemeForPath, getBackgroundClasses } from "@/lib/animations";
+import { useAchievement } from "@/hooks/use-achievement";
 
 // Lazy load other pages
 import { lazy, Suspense } from "react";
@@ -100,6 +101,10 @@ function Router() {
 }
 
 function App() {
+  // Comment out achievement hook until fully implemented
+  // const { AchievementDisplay } = useAchievement();
+  const [location] = useLocation();
+  
   // Add custom font link
   useEffect(() => {
     const link = document.createElement('link');
@@ -123,15 +128,21 @@ function App() {
     };
   }, []);
   
+  // Get the theme for the current location
+  const theme = getThemeForPath(location);
+  const bgClasses = getBackgroundClasses(theme);
+  
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col min-h-screen">
+      <div className={`flex flex-col min-h-screen ${bgClasses}`}>
         <NavigationBar />
-        <main className="flex-grow">
+        <main className="flex-grow relative">
           <Router />
         </main>
+        {/* Display achievements when triggered */}
+        {/* AchievementDisplay will be enabled once fully implemented */}
+        <Toaster />
       </div>
-      <Toaster />
     </QueryClientProvider>
   );
 }
