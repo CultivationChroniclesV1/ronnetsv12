@@ -86,7 +86,16 @@ const generateWeapons = (): ShopItem[] => {
         qi: qiCost
       },
       requiredLevel: Math.max(1, rarityIndex * 5),
-      icon: `fa-${weaponType === 'sword' ? 'khanda' : weaponType === 'bow' ? 'bow-arrow' : weaponType}`
+      icon: weaponType === 'sword' ? 'fa-khanda' :
+             weaponType === 'saber' ? 'fa-utensils' :
+             weaponType === 'spear' ? 'fa-location-arrow' :
+             weaponType === 'staff' ? 'fa-magic' :
+             weaponType === 'dagger' ? 'fa-cut' :
+             weaponType === 'bow' ? 'fa-arrow-right' :
+             weaponType === 'fan' ? 'fa-hand-paper' :
+             weaponType === 'whip' ? 'fa-wave-square' :
+             weaponType === 'hammer' ? 'fa-hammer' :
+             weaponType === 'axe' ? 'fa-axe' : 'fa-sword'
     });
   }
   
@@ -583,7 +592,7 @@ export default function Shop() {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg font-serif">
-                      <i className={`fas ${item.icon} mr-2 text-primary`}></i> 
+                      <i className={`fas ${item.icon.startsWith('fa-') ? item.icon : 'fa-'+item.icon} mr-2 text-primary`}></i> 
                       {item.name}
                     </CardTitle>
                     <Badge className={getRarityColor(item.rarity)}>
