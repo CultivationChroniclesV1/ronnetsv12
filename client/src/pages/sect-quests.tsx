@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGameEngine } from "@/lib/gameEngine";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Quest {
   id: string;
@@ -32,78 +33,122 @@ export default function SectQuests() {
   const { game, updateGameState } = useGameEngine();
   const [location, setLocation] = useLocation();
   const [quests, setQuests] = useState<Quest[]>([]);
+  const [completedQuests, setCompletedQuests] = useState<Quest[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("available");
+  const [refreshTime, setRefreshTime] = useState<number | null>(null);
+  const refreshTimer = useRef<NodeJS.Timeout | null>(null);
   
-  // Check if character is created
+  // Check if character is created and setup auto-refresh
   useEffect(() => {
     if (!game.characterCreated) {
       setLocation("/character");
     } else {
       // Generate quests based on player level if none exist
-      generateQuests();
+      if (quests.length === 0) {
+        generateQuests();
+        startQuestRefreshTimer();
+      }
     }
+    
+    return () => {
+      // Cleanup timer on unmount
+      if (refreshTimer.current) {
+        clearTimeout(refreshTimer.current);
+      }
+    };
   }, [game.characterCreated, setLocation]);
+  
+  // Start a timer to refresh quests automatically
+  const startQuestRefreshTimer = () => {
+    if (refreshTimer.current) {
+      clearTimeout(refreshTimer.current);
+    }
+    
+    // Set refresh time to 3 minutes (180 seconds) from now
+    const nextRefreshTime = Date.now() + 180000;
+    setRefreshTime(nextRefreshTime);
+    
+    refreshTimer.current = setTimeout(() => {
+      toast({
+        title: "New Quests Available",
+        description: "The sect has issued new tasks for you to complete.",
+        variant: "default"
+      });
+      generateQuests();
+      setRefreshTime(null);
+    }, 180000); // 3 minutes
+  };
   
   // Generate a set of quests based on player level
   const generateQuests = () => {
     const playerLevel = game.cultivationLevel;
     const newQuests: Quest[] = [];
     
-    // Add cultivation quests
+    // Add cultivation quests with Wuxia-themed names
     newQuests.push({
       id: `cultivation-${Date.now()}`,
-      name: "Cultivation Insight",
-      description: "Meditate and gain cultivation insights",
-      objective: "Accumulate Qi energy",
+      name: "Profound Dao Heart Tempering",
+      description: "Meditate on the fundamental principles of cultivation to strengthen your Dao Heart",
+      objective: "Accumulate Qi energy through meditation",
       type: "sect",
       progress: 0,
-      target: playerLevel * 100,
+      target: playerLevel * 150, // More challenging
       rewards: {
-        gold: playerLevel * 20,
-        spiritualStones: Math.ceil(playerLevel / 2),
-        experience: playerLevel * 15,
+        gold: playerLevel * 30,
+        spiritualStones: Math.ceil(playerLevel * 0.8),
+        experience: playerLevel * 25,
         items: []
       },
       completed: false,
       requiredLevel: 1
     });
     
-    // Add combat quests based on player level
-    const enemyTypes = ['beast', 'wolf', 'bear', 'snake', 'tiger', 'eagle', 'bandit'];
-    const randomEnemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+    // Add combat quests with Wuxia-themed names
+    const enemyTypes = [
+      { type: 'demonic-beast', name: 'Demonic Spirit Beast' },
+      { type: 'qi-wolf', name: 'Frost Wind Spirit Wolf' },
+      { type: 'bloodbear', name: 'Blood Mist Cave Bear' },
+      { type: 'venomsnake', name: 'Nine-Pattern Poison Serpent' },
+      { type: 'celestial-tiger', name: 'White Mountain Spirit Tiger' },
+      { type: 'golden-eagle', name: 'Golden Wing Thunder Eagle' },
+      { type: 'rogue-cultivator', name: 'Rogue Cultivator' }
+    ];
+    
+    const randomEnemy = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
     
     newQuests.push({
       id: `combat-${Date.now()}`,
-      name: `Hunt ${capitalizeFirst(randomEnemyType)}s`,
-      description: `The sect needs you to hunt ${randomEnemyType}s that are threatening nearby villages`,
-      objective: `Defeat ${randomEnemyType}s in combat`,
+      name: `Subdue the ${randomEnemy.name}`,
+      description: `Elder Feng has requested disciples to exterminate ${randomEnemy.name}s that are threatening nearby spiritual herb gardens. Their corrupted energy is polluting the natural environment.`,
+      objective: `Defeat ${randomEnemy.name}s in combat`,
       type: "sect",
       progress: 0,
-      target: Math.max(3, Math.floor(playerLevel / 2)),
+      target: Math.max(5, Math.floor(playerLevel * 0.7)), // More challenging
       rewards: {
-        gold: playerLevel * 30,
-        spiritualStones: Math.ceil(playerLevel / 3) + 1,
-        experience: playerLevel * 20,
+        gold: playerLevel * 45,
+        spiritualStones: Math.ceil(playerLevel * 0.6) + 2,
+        experience: playerLevel * 35,
         items: []
       },
       completed: false,
       requiredLevel: 1,
-      enemyType: randomEnemyType
+      enemyType: randomEnemy.type
     });
     
     // Add breakthrough quest for higher levels
     if (playerLevel >= 5) {
       newQuests.push({
         id: `breakthrough-${Date.now()}`,
-        name: "Realm Breakthrough",
-        description: "Achieve a breakthrough in your cultivation to progress to the next stage",
-        objective: "Perform a successful breakthrough",
+        name: "Heaven Defying Breakthrough",
+        description: "Achieve a realm breakthrough by purifying your core and harmonizing your meridians with spiritual energy from the heavens",
+        objective: "Perform a successful realm breakthrough ritual",
         type: "sect",
         progress: 0,
         target: 1,
         rewards: {
-          gold: playerLevel * 50,
-          spiritualStones: playerLevel,
-          experience: playerLevel * 30,
+          gold: playerLevel * 80,
+          spiritualStones: playerLevel * 2,
+          experience: playerLevel * 50,
           items: []
         },
         completed: false,
@@ -111,27 +156,45 @@ export default function SectQuests() {
       });
     }
     
-    // Add resource gathering quest
-    const locations = ['forest', 'mountain', 'ruins', 'jade-valley', 'poison-marsh'];
-    const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+    // Add resource gathering quest with Wuxia-themed name
+    const locationsWithNames = [
+      { id: 'forest', name: 'Verdant Spirit Forest' },
+      { id: 'mountain', name: 'Azure Dragon Mountains' },
+      { id: 'ruins', name: 'Immortal Emperor Ruins' },
+      { id: 'jade-valley', name: 'Nine Treasures Jade Valley' },
+      { id: 'poison-marsh', name: 'Miasma Venom Marsh' },
+      { id: 'flame-desert', name: 'Nine Suns Flame Desert' },
+      { id: 'frozen-peak', name: 'Frost Immortal Summit' }
+    ];
+    
+    const randomLocation = locationsWithNames[Math.floor(Math.random() * locationsWithNames.length)];
+    
+    // Select a random resource type based on location
+    const resourceTypes = [
+      'Spirit Herbs', 'Heavenly Ores', 'Lightning Essence', 
+      'Soul Crystals', 'Dragon Veins', 'Phoenix Feathers', 
+      'Immortal Fruits', 'Ancient Scripture Fragments'
+    ];
+    
+    const randomResource = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
     
     newQuests.push({
       id: `gather-${Date.now()}`,
-      name: "Resource Gathering",
-      description: `Collect resources from ${formatLocationName(randomLocation)} for the sect's alchemists`,
-      objective: `Gather resources from ${formatLocationName(randomLocation)}`,
+      name: `Harvest of ${randomResource}`,
+      description: `The sect's Grand Elder needs precious ${randomResource} from ${randomLocation.name} for an upcoming alchemy ritual. These materials only appear during specific spiritual convergences and must be gathered with care.`,
+      objective: `Gather ${randomResource} from ${randomLocation.name}`,
       type: "sect",
       progress: 0,
-      target: Math.max(2, Math.floor(playerLevel / 3)),
+      target: Math.max(4, Math.floor(playerLevel * 0.5)), // More challenging
       rewards: {
-        gold: playerLevel * 25,
-        spiritualStones: Math.ceil(playerLevel / 4),
-        experience: playerLevel * 18,
+        gold: playerLevel * 40,
+        spiritualStones: Math.ceil(playerLevel * 0.7),
+        experience: playerLevel * 30,
         items: []
       },
       completed: false,
       requiredLevel: 2,
-      location: randomLocation
+      location: randomLocation.id
     });
     
     // Add additional random quests based on player level
@@ -277,27 +340,57 @@ export default function SectQuests() {
   const generateReplacementQuest = () => {
     const playerLevel = game.cultivationLevel;
     const questTypes = [
-      "Cultivation Insight",
-      "Monster Hunt",
-      "Resource Gathering",
-      "Sect Defense",
-      "Artifact Refinement",
-      "Knowledge Seeking"
+      { 
+        name: "Divine Scripture Comprehension",
+        description: "Gain enlightenment by studying the sect's most sacred cultivation techniques",
+        objective: "Comprehend the profound mysteries in ancient texts",
+        target: Math.max(3, Math.floor(playerLevel * 0.6))
+      },
+      { 
+        name: "Demonic Beast Suppression",
+        description: "The sect needs powerful disciples to subdue demonic beasts threatening nearby territories",
+        objective: "Hunt and defeat corrupted beasts in the wilderness",
+        target: Math.max(4, Math.floor(playerLevel * 0.7))
+      },
+      { 
+        name: "Spirit Treasure Collection",
+        description: "Gather rare spiritual treasures to strengthen the sect's foundation",
+        objective: "Collect spiritual treasures throughout the realm",
+        target: Math.max(3, Math.floor(playerLevel * 0.5))
+      },
+      { 
+        name: "Array Formation Defense",
+        description: "Assist in maintaining the sect's defensive formations against rival sects",
+        objective: "Channel spiritual energy into protective arrays",
+        target: Math.max(5, Math.floor(playerLevel * 0.6))
+      },
+      { 
+        name: "Mystic Artifact Refinement",
+        description: "Help the sect's artifact refinement division forge spiritual weapons",
+        objective: "Contribute to the refinement of spiritual artifacts",
+        target: Math.max(4, Math.floor(playerLevel * 0.6))
+      },
+      { 
+        name: "Heavenly Dao Insight",
+        description: "Meditate on the principles of the Heavenly Dao to gain profound insights",
+        objective: "Achieve breakthroughs in your understanding of cultivation",
+        target: Math.max(3, Math.floor(playerLevel * 0.8))
+      }
     ];
     
-    const randomType = questTypes[Math.floor(Math.random() * questTypes.length)];
+    const randomQuest = questTypes[Math.floor(Math.random() * questTypes.length)];
     const newQuest: Quest = {
       id: `quest-${Date.now()}`,
-      name: randomType,
-      description: `A new task from the sect: ${randomType.toLowerCase()}`,
-      objective: `Complete the ${randomType.toLowerCase()} task`,
+      name: randomQuest.name,
+      description: randomQuest.description,
+      objective: randomQuest.objective,
       type: "sect",
       progress: 0,
-      target: Math.max(1, Math.floor(playerLevel / 2)) + Math.floor(Math.random() * 3),
+      target: randomQuest.target,
       rewards: {
-        gold: playerLevel * 20 + Math.floor(Math.random() * 30),
-        spiritualStones: Math.max(1, Math.floor(playerLevel / 3)),
-        experience: playerLevel * 15 + Math.floor(Math.random() * 10),
+        gold: playerLevel * 35 + Math.floor(Math.random() * 30),
+        spiritualStones: Math.max(2, Math.floor(playerLevel * 0.6)),
+        experience: playerLevel * 25 + Math.floor(Math.random() * 15),
         items: []
       },
       completed: false,
@@ -305,6 +398,9 @@ export default function SectQuests() {
     };
     
     setQuests([...quests, newQuest]);
+    
+    // Start the auto-refresh timer again when a quest is completed
+    startQuestRefreshTimer();
   };
 
   return (
@@ -331,6 +427,12 @@ export default function SectQuests() {
               <div>
                 <h2 className="text-xl font-medium">Available Quests</h2>
                 <p className="text-sm text-gray-600">Showing {quests.length} quests</p>
+                {refreshTime && (
+                  <p className="text-xs text-amber-600 mt-1">
+                    <i className="fas fa-clock mr-1"></i>
+                    New quests in: {Math.max(0, Math.floor((refreshTime - Date.now()) / 1000))} seconds
+                  </p>
+                )}
               </div>
               <Button onClick={generateQuests}>
                 <i className="fas fa-sync-alt mr-2"></i> Refresh Quests
@@ -426,13 +528,20 @@ export default function SectQuests() {
 // Helper functions
 function formatLocationName(location: string): string {
   const names: Record<string, string> = {
-    'forest': 'Spirit Forest',
-    'mountain': 'Azure Mountains',
-    'ruins': 'Ancient Ruins',
-    'jade-valley': 'Jade Valley',
-    'poison-marsh': 'Poison Marsh',
-    'flame-desert': 'Flame Desert',
-    'frozen-peak': 'Frozen Peak'
+    'forest': 'Verdant Spirit Forest',
+    'mountain': 'Azure Dragon Mountains',
+    'ruins': 'Immortal Emperor Ruins',
+    'jade-valley': 'Nine Treasures Jade Valley',
+    'poison-marsh': 'Miasma Venom Marsh',
+    'flame-desert': 'Nine Suns Flame Desert',
+    'frozen-peak': 'Frost Immortal Summit',
+    'demonic-beast': 'Demonic Spirit Beast',
+    'qi-wolf': 'Frost Wind Spirit Wolf',
+    'bloodbear': 'Blood Mist Cave Bear',
+    'venomsnake': 'Nine-Pattern Poison Serpent',
+    'celestial-tiger': 'White Mountain Spirit Tiger',
+    'golden-eagle': 'Golden Wing Thunder Eagle',
+    'rogue-cultivator': 'Rogue Cultivator'
   };
   
   return names[location] || location;
