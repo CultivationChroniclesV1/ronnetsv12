@@ -52,23 +52,69 @@ const PageLoading = () => {
 };
 
 function Router() {
-  // Simplify router to help debug 404 issues
+  const [location] = useLocation();
+  // Use a delayed page loading for a smoother experience
+  const [showLoading, setShowLoading] = useState(true);
+  // Track location changes to force loading screens between page transitions
+  const [prevLocation, setPrevLocation] = useState(location);
+  
+  // Show loading screen when location changes, then hide after delay
+  useEffect(() => {
+    if (location !== prevLocation) {
+      setShowLoading(true);
+      setPrevLocation(location);
+    }
+    
+    // Simulate a minimum load time of 1 second for a more satisfying loading experience
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [location, prevLocation]);
+  
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/game" component={Game} />
-        <Route path="/character-info" component={CharacterInfo} />
-        <Route path="/combat" component={Combat} />
-        <Route path="/map" component={Map} />
-        <Route path="/inventory" component={Inventory} />
-        <Route path="/shop" component={Shop} />
-        <Route path="/sect-quests" component={SectQuests} />
-        <Route path="/skill-tree" component={SkillTree} />
-        <Route path="/music-settings" component={MusicSettings} />
-        {/* Fallback to 404 */}
-        <Route component={NotFound} />
-      </Switch>
+    <Suspense fallback={<PageLoading />}>
+      {showLoading ? (
+        <PageLoading />
+      ) : (
+        <Switch>
+          <Route path="/">
+            <Home />
+          </Route>
+          <Route path="/game">
+            <Game />
+          </Route>
+          <Route path="/character-info">
+            <CharacterInfo />
+          </Route>
+          <Route path="/combat">
+            <Combat />
+          </Route>
+          <Route path="/map">
+            <Map />
+          </Route>
+          <Route path="/inventory">
+            <Inventory />
+          </Route>
+          <Route path="/shop">
+            <Shop />
+          </Route>
+          <Route path="/sect-quests">
+            <SectQuests />
+          </Route>
+          <Route path="/skill-tree">
+            <SkillTree />
+          </Route>
+          <Route path="/music-settings">
+            <MusicSettings />
+          </Route>
+          {/* Fallback to 404 */}
+          <Route>
+            <NotFound />
+          </Route>
+        </Switch>
+      )}
     </Suspense>
   );
 }
@@ -101,15 +147,16 @@ function App() {
     };
   }, []);
   
-  // Temporarily comment out theme-related code for debugging
-  // const theme = getThemeForPath(location);
-  // const bgClasses = getBackgroundClasses(theme);
+  // Restore theme-related code now that router is fixed
+  const theme = getThemeForPath(location);
+  const bgClasses = getBackgroundClasses(theme);
   
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-900 to-indigo-700">
+      <div className={`flex flex-col min-h-screen ${bgClasses}`}>
         <NavigationBar />
         <main className="flex-grow relative">
+          <BackgroundParticles />
           <Router />
         </main>
         {/* Display achievements when triggered */}
