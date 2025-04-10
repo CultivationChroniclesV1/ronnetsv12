@@ -1,12 +1,76 @@
 import { useState, useEffect } from "react";
 import { useGameEngine } from "@/lib/gameEngine";
-import { ENEMIES, MARTIAL_ARTS } from "@/lib/constants";
+import { ENEMIES, MARTIAL_ARTS, RESOURCES, RESOURCE_TYPES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { motion } from "framer-motion";
+
+// Helper function to determine location difficulty scaling
+function getLocationDifficultyScale(locationId: string) {
+  // Define difficulty tiers
+  const locationTiers = {
+    // Beginner areas (low difficulty)
+    "forest": { healthMultiplier: 1.0, attackMultiplier: 1.0, defenseMultiplier: 1.0, tier: "beginner" },
+    "city": { healthMultiplier: 1.1, attackMultiplier: 1.05, defenseMultiplier: 1.0, tier: "beginner" },
+    "mountain": { healthMultiplier: 1.2, attackMultiplier: 1.1, defenseMultiplier: 1.05, tier: "beginner" },
+    "poison-marsh": { healthMultiplier: 1.3, attackMultiplier: 1.2, defenseMultiplier: 1.1, tier: "beginner" },
+    
+    // Intermediate areas (medium difficulty)
+    "jade-valley": { healthMultiplier: 1.5, attackMultiplier: 1.3, defenseMultiplier: 1.2, tier: "intermediate" },
+    "ruins": { healthMultiplier: 1.7, attackMultiplier: 1.4, defenseMultiplier: 1.3, tier: "intermediate" },
+    "frozen-peak": { healthMultiplier: 1.9, attackMultiplier: 1.5, defenseMultiplier: 1.4, tier: "intermediate" },
+    "thunder-peak": { healthMultiplier: 2.0, attackMultiplier: 1.6, defenseMultiplier: 1.5, tier: "intermediate" },
+    
+    // Advanced areas (high difficulty)
+    "flame-desert": { healthMultiplier: 2.2, attackMultiplier: 1.8, defenseMultiplier: 1.6, tier: "advanced" },
+    "great-river": { healthMultiplier: 2.5, attackMultiplier: 2.0, defenseMultiplier: 1.8, tier: "advanced" },
+    "void-rift": { healthMultiplier: 2.8, attackMultiplier: 2.2, defenseMultiplier: 2.0, tier: "advanced" },
+    "dragon-volcano": { healthMultiplier: 3.0, attackMultiplier: 2.5, defenseMultiplier: 2.2, tier: "advanced" },
+  };
+  
+  // Return the scaling for the location or default beginner scaling
+  return (locationTiers as any)[locationId] || 
+    { healthMultiplier: 1.0, attackMultiplier: 1.0, defenseMultiplier: 1.0, tier: "beginner" };
+}
+
+// Helper function to get area difficulty description
+function getAreaDifficultyDescription(locationId: string) {
+  const scale = getLocationDifficultyScale(locationId);
+  
+  switch(scale.tier) {
+    case "beginner":
+      return "relatively weak, suitable for your current level";
+    case "intermediate":
+      return "tougher than normal, with enhanced physical abilities";
+    case "advanced":
+      return "extremely powerful, with formidable strength and resilience";
+    default:
+      return "of average strength";
+  }
+}
+
+// Helper function to get healing herbs from inventory
+function getHealingHerbs(inventory: any) {
+  if (!inventory || !inventory.herbs) return [];
+  
+  // Filter herbs with healing effects
+  return Object.entries(inventory.herbs)
+    .filter(([id, herb]: [string, any]) => {
+      const herbData = RESOURCES[id as keyof typeof RESOURCES];
+      return herbData && herbData.effects && herbData.effects.health;
+    })
+    .map(([id, herb]: [string, any]) => ({
+      id,
+      count: herb.count || 0,
+      data: RESOURCES[id as keyof typeof RESOURCES]
+    }))
+    .filter(herb => herb.count > 0)
+    .sort((a, b) => a.data.effects.health - b.data.effects.health); // Sort by healing amount
+}
 
 type Enemy = {
   id: string;
@@ -28,6 +92,8 @@ const CombatPage = () => {
   const [combatLog, setCombatLog] = useState<string[]>([]);
   const [selectedArea, setSelectedArea] = useState<string>("forest");
   const [cooldowns, setCooldowns] = useState<Record<string, number>>({});
+  const [showHerbPanel, setShowHerbPanel] = useState<boolean>(false);
+  const [herbAnimating, setHerbAnimating] = useState<string | null>(null);
 
   // Check if character is created
   useEffect(() => {
@@ -240,7 +306,7 @@ const CombatPage = () => {
     setCooldowns(initialCooldowns);
   };
 
-  // Handle player victory
+  // Handle player victory with item drops
   const handleVictory = () => {
     if (!enemy) return;
     
@@ -253,21 +319,66 @@ const CombatPage = () => {
     // Calculate gold reward based on experience
     const goldReward = Math.floor(rewards.experience * 2);
     
+    // Determine herb drops based on enemy and location
+    const droppedItems: { id: string, name: string, amount: number }[] = [];
+    
+    // Random herb drop chance based on location difficulty
+    const locationDifficulty = getLocationDifficultyScale(selectedArea);
+    const dropChanceMultiplier = locationDifficulty.tier === 'advanced' ? 1.5 : 
+                                locationDifficulty.tier === 'intermediate' ? 1.2 : 1.0;
+    
+    // Potential healing herb drops
+    const potentialHerbDrops = [
+      { id: 'healing-grass', chance: 0.3 * dropChanceMultiplier, amount: 1 },
+      { id: 'blood-lotus', chance: 0.15 * dropChanceMultiplier, amount: 1 },
+      { id: 'celestial-peach', chance: 0.05 * dropChanceMultiplier, amount: 1 }
+    ];
+    
+    // Roll for drops
+    potentialHerbDrops.forEach(herb => {
+      if (Math.random() < herb.chance) {
+        const herbData = RESOURCES[herb.id as keyof typeof RESOURCES];
+        droppedItems.push({
+          id: herb.id,
+          name: herbData.name,
+          amount: herb.amount
+        });
+      }
+    });
+    
     // Add rewards to log
-    setCombatLog(prev => [
-      ...prev,
+    const rewardLog = [
       `You defeated the ${enemy.name}!`,
       `Gained ${rewards.experience} cultivation experience, ${rewards.spiritualStones} spiritual stones, and ${goldReward} gold.`
-    ]);
+    ];
     
-    // Update game state with rewards
+    // Add dropped items to log if any
+    if (droppedItems.length > 0) {
+      rewardLog.push(`The enemy dropped: ${droppedItems.map(item => `${item.amount} ${item.name}`).join(', ')}`);
+    }
+    
+    setCombatLog(prev => [...prev, ...rewardLog]);
+    
+    // Update game state with rewards and drops
     updateGameState(state => {
       // Calculate new cultivation progress
       const newProgress = state.cultivationProgress + rewards.experience;
-      const overflowProgress = Math.max(0, newProgress - state.maxCultivationProgress);
       
-      // Add gold rewards for defeating enemies
-      const goldReward = Math.floor(rewards.experience * 2); // Base gold reward scaled by experience
+      // Create updated inventory for herbs
+      const updatedInventory = { ...state.inventory };
+      
+      // Initialize herbs object if it doesn't exist
+      if (!updatedInventory.herbs) {
+        updatedInventory.herbs = {};
+      }
+      
+      // Add dropped herbs to inventory
+      droppedItems.forEach(item => {
+        if (!updatedInventory.herbs[item.id]) {
+          updatedInventory.herbs[item.id] = { count: 0 };
+        }
+        updatedInventory.herbs[item.id].count = (updatedInventory.herbs[item.id].count || 0) + item.amount;
+      });
       
       return {
         ...state,
@@ -277,6 +388,8 @@ const CombatPage = () => {
         gold: state.gold + goldReward,
         // Add cultivation progress
         cultivationProgress: Math.min(state.maxCultivationProgress, newProgress),
+        // Update inventory with herb drops
+        inventory: updatedInventory,
         // If health is less than 50%, heal a bit
         health: state.health < state.maxHealth * 0.5 
           ? Math.min(state.maxHealth, state.health + Math.floor(state.maxHealth * 0.2))
