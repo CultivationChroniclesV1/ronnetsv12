@@ -65,7 +65,7 @@ function getHealingHerbs(inventory: any) {
     })
     .map(([id, herb]: [string, any]) => ({
       id,
-      count: herb.count || 0,
+      count: herb.quantity || 0, // Use quantity instead of count
       data: RESOURCES[id as keyof typeof RESOURCES]
     }))
     .filter(herb => herb.count > 0)
@@ -178,7 +178,7 @@ const CombatPage = () => {
     const herbData = game.inventory.herbs[herbId];
     const herb = RESOURCES[herbId as keyof typeof RESOURCES];
     
-    if (!herbData || !herbData.count || herbData.count <= 0) {
+    if (!herbData || !herbData.quantity || herbData.quantity <= 0) {
       toast({
         title: "Herb Not Available",
         description: "You don't have any of this herb.",
@@ -210,14 +210,14 @@ const CombatPage = () => {
         updatedInventory.herbs = {};
       }
       
-      // Reduce herb count
+      // Reduce herb quantity
       updatedInventory.herbs[herbId] = {
         ...updatedInventory.herbs[herbId],
-        count: (updatedInventory.herbs[herbId]?.count || 0) - 1
+        quantity: (updatedInventory.herbs[herbId]?.quantity || 0) - 1
       };
       
-      // Remove herb if count is 0
-      if (updatedInventory.herbs[herbId].count <= 0) {
+      // Remove herb if quantity is 0
+      if (updatedInventory.herbs[herbId].quantity <= 0) {
         delete updatedInventory.herbs[herbId];
       }
       
@@ -454,9 +454,18 @@ const CombatPage = () => {
       // Add dropped herbs to inventory
       droppedItems.forEach(item => {
         if (!updatedInventory.herbs[item.id]) {
-          updatedInventory.herbs[item.id] = { count: 0 };
+          updatedInventory.herbs[item.id] = { 
+            id: item.id,
+            name: RESOURCES[item.id as keyof typeof RESOURCES].name,
+            description: RESOURCES[item.id as keyof typeof RESOURCES].description,
+            quantity: 0,
+            icon: RESOURCES[item.id as keyof typeof RESOURCES].icon || "",
+            value: RESOURCES[item.id as keyof typeof RESOURCES].value || 0,
+            quality: RESOURCES[item.id as keyof typeof RESOURCES].quality || 1,
+            effects: RESOURCES[item.id as keyof typeof RESOURCES].effects || {}
+          };
         }
-        updatedInventory.herbs[item.id].count = (updatedInventory.herbs[item.id].count || 0) + item.amount;
+        updatedInventory.herbs[item.id].quantity = (updatedInventory.herbs[item.id].quantity || 0) + item.amount;
       });
       
       return {
