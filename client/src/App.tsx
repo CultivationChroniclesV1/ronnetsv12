@@ -145,7 +145,7 @@ function App() {
     document.head.appendChild(fontAwesome);
     
     const title = document.createElement('title');
-    title.textContent = 'Immortal Cultivation Path';
+    title.textContent = 'Cultivation Chronicles';
     document.head.appendChild(title);
     
     return () => {

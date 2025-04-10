@@ -521,7 +521,7 @@ export const useGameEngine = create<GameEngineState>()(
       }
     }),
     {
-      name: 'cultivation-game-storage',
+      name: 'cultivation-chronicles-storage',
       partialize: (state) => ({ 
         game: state.game,
         isAutoSaveEnabled: state.isAutoSaveEnabled,

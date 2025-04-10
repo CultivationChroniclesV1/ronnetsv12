@@ -25,9 +25,9 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-scroll text-center p-4">
       <div className="animate-float mb-6">
         <h1 className="font-serif text-4xl md:text-6xl font-bold mb-2 text-primary">
-          <span className="font-['Ma_Shan_Zheng'] text-amber-500 mr-2">仙道</span>
+          <span className="font-['Ma_Shan_Zheng'] text-amber-500 mr-2">修仙录</span>
           <span className="bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent">
-            Immortal Cultivation Path
+            Cultivation Chronicles
           </span>
         </h1>
         <p className="text-lg mb-8 italic text-gray-700">

@@ -56,7 +56,7 @@ export default function Game() {
   const minutesSinceLastSave = Math.floor((now.getTime() - lastSavedDate.getTime()) / 60000);
   
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen">
       <HeaderStats />
       
       <div className="container mx-auto px-4 py-6">
@@ -65,29 +65,19 @@ export default function Game() {
         <UpgradesSection />
         <SkillsSection />
         <StatsSection />
-      </div>
-      
-      {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-primary text-white py-2 px-4 shadow-lg">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="text-xs">
-            <span>
-              Game {isAutoSaveEnabled ? 'auto-saved' : 'saved'} {minutesSinceLastSave} minute{minutesSinceLastSave !== 1 ? 's' : ''} ago
-            </span>
-          </div>
-          
-          <div className="flex space-x-2">
-            <Button 
-              onClick={() => setLocation('/utility')}
-              variant="outline" 
-              size="sm"
-              className="text-xs border-white text-white hover:bg-primary-dark h-8"
-            >
-              <i className="fas fa-cogs mr-1"></i> Utility
-            </Button>
-          </div>
+        
+        {/* Utility Button - Now floating in bottom right corner instead of full footer */}
+        <div className="fixed bottom-6 right-6">
+          <Button 
+            onClick={() => setLocation('/utility')}
+            variant="default" 
+            size="sm"
+            className="rounded-full h-12 w-12 flex items-center justify-center shadow-lg"
+          >
+            <i className="fas fa-cogs"></i>
+          </Button>
         </div>
-      </footer>
+      </div>
       
       <SettingsModal />
     </div>
