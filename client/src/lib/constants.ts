@@ -3633,7 +3633,7 @@ export const RESOURCE_TYPES = {
   SPIRIT_HERB: 'spiritHerb',
   PILL: 'pill',
   ELIXIR: 'elixir',
-  SPIRITUAL_STONE: 'spiritualStone',
+  QI_STONE: 'spiritualStone', // Keep internal name for backward compatibility
   
   // Crafting materials
   ORE: 'ore',
@@ -3680,9 +3680,9 @@ export const RESOURCES = {
   // Spirit stones for cultivation
   'low-grade-stone': {
     id: 'low-grade-stone',
-    name: 'Low-Grade Spiritual Stone',
-    description: 'A basic spiritual stone containing a small amount of pure energy.',
-    type: RESOURCE_TYPES.SPIRITUAL_STONE,
+    name: 'Low-Grade Qi Stone',
+    description: 'A basic qi stone containing a small amount of pure energy.',
+    type: RESOURCE_TYPES.QI_STONE,
     rarity: 'COMMON',
     value: 100,
     effects: {
@@ -3693,9 +3693,9 @@ export const RESOURCES = {
   },
   'mid-grade-stone': {
     id: 'mid-grade-stone',
-    name: 'Mid-Grade Spiritual Stone',
-    description: 'A spiritual stone with significant energy, commonly used by Foundation Establishment cultivators.',
-    type: RESOURCE_TYPES.SPIRITUAL_STONE,
+    name: 'Mid-Grade Qi Stone',
+    description: 'A qi stone with significant energy, commonly used by Foundation Establishment cultivators.',
+    type: RESOURCE_TYPES.QI_STONE,
     rarity: 'UNCOMMON',
     value: 1000,
     effects: {
@@ -3706,9 +3706,9 @@ export const RESOURCES = {
   },
   'high-grade-stone': {
     id: 'high-grade-stone',
-    name: 'High-Grade Spiritual Stone',
-    description: 'A premium spiritual stone with concentrated energy, highly valued by Core Formation cultivators.',
-    type: RESOURCE_TYPES.SPIRITUAL_STONE,
+    name: 'High-Grade Qi Stone',
+    description: 'A premium qi stone with concentrated energy, highly valued by Core Formation cultivators.',
+    type: RESOURCE_TYPES.QI_STONE,
     rarity: 'RARE',
     value: 10000,
     effects: {
