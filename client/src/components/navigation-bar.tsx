@@ -79,6 +79,11 @@ export function NavigationBar() {
                 <i className="fas fa-music mr-1"></i> Music
               </div>
             </Link>
+            <Link href="/utility">
+              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/utility' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
+                <i className="fas fa-cogs mr-1"></i> Utility
+              </div>
+            </Link>
           </div>
           
           {/* Creator Info Button */}
@@ -185,6 +190,11 @@ export function NavigationBar() {
                 <Link href="/music-settings">
                   <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/music-settings' ? 'bg-primary/10 text-primary' : ''}`}>
                     <i className="fas fa-music mr-2"></i> Music
+                  </div>
+                </Link>
+                <Link href="/utility">
+                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/utility' ? 'bg-primary/10 text-primary' : ''}`}>
+                    <i className="fas fa-cogs mr-2"></i> Utility
                   </div>
                 </Link>
               </div>

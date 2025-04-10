@@ -25,6 +25,7 @@ const Shop = lazy(() => import("./pages/shop"));
 const SectQuests = lazy(() => import("./pages/sect-quests"));
 const SkillTree = lazy(() => import("./pages/skill-tree"));
 const MusicSettings = lazy(() => import("./pages/music-settings"));
+const Utility = lazy(() => import("./pages/utility"));
 
 // Loading component for lazy-loaded pages with wuxia theme
 const PageLoading = () => {
@@ -113,6 +114,9 @@ function Router() {
           <Route path="/music-settings">
             <MusicSettings />
           </Route>
+          <Route path="/utility">
+            <Utility />
+          </Route>
           {/* Fallback to 404 */}
           <Route>
             <NotFound />
@@ -160,7 +164,7 @@ function App() {
       <div className={`flex flex-col min-h-screen ${bgClasses}`}>
         <NavigationBar />
         <main className="flex-grow relative">
-          <BackgroundParticles />
+          {/* Background particles removed as requested */}
           <Router />
         </main>
         {/* Display achievements when triggered */}
