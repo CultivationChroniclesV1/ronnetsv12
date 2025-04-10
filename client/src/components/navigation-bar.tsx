@@ -36,11 +36,7 @@ export function NavigationBar() {
                 Cultivation
               </div>
             </Link>
-            <Link href="/character">
-              <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/character' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
-                Character
-              </div>
-            </Link>
+
             {game.characterCreated && (
               <Link href="/character-info">
                 <div className={`px-2 py-1 rounded-md transition-colors cursor-pointer ${location === '/character-info' ? 'bg-primary-dark text-white' : 'hover:bg-primary-dark/50'}`}>
@@ -143,11 +139,7 @@ export function NavigationBar() {
                     <i className="fas fa-fire mr-2"></i> Cultivation
                   </div>
                 </Link>
-                <Link href="/character">
-                  <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/character' ? 'bg-primary/10 text-primary' : ''}`}>
-                    <i className="fas fa-user mr-2"></i> Character
-                  </div>
-                </Link>
+
                 {game.characterCreated && (
                   <Link href="/character-info">
                     <div className={`px-2 py-2 rounded-md transition-colors cursor-pointer ${location === '/character-info' ? 'bg-primary/10 text-primary' : ''}`}>

@@ -68,8 +68,24 @@ export function getInitialGameState(): GameState {
     critChance: 5,
     dodgeChance: 5,
     
-    // Martial arts techniques - empty initially
-    martialArts: {},
+    // Martial arts techniques
+    martialArts: {
+      // Start with basic Azure Dragon Palm as a default skill
+      'palm-strike': {
+        id: 'palm-strike',
+        name: 'Azure Dragon Palm',
+        type: 'attack',
+        level: 1,
+        maxLevel: 10,
+        unlocked: true,
+        description: 'A basic yet powerful palm technique that channels Qi to strike opponents.',
+        damage: 15,
+        cost: 5,
+        cooldown: 2,
+        attributeScaling: 'strength',
+        lastUsed: 0
+      }
+    },
     
     // Currencies
     gold: STARTING_GOLD,

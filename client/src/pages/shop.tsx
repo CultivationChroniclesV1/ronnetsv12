@@ -418,7 +418,7 @@ export default function Shop() {
         <i className="fas fa-shopping-cart mr-2"></i> Cultivation Market
       </h1>
       
-      <div className="mb-6 p-4 rounded-lg bg-primary/5 flex justify-between items-center">
+      <div className="mb-6 p-4 rounded-lg bg-primary/5 flex justify-center items-center">
         <div className="flex space-x-8">
           <div>
             <span className="font-semibold text-primary">Gold:</span> 
@@ -432,10 +432,6 @@ export default function Shop() {
             <span className="font-semibold text-primary">Qi:</span> 
             <span className="ml-2 text-green-600">{Math.floor(game.energy)}</span>
           </div>
-        </div>
-        <div>
-          <span className="font-semibold text-primary">Cultivation Level:</span> 
-          <span className="ml-2">{game.cultivationLevel}</span>
         </div>
       </div>
       

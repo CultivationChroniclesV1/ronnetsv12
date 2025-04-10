@@ -11,7 +11,6 @@ import { NavigationBar } from "@/components/navigation-bar";
 // Lazy load other pages
 import { lazy, Suspense } from "react";
 // Use relative paths for lazy loading to avoid import issues
-const Character = lazy(() => import("./pages/character"));
 const CharacterInfo = lazy(() => import("./pages/character-info"));
 const Combat = lazy(() => import("./pages/combat"));
 const Map = lazy(() => import("./pages/map"));
@@ -38,7 +37,6 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/game" component={Game} />
-        <Route path="/character" component={Character} />
         <Route path="/character-info" component={CharacterInfo} />
         <Route path="/combat" component={Combat} />
         <Route path="/map" component={Map} />
