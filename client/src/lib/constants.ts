@@ -2328,7 +2328,7 @@ export const ENEMIES = {
 
 // Currency settings
 export const STARTING_GOLD = 100;
-export const STARTING_SPIRITUAL_STONES = 10;
+export const STARTING_QI_STONES = 10;
 
 // Game settings and mechanics
 export const DEFAULT_QI_PER_CLICK = 5;
@@ -2422,7 +2422,7 @@ export const EQUIPMENT_RARITY = {
 
 export const CURRENCY_TYPES = {
   GOLD: 'gold',
-  SPIRITUAL_STONES: 'spiritualStones',
+  QI_STONES: 'spiritualStones', // Keep the same property name in the game state for backward compatibility
   CONTRIBUTION_POINTS: 'contributionPoints',
   REPUTATION: 'reputation',
 };

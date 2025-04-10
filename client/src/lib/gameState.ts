@@ -1,4 +1,4 @@
-import { REALMS, UPGRADES, SKILLS, ACHIEVEMENTS, BASE_QI_RATE, DEFAULT_QI_PER_CLICK, BASE_STORAGE, STARTING_GOLD, STARTING_SPIRITUAL_STONES } from './constants';
+import { REALMS, UPGRADES, SKILLS, ACHIEVEMENTS, BASE_QI_RATE, DEFAULT_QI_PER_CLICK, BASE_STORAGE, STARTING_GOLD, STARTING_QI_STONES } from './constants';
 import type { GameState } from '@shared/schema';
 
 // Default initial game state
@@ -73,7 +73,7 @@ export function getInitialGameState(): GameState {
     
     // Currencies
     gold: STARTING_GOLD,
-    spiritualStones: STARTING_SPIRITUAL_STONES,
+    spiritualStones: STARTING_QI_STONES, // Property name kept for backward compatibility
     
     // Inventory
     inventory: {
