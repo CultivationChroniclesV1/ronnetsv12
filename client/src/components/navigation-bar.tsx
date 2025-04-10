@@ -177,26 +177,6 @@ export function NavigationBar() {
                     <i className="fas fa-tasks mr-2"></i> Quests
                   </div>
                 </Link>
-                
-                <div className="border-t border-gray-200 my-2 pt-2">
-                  
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Character Info</h3>
-                  {game.characterCreated ? (
-                    <>
-                      <p className="text-sm mb-1">
-                        <span className="font-medium">Name:</span> {game.characterName}
-                      </p>
-                      <p className="text-sm mb-1">
-                        <span className="font-medium">Sect:</span> {game.sect ? SECTS[game.sect as keyof typeof SECTS].name : 'None'}
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-medium">Realm:</span> {REALMS[game.realm as keyof typeof REALMS].name} Stage {game.realmStage}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-sm text-gray-600">Character not created yet</p>
-                  )}
-                </div>
               </div>
             </SheetContent>
           </Sheet>
