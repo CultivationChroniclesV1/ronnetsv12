@@ -1,5 +1,5 @@
 import { useGameEngine } from '@/lib/gameEngine';
-import { SKILLS } from '@/lib/constants';
+import { SKILLS, REALMS } from '@/lib/constants';
 import { isSkillAvailable, getSkillCost } from '@/lib/gameState';
 import { formatNumber } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -35,9 +35,9 @@ export function SkillsSection() {
       if (unlocked) return '';
       
       if (skill.requiredRealm && skill.requiredRealm !== game.realm) {
-        return `Requires ${skill.requiredRealm.charAt(0).toUpperCase() + skill.requiredRealm.slice(1)} Realm`;
+        return `Requires ${REALMS[skill.requiredRealm as keyof typeof REALMS].name} Realm`;
       } else if (skill.requiredStage && game.realmStage < skill.requiredStage) {
-        return `Requires ${game.realm.charAt(0).toUpperCase() + game.realm.slice(1)} (Stage ${skill.requiredStage})`;
+        return `Requires ${REALMS[game.realm as keyof typeof REALMS].name} (Stage ${skill.requiredStage})`;
       }
       
       return '';
