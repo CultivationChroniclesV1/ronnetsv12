@@ -770,7 +770,7 @@ export default function SkillTree() {
               <>
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2 text-2xl">
-                    <i className={`fas fa-${getSelectedSkillDetails()?.icon}`}></i>
+                    <i className={"fas " + (getSelectedSkillDetails()?.icon?.startsWith('fa-') ? getSelectedSkillDetails()?.icon : 'fa-' + getSelectedSkillDetails()?.icon)}></i>
                     {getSelectedSkillDetails()?.name}
                     <span className="text-sm text-gray-500 ml-2">
                       ({getSelectedSkillDetails()?.chineseName})
